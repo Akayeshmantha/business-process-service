@@ -274,6 +274,9 @@ public class UBLDataAdapterApplication implements IBusinessProcessApplication {
     @Override
     public void sendDocument(String processInstanceId, String initiatorID, String responderID, Object document) {
         // TODO: Send email notification to the responder...
+        // IF the ID of the responder belongs to another instance, send the document to the receiver in order to create
+        // the order process. In other words, initiate the same order process in the target instance.
+        // YADA karsi tarafin startcontrollerini direk arayuz kismindan calistir....
 
         // if this document is a response to an initiating document, set the response code of the initiating document
         // e.g OrderResponse to an Order

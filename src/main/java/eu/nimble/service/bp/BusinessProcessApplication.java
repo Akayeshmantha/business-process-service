@@ -89,7 +89,7 @@ public class BusinessProcessApplication {
         session.close();
         connection.close();
       } catch (Exception e) {
-        logger.warn("Failed to close session/connection", e);
+        logger.warn("Failed to close session/rest", e);
       }
     }
 
