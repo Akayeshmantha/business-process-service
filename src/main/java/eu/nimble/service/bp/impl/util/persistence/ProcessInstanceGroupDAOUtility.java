@@ -98,7 +98,8 @@ public class ProcessInstanceGroupDAOUtility {
                 filter.getTradingPartnerIDs().add(resultColumn);
             }
 
-            List<PartyType> parties = identityClient.getParties(bearerToken, filter.getTradingPartnerIDs());
+            // TODO: Uncomment the following lines to enable security...
+            /*List<PartyType> parties = identityClient.getParties(bearerToken, filter.getTradingPartnerIDs());
 
             // populate partners' names
             if(parties != null) {
@@ -112,7 +113,7 @@ public class ProcessInstanceGroupDAOUtility {
                         }
                     }
                 }
-            }
+            }*/
         }
         return filter;
     }

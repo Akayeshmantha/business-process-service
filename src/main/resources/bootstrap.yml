@@ -39,7 +39,7 @@ springfox:
       v2:
         path: /api-docs
 
-#### c3p0 database connection pool configurations
+#### c3p0 database rest pool configurations
 com:
   mchange:
     v2:
