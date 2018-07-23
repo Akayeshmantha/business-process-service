@@ -39,7 +39,8 @@ public class ProcessInstanceGroupController implements GroupApi {
     @ApiOperation(value = "",notes = "Add a new process instance to the specified")
     public ResponseEntity<ProcessInstanceGroup> addProcessInstanceToGroup(
             @ApiParam(value = "Identifier of the process instance group to which a new process instance id is added", required = true) @PathVariable("ID") String ID,
-            @ApiParam(value = "Identifier of the process instance to be added", required = true) @RequestParam(value = "processInstanceID", required = true) String processInstanceID) {
+            @ApiParam(value = "Identifier of the process instance to be added", required = true) @RequestParam(value = "processInstanceID", required = true) String processInstanceID,
+            @ApiParam(value = "" ,required=true ) @RequestHeader(value="Authorization", required=true) String authorization) {
         logger.debug("Adding process instance: {} to ProcessInstanceGroup: {}", ID);
         ProcessInstanceGroupDAO processInstanceGroupDAO = null;
         try {
@@ -64,7 +65,8 @@ public class ProcessInstanceGroupController implements GroupApi {
 
     @Override
     @ApiOperation(value = "",notes = "Delete the process instance from the process instance group")
-    public ResponseEntity<ProcessInstanceGroup> deleteProcessInstanceFromGroup(@ApiParam(value = "Identifier of the process instance group from which the process instance id is deleted", required = true) @PathVariable("ID") String ID, @ApiParam(value = "Identifier of the process instance to be deleted", required = true) @RequestParam(value = "processInstanceID", required = true) String processInstanceID) {
+    public ResponseEntity<ProcessInstanceGroup> deleteProcessInstanceFromGroup(@ApiParam(value = "Identifier of the process instance group from which the process instance id is deleted", required = true) @PathVariable("ID") String ID, @ApiParam(value = "Identifier of the process instance to be deleted", required = true) @RequestParam(value = "processInstanceID", required = true) String processInstanceID,@ApiParam(value = "" ,required=true ) @RequestHeader(value="Authorization", required=true) String authorization
+    ) {
         logger.debug("Deleting process instance: {} from ProcessInstanceGroup: {}", ID);
 
         ProcessInstanceGroupDAO processInstanceGroupDAO = ProcessInstanceGroupDAOUtility.getProcessInstanceGroupDAO(ID);
@@ -80,7 +82,7 @@ public class ProcessInstanceGroupController implements GroupApi {
 
     @Override
     @ApiOperation(value = "",notes = "Retrieve the process instances for the given process group")
-    public ResponseEntity<List<ProcessInstance>> getProcessInstancesOfGroup(@ApiParam(value = "Identifier of the process instance group for which the associated process instances will be retrieved", required = true) @PathVariable("ID") String ID) {
+    public ResponseEntity<List<ProcessInstance>> getProcessInstancesOfGroup(@ApiParam(value = "Identifier of the process instance group for which the associated process instances will be retrieved", required = true) @PathVariable("ID") String ID,@ApiParam(value = "" ,required=true ) @RequestHeader(value="Authorization", required=true) String authorization) {
         logger.debug("Getting ProcessInstances for group: {}", ID);
 
         ProcessInstanceGroupDAO processInstanceGroupDAO = ProcessInstanceGroupDAOUtility.getProcessInstanceGroupDAO(ID);
@@ -92,7 +94,8 @@ public class ProcessInstanceGroupController implements GroupApi {
 
     @Override
     @ApiOperation(value = "",notes = "Delete the process instance group along with the included process instances")
-    public ResponseEntity<Void> deleteProcessInstanceGroup(@ApiParam(value = "", required = true) @PathVariable("ID") String ID) {
+    public ResponseEntity<Void> deleteProcessInstanceGroup(@ApiParam(value = "", required = true) @PathVariable("ID") String ID,@ApiParam(value = "" ,required=true ) @RequestHeader(value="Authorization", required=true) String authorization
+    ) {
         logger.debug("Deleting ProcessInstanceGroup ID: {}", ID);
 
         ProcessInstanceGroupDAOUtility.deleteProcessInstanceGroupDAOByID(ID);
@@ -104,7 +107,8 @@ public class ProcessInstanceGroupController implements GroupApi {
 
     @Override
     @ApiOperation(value = "",notes = "Retrieve the process instance group specified with the ID")
-    public ResponseEntity<ProcessInstanceGroup> getProcessInstanceGroup(@ApiParam(value = "", required = true) @PathVariable("ID") String ID) {
+    public ResponseEntity<ProcessInstanceGroup> getProcessInstanceGroup(@ApiParam(value = "", required = true) @PathVariable("ID") String ID,@ApiParam(value = "" ,required=true ) @RequestHeader(value="Authorization", required=true) String authorization
+    ) {
         logger.debug("Getting ProcessInstanceGroup: {}", ID);
 
         ProcessInstanceGroupDAO processInstanceGroupDAO = ProcessInstanceGroupDAOUtility.getProcessInstanceGroupDAO(ID);
@@ -117,7 +121,8 @@ public class ProcessInstanceGroupController implements GroupApi {
 
     @Override
     @ApiOperation(value = "",notes = "Retrieve process instance groups for the specified party. If no partyID is specified, then all groups are returned")
-    public ResponseEntity<ProcessInstanceGroupResponse> getProcessInstanceGroups(@ApiParam(value = "Identifier of the party") @RequestParam(value = "partyID", required = false) String partyID,
+    public ResponseEntity<ProcessInstanceGroupResponse> getProcessInstanceGroups(@ApiParam(value = "" ,required=true ) @RequestHeader(value="Authorization", required=true) String authorization,
+                                                                                @ApiParam(value = "Identifier of the party") @RequestParam(value = "partyID", required = false) String partyID,
                                                                                  @ApiParam(value = "Related products") @RequestParam(value = "relatedProducts", required = false) List<String> relatedProducts,
                                                                                  @ApiParam(value = "Related product categories") @RequestParam(value = "relatedProductCategories", required = false) List<String> relatedProductCategories,
                                                                                  @ApiParam(value = "Identifier of the corresponsing trading partner ID") @RequestParam(value = "tradingPartnerIDs", required = false) List<String> tradingPartnerIDs,
@@ -126,7 +131,8 @@ public class ProcessInstanceGroupController implements GroupApi {
                                                                                  @ApiParam(value = "Offset of the first result among the complete result set satisfying the given criteria", defaultValue = "0") @RequestParam(value = "offset", required = false, defaultValue = "0") Integer offset,
                                                                                  @ApiParam(value = "Number of results to be included in the result set", defaultValue = "10") @RequestParam(value = "limit", required = false, defaultValue = "10") Integer limit,
                                                                                  @ApiParam(value = "", defaultValue = "false") @RequestParam(value = "archived", required = false, defaultValue = "false") Boolean archived,
-                                                                                 @ApiParam(value = "") @RequestParam(value = "collaborationRole", required = false) String collaborationRole) {
+                                                                                 @ApiParam(value = "") @RequestParam(value = "collaborationRole", required = false) String collaborationRole
+                                                                                 ) {
         logger.debug("Getting ProcessInstanceGroups for party: {}", partyID);
 
         List<ProcessInstanceGroupDAO> results = ProcessInstanceGroupDAOUtility.getProcessInstanceGroupDAOs(partyID, collaborationRole, archived, tradingPartnerIDs, relatedProducts, relatedProductCategories, null, null, limit, offset);
@@ -170,7 +176,8 @@ public class ProcessInstanceGroupController implements GroupApi {
 
     @Override
     @ApiOperation(value = "",notes = "Archive the process instance group specified with ID")
-    public ResponseEntity<ProcessInstanceGroup> archiveGroup(@ApiParam(value = "Identifier of the process instance group to be archived", required = true) @PathVariable("ID") String ID) {
+    public ResponseEntity<ProcessInstanceGroup> archiveGroup(@ApiParam(value = "Identifier of the process instance group to be archived", required = true) @PathVariable("ID") String ID,@ApiParam(value = "" ,required=true ) @RequestHeader(value="Authorization", required=true) String authorization
+    ) {
         logger.debug("Archiving ProcessInstanceGroup: {}", ID);
 
         ProcessInstanceGroupDAO processInstanceGroupDAO = ProcessInstanceGroupDAOUtility.getProcessInstanceGroupDAO(ID);
@@ -186,7 +193,8 @@ public class ProcessInstanceGroupController implements GroupApi {
 
     @Override
     @ApiOperation(value = "",notes = "Restore the archived process instance group specified with ID")
-    public ResponseEntity<ProcessInstanceGroup> restoreGroup(@ApiParam(value = "Identifier of the process instance group to be restored", required = true) @PathVariable("ID") String ID) {
+    public ResponseEntity<ProcessInstanceGroup> restoreGroup(@ApiParam(value = "Identifier of the process instance group to be restored", required = true) @PathVariable("ID") String ID,@ApiParam(value = "" ,required=true ) @RequestHeader(value="Authorization", required=true) String authorization
+    ) {
         logger.debug("Restoring ProcessInstanceGroup: {}", ID);
 
         ProcessInstanceGroupDAO processInstanceGroupDAO = ProcessInstanceGroupDAOUtility.getProcessInstanceGroupDAO(ID);
@@ -202,7 +210,8 @@ public class ProcessInstanceGroupController implements GroupApi {
 
     @Override
     @ApiOperation(value = "",notes = "Save a process group along with the initial process instance")
-    public ResponseEntity<Void> saveProcessInstanceGroup(@ApiParam(value = "The content of the process instance group to be saved", required = true) @RequestBody ProcessInstanceGroup processInstanceGroup) {
+    public ResponseEntity<Void> saveProcessInstanceGroup(@ApiParam(value = "The content of the process instance group to be saved", required = true) @RequestBody ProcessInstanceGroup processInstanceGroup,@ApiParam(value = "" ,required=true ) @RequestHeader(value="Authorization", required=true) String authorization
+    ) {
         logger.debug("Saving ProcessInstanceGroup {}", processInstanceGroup.toString());
         ProcessInstanceGroupDAO processInstanceGroupDAO = HibernateSwaggerObjectMapper.createProcessInstanceGroup_DAO(processInstanceGroup);
         HibernateUtilityRef.getInstance("bp-data-model").persist(processInstanceGroupDAO);
@@ -214,7 +223,8 @@ public class ProcessInstanceGroupController implements GroupApi {
 
     @Override
     @ApiOperation(value = "",notes = "Archive all the groups of the given party")
-    public ResponseEntity<Void> archiveAllGroups(@ApiParam(value = "Identifier of the party of which groups will be archived", required = true) @RequestParam(value = "partyID", required = true) String partyID) {
+    public ResponseEntity<Void> archiveAllGroups(@ApiParam(value = "Identifier of the party of which groups will be archived", required = true) @RequestParam(value = "partyID", required = true) String partyID,@ApiParam(value = "" ,required=true ) @RequestHeader(value="Authorization", required=true) String authorization
+    ) {
         logger.debug("Archiving ProcessInstanceGroups for party {}", partyID);
 
         ProcessInstanceGroupDAOUtility.archiveAllGroupsForParty(partyID);
@@ -226,7 +236,8 @@ public class ProcessInstanceGroupController implements GroupApi {
 
     @Override
     @ApiOperation(value = "",notes = "Delete all the archived groups of the given party")
-    public ResponseEntity<Void> deleteAllArchivedGroups(@ApiParam(value = "Identifier of the party of which groups will be deleted", required = true) @RequestParam(value = "partyID", required = true) String partyID) {
+    public ResponseEntity<Void> deleteAllArchivedGroups(@ApiParam(value = "Identifier of the party of which groups will be deleted", required = true) @RequestParam(value = "partyID", required = true) String partyID,@ApiParam(value = "" ,required=true ) @RequestHeader(value="Authorization", required=true) String authorization
+    ) {
         logger.debug("Deleting archived ProcessInstanceGroups for party {}", partyID);
 
         ProcessInstanceGroupDAOUtility.deleteArchivedGroupsForParty(partyID);

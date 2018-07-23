@@ -28,6 +28,13 @@ paths:
   /content:
     get:
       operationId: getProcessDefinitions
+      consumes:
+      - application/json
+      parameters:
+      - name: Authorization
+        in: header
+        type: string
+        required: true
       produces:
       - application/json
       responses:
@@ -50,6 +57,11 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/Process'
+      - name: Authorization
+        in: header
+        type: string
+        required: true
+
       responses:
         # Response code
         200:
@@ -67,6 +79,10 @@ paths:
         name: body
         schema:
           $ref: '#/definitions/Process'
+      - name: Authorization
+        in: header
+        type: string
+        required: true
       responses:
         # Response code
         200:
@@ -84,6 +100,10 @@ paths:
         type: string
         description: The id of the business process.
         required: true
+      - name: Authorization
+        in: header
+        type: string
+        required: true
       responses:
         # Response code
         200:
@@ -97,6 +117,10 @@ paths:
       parameters:
       - in: path
         name: processID
+        type: string
+        required: true
+      - name: Authorization
+        in: header
         type: string
         required: true
       responses:
@@ -119,6 +143,11 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/ProcessPreferences'
+      - name: Authorization
+        in: header
+        type: string
+        required: true
+
       responses:
         # Response code
         200:
@@ -136,6 +165,10 @@ paths:
         name: body
         schema:
           $ref: '#/definitions/ProcessPreferences'
+      - name: Authorization
+        in: header
+        type: string
+        required: true
       responses:
         # Response code
         200:
@@ -153,6 +186,10 @@ paths:
         type: string
         description: The id of the partner.
         required: true
+      - name: Authorization
+        in: header
+        type: string
+        required: true
       responses:
         # Response code
         200:
@@ -166,6 +203,10 @@ paths:
       parameters:
       - in: path
         name: partnerID
+        type: string
+        required: true
+      - name: Authorization
+        in: header
         type: string
         required: true
       responses:
@@ -188,6 +229,10 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/ProcessConfiguration'
+      - name: Authorization
+        in: header
+        type: string
+        required: true
       responses:
         # Response code
         200:
@@ -205,6 +250,10 @@ paths:
         name: body
         schema:
           $ref: '#/definitions/ProcessConfiguration'
+      - name: Authorization
+        in: header
+        type: string
+        required: true
       responses:
         # Response code
         200:
@@ -222,6 +271,10 @@ paths:
         name: partnerID
         type: string
         description: The id of the partner.
+        required: true
+      - name: Authorization
+        in: header
+        type: string
         required: true
       responses:
         # Response code
@@ -250,6 +303,10 @@ paths:
         name: roleType
         type: string
         required: true
+      - name: Authorization
+        in: header
+        type: string
+        required: true
       responses:
         # Response code
         200:
@@ -273,6 +330,10 @@ paths:
         name: roleType
         type: string
         required: true
+      - name: Authorization
+        in: header
+        type: string
+        required: true        
       responses:
         # Response code
         200:
@@ -303,6 +364,10 @@ paths:
         description: The id of the preceding process instance
         required: false
         type: string
+      - name: Authorization
+        in: header
+        type: string
+        required: true
 
       responses:
         # Response code
@@ -353,6 +418,10 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/ProcessDocumentMetadata'
+      - name: Authorization
+        in: header
+        type: string
+        required: true
       responses:
         # Response code
         200:
@@ -370,6 +439,10 @@ paths:
         name: body
         schema:
           $ref: '#/definitions/ProcessDocumentMetadata'
+      - name: Authorization
+        in: header
+        type: string
+        required: true
       responses:
         # Response code
         200:
@@ -385,6 +458,10 @@ paths:
       parameters:
       - in: path
         name: documentID
+        type: string
+        required: true
+      - name: Authorization
+        in: header
         type: string
         required: true
       responses:
@@ -420,6 +497,10 @@ paths:
         type: string
         description: The source of the document (whether it is sent or received by the partner - SENT, RECEIVED).
         required: true
+      - name: Authorization
+        in: header
+        type: string
+        required: true
       responses:
         # Response code
         200:
@@ -450,6 +531,10 @@ paths:
         type: string
         description: The source of the document (whether it is sent or received by the partner - SENT, RECEIVED).
         required: true
+      - name: Authorization
+        in: header
+        type: string
+        required: true
       responses:
         # Response code
         200:
@@ -474,6 +559,10 @@ paths:
         name: type
         type: string
         description: The type of the document such as PPAPRESPONSE,ORDERRESPONSESIMPLE,REQUESTFORQUOTATION etc.
+        required: true
+      - name: Authorization
+        in: header
+        type: string
         required: true
       responses:
         # Response code
@@ -530,6 +619,10 @@ paths:
         name: collaborationRole
         type: string
         required: false
+      - name: Authorization
+        in: header
+        type: string
+        required: true
       produces:
       - application/json
       responses:
@@ -550,6 +643,10 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/ProcessInstanceGroup'
+      - name: Authorization
+        in: header
+        type: string
+        required: true
       responses:
         # Response code
         201:
@@ -611,6 +708,10 @@ paths:
         name: ID
         type: string
         required: true
+      - name: Authorization
+        in: header
+        type: string
+        required: true
       responses:
         200:
           description: Retrieved the groups successfully
@@ -621,6 +722,10 @@ paths:
       parameters:
       - in: path
         name: ID
+        type: string
+        required: true
+      - name: Authorization
+        in: header
         type: string
         required: true
       responses:
@@ -636,6 +741,10 @@ paths:
         type: string
         description: Identifier of the process instance group to be archived
         required: true
+      - name: Authorization
+        in: header
+        type: string
+        required: true
       responses:
         200:
           description: Archived the group successfully
@@ -649,6 +758,10 @@ paths:
         name: ID
         type: string
         description: Identifier of the process instance group to be restored
+        required: true
+      - name: Authorization
+        in: header
+        type: string
         required: true
       responses:
         200:
@@ -665,6 +778,10 @@ paths:
         type: string
         description: Identifier of the party of which groups will be archived
         required: true
+      - name: Authorization
+        in: header
+        type: string
+        required: true
       responses:
         200:
           description: Archived the groups successfully
@@ -676,6 +793,10 @@ paths:
         name: partyID
         type: string
         description: Identifier of the party of which groups will be deleted
+        required: true
+      - name: Authorization
+        in: header
+        type: string
         required: true
       responses:
         200:
@@ -691,6 +812,10 @@ paths:
         name: ID
         type: string
         description: Identifier of the process instance group for which the associated process instances will be retrieved
+        required: true
+      - name: Authorization
+        in: header
+        type: string
         required: true
       responses:
         200:
@@ -712,6 +837,10 @@ paths:
         type: string
         description: Identifier of the process instance to be added
         required: true
+      - name: Authorization
+        in: header
+        type: string
+        required: true
       responses:
         200:
           description: Added the process instance to the group successfully
@@ -729,6 +858,10 @@ paths:
         name: processInstanceID
         type: string
         description: Identifier of the process instance to be deleted
+        required: true
+      - name: Authorization
+        in: header
+        type: string
         required: true
       responses:
         200:

@@ -56,7 +56,7 @@ public class ContractController {
     @RequestMapping(value = "/clauses/{clauseId}",
             produces = {"application/json"},
             method = RequestMethod.GET)
-    public ResponseEntity getClauseDetails(@PathVariable(value = "clauseId", required = true) String clauseId) {
+    public ResponseEntity getClauseDetails(@PathVariable(value = "clauseId", required = true) String clauseId,@RequestHeader(value="Authorization", required=true) String bearerToken) {
         try {
             logger.info("Getting clause with id: {}", clauseId);
             ClauseType clause = ContractDAOUtility.getClause(clauseId);
@@ -75,7 +75,8 @@ public class ContractController {
     @RequestMapping(value = "/clauses/{clauseId}",
             method = RequestMethod.PUT)
     public ResponseEntity updateClause(@PathVariable(value = "clauseId") String clauseId,
-                                       @RequestBody() String deserializedClause) {
+                                       @RequestBody() String deserializedClause,
+                                       @RequestHeader(value="Authorization", required=true) String bearerToken) {
 
         try {
             logger.info("Updating clause with id: {}", clauseId);
@@ -125,7 +126,7 @@ public class ContractController {
     @ApiOperation(value = "",notes = "Construct contract starting from the process instance with the given id")
     @RequestMapping(value = "/contracts",
             method = RequestMethod.GET)
-    public ResponseEntity constructContractForProcessInstances(@RequestParam(value = "processInstanceId") String processInstanceId) {
+    public ResponseEntity constructContractForProcessInstances(@RequestParam(value = "processInstanceId") String processInstanceId,@RequestHeader(value="Authorization", required=true) String bearerToken) {
         try {
             logger.info("Constructing contract starting from the process instance: {}", processInstanceId);
             // check existence and type of the process instance
@@ -163,7 +164,7 @@ public class ContractController {
     @RequestMapping(value = "/contracts/{contractId}/clauses",
             produces = {"application/json"},
             method = RequestMethod.GET)
-    public ResponseEntity getClausesOfContract(@PathVariable(value = "contractId") String contractId) {
+    public ResponseEntity getClausesOfContract(@PathVariable(value = "contractId") String contractId,@RequestHeader(value="Authorization", required=true) String bearerToken) {
         try {
             logger.info("Getting clauses for contract: {}", contractId);
             ContractType contract = ContractDAOUtility.getContract(contractId);
@@ -188,7 +189,8 @@ public class ContractController {
     @RequestMapping(value = "/contracts/{contractId}/clauses/{clauseId}",
             method = RequestMethod.DELETE)
     public ResponseEntity deleteClauseFromContract(@PathVariable(value = "contractId") String contractId,
-                                                   @PathVariable(value = "clauseId") String clauseId) {
+                                                   @PathVariable(value = "clauseId") String clauseId,
+                                                   @RequestHeader(value="Authorization", required=true) String bearerToken) {
         try {
             logger.info("Deleting clause: {} from contract: {}", clauseId, contractId);
 
@@ -236,7 +238,8 @@ public class ContractController {
             produces = {"application/json"},
             method = RequestMethod.GET)
     public ResponseEntity getClauseDetails(@PathVariable(value = "documentId", required = true) String documentId,
-                                                       @RequestParam(value = "clauseType", required = true) eu.nimble.service.bp.impl.model.ClauseType clauseType) {
+                                           @RequestParam(value = "clauseType", required = true) eu.nimble.service.bp.impl.model.ClauseType clauseType,
+                                           @RequestHeader(value="Authorization", required=true) String bearerToken) {
         try {
             logger.info("Getting clause for document: {}, type: {}", documentId, clauseType);
             // check existence and type of the document bound to the contract
@@ -267,7 +270,8 @@ public class ContractController {
             method = RequestMethod.PATCH)
     public ResponseEntity addDocumentClauseToContract(@PathVariable(value = "documentId") String documentId,
                                                       @RequestParam(value = "clauseType") String clauseType,
-                                                      @RequestParam(value = "clauseDocumentId") String clauseDocumentId) {
+                                                      @RequestParam(value = "clauseDocumentId") String clauseDocumentId,
+                                                      @RequestHeader(value="Authorization", required=true) String bearerToken) {
         try {
             logger.info("Adding document clause to contract. Bounded-document id: {}, clause type: {}, clause document id: {}", documentId, clauseType, clauseDocumentId);
 
@@ -332,7 +336,8 @@ public class ContractController {
             produces = {"application/json"},
             method = RequestMethod.PATCH)
     public ResponseEntity addDataMonitoringClauseToContract(@PathVariable(value = "documentId") String documentId,
-                                                            @RequestBody() DataMonitoringClauseType dataMonitoringClause) {
+                                                            @RequestBody() DataMonitoringClauseType dataMonitoringClause,
+                                                            @RequestHeader(value="Authorization", required=true) String bearerToken) {
 
         try {
             logger.info("Adding data monitoring clause to contract. Bounded-document id: {}", documentId);

@@ -23,10 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +41,7 @@ public class DocumentController implements DocumentApi {
     @RequestMapping(value = "/document/json/{documentID}",
             produces = {"application/json"},
             method = RequestMethod.GET)
-    ResponseEntity<Object> getDocumentJsonContent(@PathVariable("documentID") String documentID) {
+    ResponseEntity<Object> getDocumentJsonContent(@PathVariable("documentID") String documentID,@RequestHeader(value="Authorization", required=true) String bearerToken) {
         try {
             logger.info("Getting content of document: {}", documentID);
             Object document = DocumentDAOUtility.getUBLDocument(documentID);
@@ -69,7 +66,7 @@ public class DocumentController implements DocumentApi {
     @RequestMapping(value = "/document/xml/{documentID}",
             produces = {"application/json"},
             method = RequestMethod.GET)
-    ResponseEntity<String> getDocumentXMLContent(@PathVariable("documentID") String documentID) {
+    ResponseEntity<String> getDocumentXMLContent(@PathVariable("documentID") String documentID,@RequestHeader(value="Authorization", required=true) String bearerToken) {
         Object document = DocumentDAOUtility.getUBLDocument(documentID);
 
         String documentContentXML = null;
@@ -97,7 +94,7 @@ public class DocumentController implements DocumentApi {
 
     @Override
     @ApiOperation(value = "",notes = "Add a business process document metadata")
-    public ResponseEntity<ModelApiResponse> addDocumentMetadata(@RequestBody ProcessDocumentMetadata body) {
+    public ResponseEntity<ModelApiResponse> addDocumentMetadata(@RequestBody ProcessDocumentMetadata body,@RequestHeader(value="Authorization", required=true) String bearerToken) {
         BusinessProcessContext businessProcessContext = BusinessProcessContextHandler.getBusinessProcessContextHandler().getBusinessProcessContext(null);
         try{
             DocumentDAOUtility.addDocumentWithMetadata(businessProcessContext.getId(),body, null);
@@ -113,7 +110,7 @@ public class DocumentController implements DocumentApi {
 
     @Override
     @ApiOperation(value = "",notes = "Update a business process document metadata")
-    public ResponseEntity<ModelApiResponse> updateDocumentMetadata(@RequestBody ProcessDocumentMetadata body) {
+    public ResponseEntity<ModelApiResponse> updateDocumentMetadata(@RequestHeader(value="Authorization", required=true) String bearerToken ,@RequestBody ProcessDocumentMetadata body) {
         BusinessProcessContext businessProcessContext = BusinessProcessContextHandler.getBusinessProcessContextHandler().getBusinessProcessContext(null);
         try{
             DocumentDAOUtility.updateDocumentMetadata(businessProcessContext.getId(),body);
@@ -129,7 +126,7 @@ public class DocumentController implements DocumentApi {
 
     @Override
     @ApiOperation(value = "",notes = "Delete the business process document metadata together with content by id")
-    public ResponseEntity<ModelApiResponse> deleteDocument(@PathVariable("documentID") String documentID) {
+    public ResponseEntity<ModelApiResponse> deleteDocument(@PathVariable("documentID") String documentID,@RequestHeader(value="Authorization", required=true) String bearerToken) {
         logger.info(" $$$ Deleting Document for ... {}", documentID);
         DocumentDAOUtility.deleteDocumentWithMetadata(documentID);
         return HibernateSwaggerObjectMapper.getApiResponse();
@@ -150,7 +147,7 @@ public class DocumentController implements DocumentApi {
 
     @Override
     @ApiOperation(value = "",notes = "Get the business process document metadata")
-    public ResponseEntity<List<ProcessDocumentMetadata>> getDocuments(@PathVariable("partnerID") String partnerID, @PathVariable("type") String type) {
+    public ResponseEntity<List<ProcessDocumentMetadata>> getDocuments(@PathVariable("partnerID") String partnerID, @PathVariable("type") String type,@RequestHeader(value="Authorization", required=true) String bearerToken) {
         logger.info(" $$$ Getting Document for partner {}, type {}", partnerID, type);
         List<ProcessDocumentMetadataDAO> processDocumentsDAO = DAOUtility.getProcessDocumentMetadata(partnerID, type);
         List<ProcessDocumentMetadata> processDocuments = new ArrayList<>();
@@ -164,7 +161,7 @@ public class DocumentController implements DocumentApi {
 
     @Override
     @ApiOperation(value = "",notes = "Get the business process document metadata")
-    public ResponseEntity<List<ProcessDocumentMetadata>> getDocuments(@PathVariable("partnerID") String partnerID, @PathVariable("type") String type, @PathVariable("source") String source) {
+    public ResponseEntity<List<ProcessDocumentMetadata>> getDocuments(@PathVariable("partnerID") String partnerID, @PathVariable("type") String type, @PathVariable("source") String source,@RequestHeader(value="Authorization", required=true) String bearerToken) {
         logger.info(" $$$ Getting Document for partner {}, type {}, source {}", partnerID, type, source);
         List<ProcessDocumentMetadataDAO> processDocumentsDAO = DAOUtility.getProcessDocumentMetadata(partnerID, type, source);
         List<ProcessDocumentMetadata> processDocuments = new ArrayList<>();
@@ -178,7 +175,7 @@ public class DocumentController implements DocumentApi {
     @Override
     @ApiOperation(value = "",notes = "Get the business process document metadata")
     public ResponseEntity<List<ProcessDocumentMetadata>> getDocuments(@PathVariable("partnerID") String partnerID, @PathVariable("type") String type,
-            @PathVariable("source") String source, @PathVariable("status") String status) {
+            @PathVariable("source") String source, @PathVariable("status") String status,@RequestHeader(value="Authorization", required=true) String bearerToken) {
         logger.info(" $$$ Getting Document for partner {}, type {}, status {}, source {}", partnerID, type, status, source);
         List<ProcessDocumentMetadataDAO> processDocumentsDAO = DAOUtility.getProcessDocumentMetadata(partnerID, type, status, source);
         List<ProcessDocumentMetadata> processDocuments = new ArrayList<>();

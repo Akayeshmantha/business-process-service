@@ -14,7 +14,19 @@ public class GenericConfig {
     @Value("${nimble.data-channel.url}")
     private String dataChannelServiceUrl;
 
+    @Value("${nimble.federation.core-endpoint}")
+    private String coreEndpointUrl;
+
+    @Value("${nimble.instance.instance_id}")
+    private String instanceId;
+
+    public String getInstanceid() {
+        return instanceId;
+    }
+
     public String getDataChannelServiceUrl() {
         return dataChannelServiceUrl;
     }
+
+    public String getCoreEndpointUrl(){return coreEndpointUrl;}
 }

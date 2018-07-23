@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +29,7 @@ public class ApplicationController implements ApplicationApi {
 
     @Override
     @ApiOperation(value = "",notes = "Add a new partner business process application preference")
-    public ResponseEntity<ModelApiResponse> addProcessConfiguration(@RequestBody ProcessConfiguration body) {
+    public ResponseEntity<ModelApiResponse> addProcessConfiguration(@RequestBody ProcessConfiguration body,@RequestHeader(value="Authorization", required=true) String authorization) {
         logger.info(" $$$ Adding ProcessApplicationConfigurations: ");
         logger.debug(" $$$ {}", body.toString());
         ProcessConfigurationDAO processConfigurationDAO = HibernateSwaggerObjectMapper.createProcessConfiguration_DAO(body);
@@ -38,7 +39,7 @@ public class ApplicationController implements ApplicationApi {
 
     @Override
     @ApiOperation(value = "",notes = "Delete the business process application preference of a partner for a process")
-    public ResponseEntity<ModelApiResponse> deleteProcessConfiguration(@PathVariable("partnerID") String partnerID, @PathVariable("processID") String processID, @PathVariable("roleType") String roleType) {
+    public ResponseEntity<ModelApiResponse> deleteProcessConfiguration(@PathVariable("partnerID") String partnerID, @PathVariable("processID") String processID, @PathVariable("roleType") String roleType,@RequestHeader(value="Authorization", required=true) String authorization) {
         logger.info(" $$$ Deleting ProcessApplicationConfigurations for ... {}", partnerID);
         ProcessConfigurationDAO processConfigurationDAO = DAOUtility.getProcessConfiguration(partnerID, processID, ProcessConfiguration.RoleTypeEnum.valueOf(roleType));
         HibernateUtilityRef.getInstance("bp-data-model").delete(ProcessConfigurationDAO.class, processConfigurationDAO.getHjid());
@@ -47,7 +48,7 @@ public class ApplicationController implements ApplicationApi {
 
     @Override
     @ApiOperation(value = "",notes = "Get the business process application preferences of a partner for all processes")
-    public ResponseEntity<List<ProcessConfiguration>> getProcessConfiguration(@PathVariable("partnerID") String partnerID) {
+    public ResponseEntity<List<ProcessConfiguration>> getProcessConfiguration(@PathVariable("partnerID") String partnerID,@RequestHeader(value="Authorization", required=true) String authorization) {
         logger.info(" $$$ Getting ProcessApplicationConfigurations for ... {}", partnerID);
         List<ProcessConfigurationDAO> processApplicationConfigurationsDAO = DAOUtility.getProcessConfigurationDAOByPartnerID(partnerID);
 
@@ -63,7 +64,7 @@ public class ApplicationController implements ApplicationApi {
 
     @Override
     @ApiOperation(value = "",notes = "Get the business process application preferences of a partner for a specific process")
-    public ResponseEntity<ProcessConfiguration> getProcessConfigurationByProcessID(@PathVariable("partnerID") String partnerID, @PathVariable("processID") String processID, @PathVariable("roleType") String roleType) {
+    public ResponseEntity<ProcessConfiguration> getProcessConfigurationByProcessID(@PathVariable("partnerID") String partnerID, @PathVariable("processID") String processID, @PathVariable("roleType") String roleType,@RequestHeader(value="Authorization", required=true) String authorization) {
         logger.info(" $$$ Deleting ProcessApplicationConfigurations for ... {}", partnerID);
         ProcessConfigurationDAO processConfigurationDAO = DAOUtility.getProcessConfiguration(partnerID, processID, ProcessConfiguration.RoleTypeEnum.valueOf(roleType));
         ProcessConfiguration processConfiguration = null;
@@ -74,7 +75,7 @@ public class ApplicationController implements ApplicationApi {
 
     @Override
     @ApiOperation(value = "",notes = "Update the business process application preference of a partner")
-    public ResponseEntity<ModelApiResponse> updateProcessConfiguration(@RequestBody ProcessConfiguration body) {
+    public ResponseEntity<ModelApiResponse> updateProcessConfiguration(@RequestHeader(value="Authorization", required=true) String authorization,@RequestBody ProcessConfiguration body) {
         logger.info(" $$$ Updating ProcessApplicationConfigurations: ");
         logger.debug(" $$$ {}", body.toString());
         ProcessConfigurationDAO processApplicationConfigurationsDAO = DAOUtility.getProcessConfiguration(body.getPartnerID(), body.getProcessID(), body.getRoleType());

@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +31,7 @@ public class ContentController implements ContentApi {
 
     @Override
     @ApiOperation(value = "",notes = "Add a new business process")
-    public ResponseEntity<ModelApiResponse> addProcessDefinition(@RequestBody Process body) {
+    public ResponseEntity<ModelApiResponse> addProcessDefinition(@RequestBody Process body,@RequestHeader(value="Authorization", required=true) String authorization) {
         logger.info(" $$$ Adding business process definition: ");
         logger.debug(" $$$ {}", body.toString());
 
@@ -53,7 +54,7 @@ public class ContentController implements ContentApi {
 
     @Override
     @ApiOperation(value = "",notes = "Delete a business process definition")
-    public ResponseEntity<ModelApiResponse> deleteProcessDefinition(@PathVariable("processID") String processID) {
+    public ResponseEntity<ModelApiResponse> deleteProcessDefinition(@PathVariable("processID") String processID,@RequestHeader(value="Authorization", required=true) String authorization) {
         logger.info(" $$$ Deleting business process definition for ... {}", processID);
 
         CamundaEngine.deleteProcessDefinition(processID);
@@ -67,7 +68,7 @@ public class ContentController implements ContentApi {
 
     @Override
     @ApiOperation(value = "",notes = "Get the business process definitions")
-    public ResponseEntity<Process> getProcessDefinition(@PathVariable("processID") String processID) {
+    public ResponseEntity<Process> getProcessDefinition(@PathVariable("processID") String processID,@RequestHeader(value="Authorization", required=true) String authorization) {
         logger.info(" $$$ Getting business process definition for ... {}", processID);
 
         ProcessDAO processDAO = DAOUtility.getProcessDAOByID(processID);
@@ -84,7 +85,7 @@ public class ContentController implements ContentApi {
 
     @Override
     @ApiOperation(value = "",notes = "Get the business process definitions")
-    public ResponseEntity<List<Process>> getProcessDefinitions() {
+    public ResponseEntity<List<Process>> getProcessDefinitions(@RequestHeader(value="Authorization", required=true) String authorization) {
         logger.info(" $$$ Getting business process definitions");
 
         // first get the ones in the database
@@ -114,7 +115,7 @@ public class ContentController implements ContentApi {
 
     @Override
     @ApiOperation(value = "",notes = "Update a business process")
-    public ResponseEntity<ModelApiResponse> updateProcessDefinition(@RequestBody Process body) {
+    public ResponseEntity<ModelApiResponse> updateProcessDefinition(@RequestHeader(value="Authorization", required=true) String authorization ,@RequestBody Process body) {
         logger.info(" $$$ Updating business process definition: ");
         logger.debug(" $$$ {}", body.toString());
 

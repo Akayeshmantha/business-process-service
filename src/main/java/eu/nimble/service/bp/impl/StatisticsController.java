@@ -42,7 +42,8 @@ public class StatisticsController {
                                           @ApiParam(value = "End date (DD-MM-YYYY)", required = false) @RequestParam(value = "endDate", required = false) String endDateStr,
                                           @ApiParam(value = "Company ID", required = false) @RequestParam(value = "companyId", required = false) Integer companyId,
                                           @ApiParam(value = "Role in business process. Can be seller or buyer", required = false) @RequestParam(value = "role", required = false, defaultValue = "seller") String role,
-                                          @ApiParam(value = "State of transaction. Can be WaitingResponse, Approved or Denied", required = false) @RequestParam(value = "status", required = false) String status) {
+                                          @ApiParam(value = "State of transaction. Can be WaitingResponse, Approved or Denied", required = false) @RequestParam(value = "status", required = false) String status,
+                                          @ApiParam(value = "" ,required=true ) @RequestHeader(value="Authorization", required=true) String bearerToken) {
 
         try {
             logger.info("Getting total number of documents for start date: {}, end date: {}, type: {}, company id: {}, role: {}, state: {}", startDateStr, endDateStr, businessProcessType, companyId, role, status);
@@ -146,7 +147,7 @@ public class StatisticsController {
     @RequestMapping(value = "/non-ordered",
             produces = {"application/json"},
             method = RequestMethod.GET)
-    public ResponseEntity getNonOrderedProducts(@ApiParam(value = "Company ID", required = false) @RequestParam(value = "companyId", required = false) Integer companyId) {
+    public ResponseEntity getNonOrderedProducts(@ApiParam(value = "Company ID", required = false) @RequestParam(value = "companyId", required = false) Integer companyId,@ApiParam(value = "" ,required=true ) @RequestHeader(value="Authorization", required=true) String bearerToken) {
         try {
             logger.info("Getting non-ordered products for company id: {}", companyId);
 
@@ -171,7 +172,8 @@ public class StatisticsController {
                                           @ApiParam(value = "End date (DD-MM-YYYY)", required = false) @RequestParam(value = "endDate", required = false) String endDateStr,
                                           @ApiParam(value = "Company ID", required = false) @RequestParam(value = "companyId", required = false) Integer companyId,
                                           @ApiParam(value = "Role in business process. Can be SELLER or BUYER", required = false) @RequestParam(value = "role", required = false, defaultValue = "SELLER") String role,
-                                          @ApiParam(value = "State of transaction. Can be WaitingResponse, Approved or Denied", required = false) @RequestParam(value = "status", required = false) String status) {
+                                          @ApiParam(value = "State of transaction. Can be WaitingResponse, Approved or Denied", required = false) @RequestParam(value = "status", required = false) String status,
+                                           @ApiParam(value = "" ,required=true ) @RequestHeader(value="Authorization", required=true) String bearerToken) {
         try {
             logger.info("Getting total number of documents for start date: {}, end date: {}, company id: {}, role: {}, state: {}", startDateStr, endDateStr, companyId, role, status);
             ValidationResponse response;

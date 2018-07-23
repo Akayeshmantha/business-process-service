@@ -27,7 +27,7 @@ public class ContractGeneratorController {
     @RequestMapping(value = "/contracts/create-bundle",
             method = RequestMethod.GET,
             produces = {"application/zip"})
-    public void generateContract(@RequestParam(value = "orderId", required = true) String orderId, HttpServletResponse response){
+    public void generateContract(@RequestParam(value = "orderId", required = true) String orderId, HttpServletResponse response,@RequestHeader(value="Authorization", required=true) String bearerToken){
         try{
             logger.info("Generating contract for the order with id : {}",orderId);
 
@@ -68,7 +68,8 @@ public class ContractGeneratorController {
                                                                 @RequestParam(value = "sellerParty", required = true) String sellerParty,
                                                                 @RequestParam(value = "buyerParty", required = true) String buyerParty,
                                                                 @RequestParam(value = "incoterms", required = true) String incoterms,
-                                                                @RequestParam(value = "tradingTerms", required = true) String tradingTerms){
+                                                                @RequestParam(value = "tradingTerms", required = true) String tradingTerms,
+                                                                @RequestHeader(value="Authorization", required=true) String bearerToken){
         logger.info("Generating Order Terms and Conditions as text for the order with id : {}",orderId);
 
         try {

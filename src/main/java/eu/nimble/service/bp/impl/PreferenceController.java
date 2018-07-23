@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 /**
  * Created by yildiray on 5/25/2017.
@@ -24,7 +25,7 @@ public class PreferenceController implements PreferenceApi {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     @Override
     @ApiOperation(value = "",notes = "Add a new partner business process sequence preference")
-    public ResponseEntity<ModelApiResponse> addProcessPartnerPreference(@RequestBody ProcessPreferences body) {
+    public ResponseEntity<ModelApiResponse> addProcessPartnerPreference(@RequestBody ProcessPreferences body,@RequestHeader(value="Authorization", required=true) String authorization) {
         logger.info(" $$$ Adding ProcessPreferences: ");
         logger.debug(" $$$ {}", body.toString());
         ProcessPreferencesDAO processPreferencesDAO = HibernateSwaggerObjectMapper.createProcessPreferences_DAO(body);
@@ -34,7 +35,7 @@ public class PreferenceController implements PreferenceApi {
 
     @Override
     @ApiOperation(value = "",notes = "Deletes the business process preference of a partner")
-    public ResponseEntity<ModelApiResponse> deleteProcessPartnerPreference(@PathVariable("partnerID") String partnerID) {
+    public ResponseEntity<ModelApiResponse> deleteProcessPartnerPreference(@PathVariable("partnerID") String partnerID,@RequestHeader(value="Authorization", required=true) String authorization) {
         logger.info(" $$$ Deleting ProcessPreferences for ... {}", partnerID);
         ProcessPreferencesDAO processPreferencesDAO = DAOUtility.getProcessPreferencesDAOByPartnerID(partnerID);
         HibernateUtilityRef.getInstance("bp-data-model").delete(ProcessPreferencesDAO.class, processPreferencesDAO.getHjid());
@@ -43,7 +44,7 @@ public class PreferenceController implements PreferenceApi {
 
     @Override
     @ApiOperation(value = "",notes = "Get the business process preference of a partner")
-    public ResponseEntity<ProcessPreferences> getProcessPartnerPreference(@PathVariable("partnerID") String partnerID) {
+    public ResponseEntity<ProcessPreferences> getProcessPartnerPreference(@PathVariable("partnerID") String partnerID,@RequestHeader(value="Authorization", required=true) String authorization) {
         logger.info(" $$$ Getting ProcessPreferences for ... {}", partnerID);
         ProcessPreferencesDAO businessProcessPreferencesDAO = DAOUtility.getProcessPreferencesDAOByPartnerID(partnerID);
         ProcessPreferences businessProcessPreferences = null;
@@ -58,7 +59,7 @@ public class PreferenceController implements PreferenceApi {
 
     @Override
     @ApiOperation(value = "",notes = "Update the business process preference of a partner")
-    public ResponseEntity<ModelApiResponse> updateProcessPartnerPreference(@RequestBody ProcessPreferences body) {
+    public ResponseEntity<ModelApiResponse> updateProcessPartnerPreference(@RequestHeader(value="Authorization", required=true) String authorization,@RequestBody ProcessPreferences body) {
         logger.info(" $$$ Updating ProcessPreferences: ");
         logger.debug(" $$$ {}", body.toString());
         ProcessPreferencesDAO processPreferencesDAO = DAOUtility.getProcessPreferencesDAOByPartnerID(body.getPartnerID());

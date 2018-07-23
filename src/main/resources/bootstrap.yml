@@ -172,7 +172,10 @@ nimble:
     url: ${IDENTITY_SERVICE_URL:http://nimble-staging.salzburgresearch.at/identity}
   data-channel:
     url: ${DATA_CHANNEL_SERVICE_URL:http://nimble-staging.salzburgresearch.at/data-channel}
-
+  federation:
+    core-endpoint:${CORE_ENDPOINT_URL:http://nimble-staging.salzburgresearch.at/data-channel}
+  instance:
+    instance_id:${INSTANCE_ID:11}
 hystrix:
   command:
     default:
