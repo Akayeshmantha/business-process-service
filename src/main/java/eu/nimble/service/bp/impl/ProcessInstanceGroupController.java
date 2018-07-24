@@ -1,16 +1,21 @@
 package eu.nimble.service.bp.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.nimble.service.bp.hyperjaxb.model.ProcessInstanceGroupDAO;
+import eu.nimble.service.bp.impl.util.federation.FederationUtil;
 import eu.nimble.service.bp.impl.util.persistence.HibernateSwaggerObjectMapper;
 import eu.nimble.service.bp.impl.util.persistence.HibernateUtilityRef;
 import eu.nimble.service.bp.impl.util.persistence.ProcessInstanceGroupDAOUtility;
+import eu.nimble.service.bp.impl.util.rest.URLConnectionUtil;
 import eu.nimble.service.bp.swagger.api.GroupApi;
 import eu.nimble.service.bp.swagger.model.ProcessInstance;
 import eu.nimble.service.bp.swagger.model.ProcessInstanceGroup;
 import eu.nimble.service.bp.swagger.model.ProcessInstanceGroupFilter;
 import eu.nimble.service.bp.swagger.model.ProcessInstanceGroupResponse;
 import io.swagger.annotations.ApiOperation;
+import eu.nimble.utility.DateUtility;
 import io.swagger.annotations.ApiParam;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +27,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.UriInfo;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -147,15 +156,57 @@ public class ProcessInstanceGroupController implements GroupApi {
         groupResponse.setProcessInstanceGroups(processInstanceGroups);
         groupResponse.setSize(totalSize);
 
+        // For federation: Check the process instance groups in other and join them to ..
+        String queryString = constructQueryString(partyID, relatedProducts, relatedProductCategories, tradingPartnerIDs, initiationDateRange, lastActivityDateRange, offset, limit, archived, collaborationRole);
+        List<String> nimbleURLs = FederationUtil.getFederationEndpoints();
+        for(String nimbleURL: nimbleURLs) {
+            String groupResponseFederationJson = URLConnectionUtil.get(nimbleURL + "/group?" + queryString, "UTF-8");
+            try {
+                ProcessInstanceGroupResponse groupResponseFromFederation = new ObjectMapper().readValue(groupResponseFederationJson, ProcessInstanceGroupResponse.class);
+                groupResponse.getProcessInstanceGroups().addAll(groupResponseFromFederation.getProcessInstanceGroups());
+                groupResponse.setSize(groupResponse.getSize() + groupResponseFromFederation.getSize());
+            } catch (IOException e) {
+                logger.error("", e);
+            }
+        }
+        /////////////////////////////////////////////////////////
+
         ResponseEntity response = ResponseEntity.status(HttpStatus.OK).body(groupResponse);
         logger.debug("Retrieved ProcessInstanceGroups for party: {}", partyID);
         return response;
     }
 
+    private String constructQueryString(String partyID, List<String> relatedProducts, List<String> relatedProductCategories, List<String> tradingPartnerIDs,
+                                        String initiationDateRange, String lastActivityDateRange, Integer offset, Integer limit, Boolean archived, String collaborationRole) {
+        String queryString = "";
+        if (partyID != null)
+            queryString += "partyID=" + partyID;
+        if (relatedProducts != null)
+            queryString += "relatedProducts=" + String.join(",", relatedProducts);
+        if (relatedProductCategories != null)
+            queryString += "relatedProductCategories=" + String.join(",", relatedProductCategories);
+        if (tradingPartnerIDs != null)
+            queryString += "tradingPartnerIDs=" + String.join(",", tradingPartnerIDs);
+        if (initiationDateRange != null)
+            queryString += "initiationDateRange=" + initiationDateRange;
+        if (lastActivityDateRange != null)
+            queryString += "lastActivityDateRange=" + lastActivityDateRange;
+        if (offset != null)
+            queryString += "offset=" + offset;
+        if (limit != null)
+            queryString += "limit=" + limit;
+        if (archived != null)
+            queryString += "archived=" + archived;
+        if (collaborationRole != null)
+            queryString += "collaborationRole=" + collaborationRole;
+
+        return queryString;
+    }
+
     @Override
     @ApiOperation(value = "",notes = "Generate detailed filtering criteria for the current query parameters in place")
     public ResponseEntity<ProcessInstanceGroupFilter> getProcessInstanceGroupFilters(
-            @ApiParam(value = "" ,required=true ) @RequestHeader(value="Authorization", required=true) String bearerToken,
+            @ApiParam(value = "", required = true) @RequestHeader(value = "Authorization", required = false) String bearerToken,
             @ApiParam(value = "Identifier of the party") @RequestParam(value = "partyID", required = false) String partyID,
             @ApiParam(value = "Related products") @RequestParam(value = "relatedProducts", required = false) List<String> relatedProducts,
             @ApiParam(value = "Related product categories") @RequestParam(value = "relatedProductCategories", required = false) List<String> relatedProductCategories,
@@ -166,11 +217,43 @@ public class ProcessInstanceGroupController implements GroupApi {
             @ApiParam(value = "") @RequestParam(value = "collaborationRole", required = false) String collaborationRole) {
 
         ProcessInstanceGroupFilter filters = groupDaoUtility.getFilterDetails(partyID, collaborationRole, archived, tradingPartnerIDs, relatedProducts, relatedProductCategories, null, null, bearerToken);
+
+        // For federation: Check the process instance groups in other and join them to filters..
+        String queryString = constructQueryString(partyID, relatedProducts, relatedProductCategories, tradingPartnerIDs, initiationDateRange, lastActivityDateRange, null, null, archived, collaborationRole);
+        List<String> nimbleURLs = FederationUtil.getFederationEndpoints();
+        for(String nimbleURL: nimbleURLs) {
+            String groupFiltersJson = URLConnectionUtil.get(nimbleURL + "/group/filters?" + queryString, "UTF-8");
+            try {
+                ProcessInstanceGroupFilter filtersFromFederation = new ObjectMapper().readValue(groupFiltersJson, ProcessInstanceGroupFilter.class);
+
+                filters.getTradingPartnerIDs().addAll(filtersFromFederation.getTradingPartnerIDs());
+                filters.getRelatedProductCategories().addAll(filtersFromFederation.getRelatedProductCategories());
+                filters.getRelatedProducts().addAll(filtersFromFederation.getRelatedProducts());
+                filters.getTradingPartnerNames().addAll(filtersFromFederation.getTradingPartnerNames());
+
+                DateTime startDate = DateUtility.convert(filters.getStartDate());
+                DateTime endDate = DateUtility.convert(filters.getEndDate());
+
+                DateTime federationStartDate = DateUtility.convert(filtersFromFederation.getStartDate());
+                DateTime federationEndDate = DateUtility.convert(filtersFromFederation.getEndDate());
+
+                if(federationStartDate.isBefore(startDate))
+                    filters.setStartDate(DateUtility.convert(federationStartDate));
+
+                if(federationEndDate.isAfter(endDate))
+                    filters.setEndDate(DateUtility.convert(federationEndDate));
+            } catch (IOException e) {
+                logger.error("", e);
+            }
+        }
+        /////////////////////////////////////////////////////////
+
         ResponseEntity response = ResponseEntity.status(HttpStatus.OK).body(filters);
         logger.debug("Filters retrieved for partyId: {}, archived: {}, products: {}, categories: {}, parties: {}", partyID, archived,
                 relatedProducts != null ? relatedProducts.toString() : "[]",
                 relatedProductCategories != null ? relatedProductCategories.toString() : "[]",
                 tradingPartnerIDs != null ? tradingPartnerIDs.toString() : "[]");
+
         return response;
     }
 

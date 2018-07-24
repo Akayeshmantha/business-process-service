@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
@@ -41,6 +42,8 @@ private ContractGeneratorController contractGeneratorController;
 private DocumentController documentController;
 @Autowired
 private EPCController epcController;
+@Autowired
+private SearchController searchController;
 
 @Autowired
 private GenericConfig config;
@@ -131,10 +134,66 @@ public BusinessProcessClient clientGenerator(String instanceid){
 
 
 
+
+
+
+    @RequestMapping(value = "/search/fields",
+            produces = { "application/json" },
+            method = RequestMethod.GET)
+    public ResponseEntity delegateGetFields(@RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
+                                                                @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
+                                                                @RequestHeader(value="Authorization", required=true) String bearerToken) {
+
+
+        if(config.getInstanceid().equals(targetInstanceId))
+            return searchController.getFields();
+        else
+            return clientGenerator(targetInstanceId).clientGetFields(initiatorInstanceId,targetInstanceId,bearerToken);
+
+    }
+
+    @RequestMapping(value = "/search/query",
+            produces = { "application/json" },
+            method = RequestMethod.GET)
+    public ResponseEntity delegateSearch(HttpServletRequest request,
+                                         @RequestParam(value = "query", required = false) String query,
+                                         @RequestParam(value = "facets", required = false) List<String> facets,
+                                         @RequestParam(value = "facetQueries", required = false) List<String> facetQueries,
+                                         @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
+                                         @RequestParam(value = "federated", required = false, defaultValue = "false") Boolean federated,
+                                         @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
+                                         @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
+                                         @RequestHeader(value="Authorization", required=true) String bearerToken) {
+
+
+        if(config.getInstanceid().equals(targetInstanceId))
+            return searchController.search(request,query,facets,facetQueries,page,federated);
+        else
+            return clientGenerator(targetInstanceId).clientSearch(query,facets,facetQueries,page,federated,initiatorInstanceId,targetInstanceId,bearerToken);
+
+    }
+
+
+
+
+
+    @RequestMapping(value = "/search/retrieve",
+            produces = { "application/json" },
+            method = RequestMethod.GET)
+    public ResponseEntity delegateSearch(@RequestParam(value = "id", required = false) String id,
+                                            @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
+                                            @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
+                                            @RequestHeader(value="Authorization", required=true) String bearerToken) {
+
+
+        if(config.getInstanceid().equals(targetInstanceId))
+            return searchController.search(id);
+        else
+            return clientGenerator(targetInstanceId).clientSearch(id,initiatorInstanceId,targetInstanceId,bearerToken);
+
+    }
+
 //STARTCONTROLLER
-
-
-
 
 @RequestMapping(value = "/start",
                 produces = { "application/json" },

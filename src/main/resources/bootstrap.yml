@@ -39,7 +39,7 @@ springfox:
       v2:
         path: /api-docs
 
-#### c3p0 database connection pool configurations
+#### c3p0 database rest pool configurations
 com:
   mchange:
     v2:
@@ -173,7 +173,7 @@ nimble:
   data-channel:
     url: ${DATA_CHANNEL_SERVICE_URL:http://nimble-staging.salzburgresearch.at/data-channel}
   federation:
-    core-endpoint:${CORE_ENDPOINT_URL:http://nimble-staging.salzburgresearch.at/data-channel}
+    core-endpoint:${CORE_ENDPOINT_URL:http://localhost:8081}
   instance:
     instance_id:${INSTANCE_ID:11}
 hystrix:

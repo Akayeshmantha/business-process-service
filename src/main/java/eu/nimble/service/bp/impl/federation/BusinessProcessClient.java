@@ -208,7 +208,7 @@ public interface BusinessProcessClient {
 
 
 
-    @RequestLine("GET delegate/rest/engine/default/history/variable-instance?processInstanceIdIn={processInstanceIdIn}")
+    @RequestLine("GET delegate/rest/engine/default/history/variable-instance?processInstanceIdIn={processInstanceIdIn}&initiatorInstanceId={initiatorInstanceId}&targetInstanceId={targetInstanceId}")
     @Headers("Authorization: {bearerToken}")
     String clientGetProcessDetailsHistory(
             @Param("processInstanceIdIn") String processInstanceIdIn,
@@ -216,7 +216,7 @@ public interface BusinessProcessClient {
             @Param("targetInstanceId") String targetInstanceId,
             @Param("Authorization") String bearerToken);
 
-    @RequestLine("GET delegate/rest/engine/default/history/activity-instance?processInstanceId={processInstanceId}&sortBy={sortBy}&sortOrder={sortOrder}&maxResults={maxResults}")
+    @RequestLine("GET delegate/rest/engine/default/history/activity-instance?processInstanceId={processInstanceId}&sortBy={sortBy}&sortOrder={sortOrder}&maxResults={maxResults}&initiatorInstanceId={initiatorInstanceId}&targetInstanceId={targetInstanceId}")
     @Headers("Authorization: {bearerToken}")
     String clientGetLastActivityForProcessInstance(
             @Param("processInstanceId") String processInstanceId,
@@ -227,10 +227,44 @@ public interface BusinessProcessClient {
             @Param("targetInstanceId") String targetInstanceId,
             @Param("Authorization") String bearerToken);
 
-    @RequestLine("GET delegate/rest/engine/default/history/process-instance/{processInstanceId}")
+    @RequestLine("GET delegate/rest/engine/default/history/process-instance/{processInstanceId}&initiatorInstanceId={initiatorInstanceId}&targetInstanceId={targetInstanceId}")
     @Headers("Authorization: {bearerToken}")
     String clientGetProcessInstanceDetails(
             @Param("processInstanceId") String processInstanceId,
+            @Param("initiatorInstanceId") String initiatorInstanceId,
+            @Param("targetInstanceId") String targetInstanceId,
+            @Param("Authorization") String bearerToken);
+
+
+
+
+
+    @RequestLine("GET delegate/search/fields?initiatorInstanceId={initiatorInstanceId}&targetInstanceId={targetInstanceId}")
+    @Headers("Authorization: {bearerToken}")
+    ResponseEntity clientGetFields(
+            @Param("initiatorInstanceId") String initiatorInstanceId,
+            @Param("targetInstanceId") String targetInstanceId,
+            @Param("Authorization") String bearerToken);
+
+
+
+    @RequestLine("GET delegate/search/query?query={query}&facets={facets}&facetQueries={facetQueries}&page={page}&federated={federated}&initiatorInstanceId={initiatorInstanceId}&targetInstanceId={targetInstanceId}")
+    @Headers("Authorization: {bearerToken}")
+    ResponseEntity clientSearch(
+            @Param("query") String query,
+            @Param("facets") List<String> facets,
+            @Param("facetQueries")  List<String> facetQueries,
+            @Param("page") Integer page,
+            @Param("federated") Boolean federated,
+            @Param("initiatorInstanceId") String initiatorInstanceId,
+            @Param("targetInstanceId") String targetInstanceId,
+            @Param("Authorization") String bearerToken);
+
+
+    @RequestLine("GET delegate/search/retrieve?id={id}&initiatorInstanceId={initiatorInstanceId}&targetInstanceId={targetInstanceId}")
+    @Headers("Authorization: {bearerToken}")
+    ResponseEntity clientSearch(
+            @Param("id") String id,
             @Param("initiatorInstanceId") String initiatorInstanceId,
             @Param("targetInstanceId") String targetInstanceId,
             @Param("Authorization") String bearerToken);
