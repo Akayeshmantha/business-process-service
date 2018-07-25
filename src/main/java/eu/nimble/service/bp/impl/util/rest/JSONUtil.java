@@ -9,11 +9,20 @@ import java.util.List;
 
 public class JSONUtil {
     public static String unify(List<String> results) {
+        //TODO: Rewrite this method using SolrJ
         JSONObject union = new JSONObject(results.get(0));
         JSONObject responseHeader = union.getJSONObject("responseHeader");
         JSONObject params = responseHeader.getJSONObject("params");
-        JSONArray unionFacetFieldNames = params.getJSONArray("facet.field");
+        JSONArray unionFacetFieldNames;
+
+        if(params.get("facet.field").getClass() == JSONArray.class){
+            unionFacetFieldNames = params.getJSONArray("facet.field");
+        }
+        else {
+            unionFacetFieldNames = new JSONArray("["+params.get("facet.field").toString()+"]");
+        }
         List<String> facetFieldNames = new ArrayList<>();
+
         for (int i = 0; i < unionFacetFieldNames.length(); i++) {
             facetFieldNames.add(unionFacetFieldNames.getString(i));
         }

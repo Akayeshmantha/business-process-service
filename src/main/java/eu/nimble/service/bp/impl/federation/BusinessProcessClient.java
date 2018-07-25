@@ -8,11 +8,8 @@ import eu.nimble.service.model.ubl.commonaggregatecomponents.DataMonitoringClaus
 import feign.Headers;
 import feign.Param;
 import feign.RequestLine;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 

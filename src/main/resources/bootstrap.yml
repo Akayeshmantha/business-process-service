@@ -173,9 +173,9 @@ nimble:
   data-channel:
     url: ${DATA_CHANNEL_SERVICE_URL:http://nimble-staging.salzburgresearch.at/data-channel}
   federation:
-    core-endpoint:${CORE_ENDPOINT_URL:http://localhost:8081}
+    core-endpoint: ${CORE_ENDPOINT_URL:http://localhost:8081}
   instance:
-    instance_id:${INSTANCE_ID:11}
+    instance_id: ${INSTANCE_ID:11}
 hystrix:
   command:
     default:
