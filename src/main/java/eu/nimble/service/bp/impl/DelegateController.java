@@ -211,13 +211,7 @@ public BusinessProcessClient clientGenerator(String instanceid){
                                          @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
                                          @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
                                          @RequestHeader(value="Authorization", required=true) String bearerToken) throws Exception{
-
-
-        if(config.getInstanceid().equals(targetInstanceId))
             return searchController.search(request,query,facets,facetQueries,page,federated,initiatorInstanceId,targetInstanceId,bearerToken);
-        else
-            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientSearch(query,facets,facetQueries,page,federated,initiatorInstanceId,targetInstanceId,bearerToken));
-
     }
 
 
@@ -231,13 +225,7 @@ public BusinessProcessClient clientGenerator(String instanceid){
                                             @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
                                             @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
                                             @RequestHeader(value="Authorization", required=true) String bearerToken) throws Exception{
-
-
-        if(config.getInstanceid().equals(targetInstanceId))
             return searchController.search(id,initiatorInstanceId,targetInstanceId,bearerToken);
-        else
-            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientSearch(id,initiatorInstanceId,targetInstanceId,bearerToken));
-
     }
 
 //STARTCONTROLLER
