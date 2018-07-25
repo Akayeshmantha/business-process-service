@@ -1,6 +1,8 @@
 package eu.nimble.service.bp.impl.federation;
 
 import eu.nimble.service.bp.swagger.model.ProcessDocumentMetadata;
+import eu.nimble.service.bp.swagger.model.ProcessInstanceGroupFilter;
+import eu.nimble.service.bp.swagger.model.ProcessInstanceGroupResponse;
 import eu.nimble.service.model.ubl.commonaggregatecomponents.ClauseType;
 import eu.nimble.service.model.ubl.commonaggregatecomponents.DataMonitoringClauseType;
 import feign.Headers;
@@ -16,6 +18,45 @@ import java.util.List;
 
 @Headers("Content-Type: application/json")
 public interface BusinessProcessClient {
+
+
+
+
+
+    @RequestLine("GET delegate/group?collaborationRole={collaborationRole}&archived={archived}&limit={limit}&offset={offset}&lastActivityDateRange={lastActivityDateRange}&initiationDateRange={initiationDateRange}&tradingPartnerIDs={tradingPartnerIDs}&relatedProductCategories={relatedProductCategories}&relatedProducts={relatedProducts}&partyID={partyID}&initiatorInstanceId={initiatorInstanceId}&targetInstanceId={targetInstanceId}")
+    @Headers("Authorization: {bearerToken}")
+    public ResponseEntity<ProcessInstanceGroupResponse> clientGetProcessInstanceGroups(
+                                                                                                       @Param("partyID") String partyID,
+                                                                                                       @Param("relatedProducts") List<String> relatedProducts,
+                                                                                                       @Param("relatedProductCategories") List<String> relatedProductCategories,
+                                                                                                       @Param("tradingPartnerIDs") List<String> tradingPartnerIDs,
+                                                                                                       @Param("initiationDateRange") String initiationDateRange,
+                                                                                                       @Param("lastActivityDateRange") String lastActivityDateRange,
+                                                                                                       @Param("offset") Integer offset,
+                                                                                                       @Param("limit") Integer limit,
+                                                                                                       @Param("archived") Boolean archived,
+                                                                                                       @Param("collaborationRole") String collaborationRole,
+                                                                                                       @Param("initiatorInstanceId") String initiatorInstanceId,
+                                                                                                       @Param("targetInstanceId") String targetInstanceId,
+                                                                                                       @Param("bearerToken") String bearerToken) ;
+
+
+    @RequestLine("GET delegate/group/filters?collaborationRole={collaborationRole}&archived={archived}&lastActivityDateRange={lastActivityDateRange}&initiationDateRange={initiationDateRange}&tradingPartnerIDs={tradingPartnerIDs}&relatedProductCategories={relatedProductCategories}&relatedProducts={relatedProducts}&partyID={partyID}&initiatorInstanceId={initiatorInstanceId}&targetInstanceId={targetInstanceId}")
+    @Headers("Authorization: {bearerToken}")
+    public ResponseEntity<ProcessInstanceGroupFilter> clientGetProcessInstanceGroupFilters(
+            @Param("partyID") String partyID,
+            @Param("relatedProducts") List<String> relatedProducts,
+            @Param("relatedProductCategories") List<String> relatedProductCategories,
+            @Param("tradingPartnerIDs") List<String> tradingPartnerIDs,
+            @Param("initiationDateRange") String initiationDateRange,
+            @Param("lastActivityDateRange") String lastActivityDateRange,
+            @Param("archived") Boolean archived,
+            @Param("collaborationRole") String collaborationRole,
+            @Param("initiatorInstanceId") String initiatorInstanceId,
+            @Param("targetInstanceId") String targetInstanceId,
+            @Param("bearerToken") String bearerToken) ;
+
+
     @RequestLine("POST delegate/start?gid={gid}&precedingPid={precedingPid}&initiatorInstanceId={initiatorInstanceId}&targetInstanceId={targetInstanceId}")
     @Headers("Authorization: {bearerToken}")
     public ResponseEntity<eu.nimble.service.bp.swagger.model.ProcessInstance> clientStartProcessInstance(eu.nimble.service.bp.swagger.model.ProcessInstanceInputMessage body,
@@ -62,7 +103,7 @@ public interface BusinessProcessClient {
 
     @RequestLine("GET delegate/contracts?initiatorInstanceId={initiatorInstanceId}&targetInstanceId={targetInstanceId}&processInstanceId={processInstanceId}")
     @Headers("Authorization: {bearerToken}")
-    ResponseEntity<eu.nimble.service.bp.swagger.model.Process> clientConstructContractForProcessInstances(@Param("processInstanceId") String processInstanceId,
+    ResponseEntity clientConstructContractForProcessInstances(@Param("processInstanceId") String processInstanceId,
                                                                                                           @Param("initiatorInstanceId") String initiatorInstanceId,
                                                                                                             @Param("targetInstanceId") String targetInstanceId,
                                                                                                             @Param("Authorization") String bearerToken);

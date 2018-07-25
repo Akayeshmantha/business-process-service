@@ -8,6 +8,8 @@ import eu.nimble.service.bp.impl.federation.ClientFactory;
 import eu.nimble.service.bp.impl.federation.CoreFunctions;
 import eu.nimble.service.bp.swagger.model.Process;
 import eu.nimble.service.bp.swagger.model.ProcessDocumentMetadata;
+import eu.nimble.service.bp.swagger.model.ProcessInstanceGroupFilter;
+import eu.nimble.service.bp.swagger.model.ProcessInstanceGroupResponse;
 import eu.nimble.service.model.ubl.commonaggregatecomponents.ClauseType;
 import eu.nimble.service.model.ubl.commonaggregatecomponents.DataMonitoringClauseType;
 import io.swagger.annotations.ApiOperation;
@@ -44,6 +46,8 @@ private DocumentController documentController;
 private EPCController epcController;
 @Autowired
 private SearchController searchController;
+@Autowired
+private ProcessInstanceGroupController processInstanceGroupController;
 
 @Autowired
 private GenericConfig config;
@@ -70,6 +74,57 @@ public BusinessProcessClient clientGenerator(String instanceid){
     String url=core.getEndpointFromInstanceId(instanceid);
     return factory.createClient(BusinessProcessClient.class,url);
 }
+
+    @RequestMapping(value = "/group",
+            produces = { "application/json" },
+            method = RequestMethod.GET)
+    public ResponseEntity<ProcessInstanceGroupResponse> getProcessInstanceGroups(
+                                                                                  @RequestParam(value = "partyID", required = false) String partyID,
+                                                                                  @RequestParam(value = "relatedProducts", required = false) List<String> relatedProducts,
+                                                                                  @RequestParam(value = "relatedProductCategories", required = false) List<String> relatedProductCategories,
+                                                                                  @RequestParam(value = "tradingPartnerIDs", required = false) List<String> tradingPartnerIDs,
+                                                                                  @RequestParam(value = "initiationDateRange", required = false) String initiationDateRange,
+                                                                                  @RequestParam(value = "lastActivityDateRange", required = false) String lastActivityDateRange,
+                                                                                  @RequestParam(value = "offset", required = false, defaultValue = "0") Integer offset,
+                                                                                  @RequestParam(value = "limit", required = false, defaultValue = "10") Integer limit,
+                                                                                  @RequestParam(value = "archived", required = false, defaultValue = "false") Boolean archived,
+                                                                                  @RequestParam(value = "collaborationRole", required = false) String collaborationRole,
+                                                                                  @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
+                                                                                  @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
+                                                                                  @RequestHeader(value="Authorization", required=true) String bearerToken) {
+        if(config.getInstanceid().equals(targetInstanceId))
+            return processInstanceGroupController.getProcessInstanceGroups(bearerToken,partyID,relatedProducts,relatedProductCategories,tradingPartnerIDs,initiationDateRange,lastActivityDateRange,offset,limit,archived,collaborationRole);
+        else
+            return clientGenerator(targetInstanceId).clientGetProcessInstanceGroups(partyID,relatedProducts,relatedProductCategories,tradingPartnerIDs,initiationDateRange,lastActivityDateRange,offset,limit,archived,collaborationRole,initiatorInstanceId,targetInstanceId,bearerToken);
+
+    }
+
+    @RequestMapping(value = "/group/filters",
+            produces = { "application/json" },
+            method = RequestMethod.GET)
+    public ResponseEntity<ProcessInstanceGroupFilter> getProcessInstanceGroupFilters(
+                         @RequestParam(value = "partyID", required = false) String partyID,
+                         @RequestParam(value = "relatedProducts", required = false) List<String> relatedProducts,
+                         @RequestParam(value = "relatedProductCategories", required = false) List<String> relatedProductCategories,
+                         @RequestParam(value = "tradingPartnerIDs", required = false) List<String> tradingPartnerIDs,
+                         @RequestParam(value = "initiationDateRange", required = false) String initiationDateRange,
+                         @RequestParam(value = "lastActivityDateRange", required = false) String lastActivityDateRange,
+                         @RequestParam(value = "archived", required = false, defaultValue = "false") Boolean archived,
+                         @RequestParam(value = "collaborationRole", required = false) String collaborationRole,
+                         @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
+                         @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
+                         @RequestHeader(value="Authorization", required=true) String bearerToken) {
+
+        if(config.getInstanceid().equals(targetInstanceId))
+            return processInstanceGroupController.getProcessInstanceGroupFilters(bearerToken,partyID,relatedProducts,relatedProductCategories,tradingPartnerIDs,initiationDateRange,lastActivityDateRange,archived,collaborationRole);
+        else
+            return clientGenerator(targetInstanceId).clientGetProcessInstanceGroupFilters(partyID,relatedProducts,relatedProductCategories,tradingPartnerIDs,initiationDateRange,lastActivityDateRange,archived,collaborationRole,initiatorInstanceId,targetInstanceId,bearerToken);
+
+
+
+    }
+
+
 
 
 //CAMUNDA REST CONTROLLERS
