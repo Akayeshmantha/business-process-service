@@ -627,6 +627,10 @@ paths:
         name: targetInstanceId
         type: string
         required: true
+      - in: query
+        name: federated
+        type: boolean
+        required: true
       - name: Authorization
         in: header
         type: string
@@ -703,6 +707,10 @@ paths:
       - in: query
         name: targetInstanceId
         type: string
+        required: true
+      - in: query
+        name: federated
+        type: boolean
         required: true
       - name: Authorization
         in: header

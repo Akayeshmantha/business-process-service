@@ -2,7 +2,6 @@ package eu.nimble.service.bp.impl;
 
 
 import eu.nimble.service.bp.config.GenericConfig;
-import eu.nimble.service.bp.impl.contract.ContractGenerator;
 import eu.nimble.service.bp.impl.federation.BusinessProcessClient;
 import eu.nimble.service.bp.impl.federation.ClientFactory;
 import eu.nimble.service.bp.impl.federation.CoreFunctions;
@@ -12,10 +11,6 @@ import eu.nimble.service.bp.swagger.model.ProcessInstanceGroupFilter;
 import eu.nimble.service.bp.swagger.model.ProcessInstanceGroupResponse;
 import eu.nimble.service.model.ubl.commonaggregatecomponents.ClauseType;
 import eu.nimble.service.model.ubl.commonaggregatecomponents.DataMonitoringClauseType;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -89,9 +84,10 @@ public BusinessProcessClient clientGenerator(String instanceid){
                                                                                   @RequestParam(value = "collaborationRole", required = false) String collaborationRole,
                                                                                   @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
                                                                                   @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
+                                                                                  @RequestParam(value = "federated", required = true) Boolean federated,
                                                                                   @RequestHeader(value="Authorization", required=true) String bearerToken) throws Exception {
         if(config.getInstanceid().equals(targetInstanceId))
-            return processInstanceGroupController.getProcessInstanceGroups(initiatorInstanceId,targetInstanceId,bearerToken,partyID,relatedProducts,relatedProductCategories,tradingPartnerIDs,initiationDateRange,lastActivityDateRange,offset,limit,archived,collaborationRole);
+            return processInstanceGroupController.getProcessInstanceGroups(initiatorInstanceId,targetInstanceId,federated,bearerToken,partyID,relatedProducts,relatedProductCategories,tradingPartnerIDs,initiationDateRange,lastActivityDateRange,offset,limit,archived,collaborationRole);
         else
             return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientGetProcessInstanceGroups(partyID,relatedProducts,relatedProductCategories,tradingPartnerIDs,initiationDateRange,lastActivityDateRange,offset,limit,archived,collaborationRole,initiatorInstanceId,targetInstanceId,bearerToken));
 
@@ -111,10 +107,11 @@ public BusinessProcessClient clientGenerator(String instanceid){
                          @RequestParam(value = "collaborationRole", required = false) String collaborationRole,
                          @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
                          @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
+                         @RequestParam(value = "federated", required = true) Boolean federated,
                          @RequestHeader(value="Authorization", required=true) String bearerToken) throws Exception{
 
         if(config.getInstanceid().equals(targetInstanceId))
-            return processInstanceGroupController.getProcessInstanceGroupFilters(initiatorInstanceId,targetInstanceId,bearerToken,partyID,relatedProducts,relatedProductCategories,tradingPartnerIDs,initiationDateRange,lastActivityDateRange,archived,collaborationRole);
+            return processInstanceGroupController.getProcessInstanceGroupFilters(initiatorInstanceId,targetInstanceId,federated,bearerToken,partyID,relatedProducts,relatedProductCategories,tradingPartnerIDs,initiationDateRange,lastActivityDateRange,archived,collaborationRole);
         else
             return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientGetProcessInstanceGroupFilters(partyID,relatedProducts,relatedProductCategories,tradingPartnerIDs,initiationDateRange,lastActivityDateRange,archived,collaborationRole,initiatorInstanceId,targetInstanceId,bearerToken));
 
