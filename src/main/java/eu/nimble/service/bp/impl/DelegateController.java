@@ -28,7 +28,7 @@ import java.util.List;
 
 @Controller
 @RequestMapping(value = "/delegate")
-public class DelegateController {
+public class DelegateController  {
 
     //WRAPPERS FOR DELEGATE PROCESSES
 
@@ -52,8 +52,6 @@ private ProcessInstanceGroupController processInstanceGroupController;
 @Autowired
 private GenericConfig config;
 
-@Autowired
-private ClientFactory factory;
 
 @Autowired
 private CoreFunctions core;
@@ -72,13 +70,13 @@ public boolean isValid( String initiatorInstanceId,String bearerToken){
 
 public BusinessProcessClient clientGenerator(String instanceid){
     String url=core.getEndpointFromInstanceId(instanceid);
-    return factory.createClient(BusinessProcessClient.class,url);
+    return ClientFactory.getClientFactoryInstance().createClient(BusinessProcessClient.class,url);
 }
 
     @RequestMapping(value = "/group",
             produces = { "application/json" },
             method = RequestMethod.GET)
-    public ResponseEntity<ProcessInstanceGroupResponse> getProcessInstanceGroups(
+    public ResponseEntity<ProcessInstanceGroupResponse> getProcessInstanceGroups (
                                                                                   @RequestParam(value = "partyID", required = false) String partyID,
                                                                                   @RequestParam(value = "relatedProducts", required = false) List<String> relatedProducts,
                                                                                   @RequestParam(value = "relatedProductCategories", required = false) List<String> relatedProductCategories,
@@ -91,11 +89,11 @@ public BusinessProcessClient clientGenerator(String instanceid){
                                                                                   @RequestParam(value = "collaborationRole", required = false) String collaborationRole,
                                                                                   @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
                                                                                   @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
-                                                                                  @RequestHeader(value="Authorization", required=true) String bearerToken) {
+                                                                                  @RequestHeader(value="Authorization", required=true) String bearerToken) throws Exception {
         if(config.getInstanceid().equals(targetInstanceId))
             return processInstanceGroupController.getProcessInstanceGroups(bearerToken,partyID,relatedProducts,relatedProductCategories,tradingPartnerIDs,initiationDateRange,lastActivityDateRange,offset,limit,archived,collaborationRole);
         else
-            return clientGenerator(targetInstanceId).clientGetProcessInstanceGroups(partyID,relatedProducts,relatedProductCategories,tradingPartnerIDs,initiationDateRange,lastActivityDateRange,offset,limit,archived,collaborationRole,initiatorInstanceId,targetInstanceId,bearerToken);
+            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientGetProcessInstanceGroups(partyID,relatedProducts,relatedProductCategories,tradingPartnerIDs,initiationDateRange,lastActivityDateRange,offset,limit,archived,collaborationRole,initiatorInstanceId,targetInstanceId,bearerToken));
 
     }
 
@@ -113,12 +111,12 @@ public BusinessProcessClient clientGenerator(String instanceid){
                          @RequestParam(value = "collaborationRole", required = false) String collaborationRole,
                          @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
                          @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
-                         @RequestHeader(value="Authorization", required=true) String bearerToken) {
+                         @RequestHeader(value="Authorization", required=true) String bearerToken) throws Exception{
 
         if(config.getInstanceid().equals(targetInstanceId))
             return processInstanceGroupController.getProcessInstanceGroupFilters(bearerToken,partyID,relatedProducts,relatedProductCategories,tradingPartnerIDs,initiationDateRange,lastActivityDateRange,archived,collaborationRole);
         else
-            return clientGenerator(targetInstanceId).clientGetProcessInstanceGroupFilters(partyID,relatedProducts,relatedProductCategories,tradingPartnerIDs,initiationDateRange,lastActivityDateRange,archived,collaborationRole,initiatorInstanceId,targetInstanceId,bearerToken);
+            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientGetProcessInstanceGroupFilters(partyID,relatedProducts,relatedProductCategories,tradingPartnerIDs,initiationDateRange,lastActivityDateRange,archived,collaborationRole,initiatorInstanceId,targetInstanceId,bearerToken));
 
 
 
@@ -133,16 +131,16 @@ public BusinessProcessClient clientGenerator(String instanceid){
             produces = { "application/json" },
             consumes = { "application/json" },
             method = RequestMethod.GET)
-    public  String delegateGetProcessDetailsHistory(
+    public   ResponseEntity delegateGetProcessDetailsHistory(
             @RequestParam(value = "processInstanceIdIn", required = true) String processInstanceIdIn,
             @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
             @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
-            @RequestHeader(value="Authorization", required=true) String bearerToken) {
+            @RequestHeader(value="Authorization", required=true) String bearerToken)throws Exception {
 
         if(config.getInstanceid().equals(targetInstanceId))
-            return clientGenerator(config.getInstanceid()).clientGetProcessDetailsHistory(processInstanceIdIn,initiatorInstanceId,targetInstanceId,bearerToken);
+            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(config.getInstanceid()).clientGetProcessDetailsHistory(processInstanceIdIn,initiatorInstanceId,targetInstanceId,bearerToken));
         else
-            return clientGenerator(targetInstanceId).clientGetProcessDetailsHistory(processInstanceIdIn,initiatorInstanceId,targetInstanceId,bearerToken);
+            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientGetProcessDetailsHistory(processInstanceIdIn,initiatorInstanceId,targetInstanceId,bearerToken));
 
 
     }
@@ -152,16 +150,16 @@ public BusinessProcessClient clientGenerator(String instanceid){
             produces = { "application/json" },
             consumes = { "application/json" },
             method = RequestMethod.GET)
-    public  String delegateGetProcessInstanceDetails(
+    public  ResponseEntity delegateGetProcessInstanceDetails(
             @PathVariable(value = "processInstanceId", required = true) String processInstanceId,
             @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
             @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
-            @RequestHeader(value="Authorization", required=true) String bearerToken) {
+            @RequestHeader(value="Authorization", required=true) String bearerToken)throws Exception {
 
         if(config.getInstanceid().equals(targetInstanceId))
-            return clientGenerator(config.getInstanceid()).clientGetProcessInstanceDetails(processInstanceId,initiatorInstanceId,targetInstanceId,bearerToken);
+            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(config.getInstanceid()).clientGetProcessInstanceDetails(processInstanceId,initiatorInstanceId,targetInstanceId,bearerToken));
         else
-            return clientGenerator(targetInstanceId).clientGetProcessInstanceDetails(processInstanceId,initiatorInstanceId,targetInstanceId,bearerToken);
+            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientGetProcessInstanceDetails(processInstanceId,initiatorInstanceId,targetInstanceId,bearerToken));
 
     }
 
@@ -169,19 +167,19 @@ public BusinessProcessClient clientGenerator(String instanceid){
             produces = { "application/json" },
             consumes = { "application/json" },
             method = RequestMethod.GET)
-    public  String delegateGetLastActivityForProcessInstance(
+    public  ResponseEntity delegateGetLastActivityForProcessInstance(
             @PathVariable(value = "processInstanceId", required = true) String processInstanceId,
             @PathVariable(value = "sortBy", required = true) String sortBy,
             @PathVariable(value = "sortOrder", required = true) String sortOrder,
             @PathVariable(value = "maxResults", required = true) String maxResults,
             @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
             @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
-            @RequestHeader(value="Authorization", required=true) String bearerToken) {
+            @RequestHeader(value="Authorization", required=true) String bearerToken)throws Exception {
 
         if(config.getInstanceid().equals(targetInstanceId))
-            return clientGenerator(config.getInstanceid()).clientGetLastActivityForProcessInstance(processInstanceId,sortBy,sortOrder,maxResults,initiatorInstanceId,targetInstanceId,bearerToken);
+            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(config.getInstanceid()).clientGetLastActivityForProcessInstance(processInstanceId,sortBy,sortOrder,maxResults,initiatorInstanceId,targetInstanceId,bearerToken));
         else
-            return clientGenerator(targetInstanceId).clientGetLastActivityForProcessInstance(processInstanceId,sortBy,sortOrder,maxResults,initiatorInstanceId,targetInstanceId,bearerToken);
+            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientGetLastActivityForProcessInstance(processInstanceId,sortBy,sortOrder,maxResults,initiatorInstanceId,targetInstanceId,bearerToken));
 
 
     }
@@ -197,7 +195,7 @@ public BusinessProcessClient clientGenerator(String instanceid){
             method = RequestMethod.GET)
     public ResponseEntity delegateGetFields(@RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
                                                                 @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
-                                                                @RequestHeader(value="Authorization", required=true) String bearerToken) {
+                                                                @RequestHeader(value="Authorization", required=true) String bearerToken) throws Exception{
         return searchController.getFields();
     }
 
@@ -212,13 +210,13 @@ public BusinessProcessClient clientGenerator(String instanceid){
                                          @RequestParam(value = "federated", required = false, defaultValue = "false") Boolean federated,
                                          @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
                                          @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
-                                         @RequestHeader(value="Authorization", required=true) String bearerToken) {
+                                         @RequestHeader(value="Authorization", required=true) String bearerToken) throws Exception{
 
 
         if(config.getInstanceid().equals(targetInstanceId))
             return searchController.search(request,query,facets,facetQueries,page,federated,initiatorInstanceId,targetInstanceId,bearerToken);
         else
-            return clientGenerator(targetInstanceId).clientSearch(query,facets,facetQueries,page,federated,initiatorInstanceId,targetInstanceId,bearerToken);
+            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientSearch(query,facets,facetQueries,page,federated,initiatorInstanceId,targetInstanceId,bearerToken));
 
     }
 
@@ -232,13 +230,13 @@ public BusinessProcessClient clientGenerator(String instanceid){
     public ResponseEntity delegateSearch(@RequestParam(value = "id", required = false) String id,
                                             @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
                                             @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
-                                            @RequestHeader(value="Authorization", required=true) String bearerToken) {
+                                            @RequestHeader(value="Authorization", required=true) String bearerToken) throws Exception{
 
 
         if(config.getInstanceid().equals(targetInstanceId))
             return searchController.search(id,initiatorInstanceId,targetInstanceId,bearerToken);
         else
-            return clientGenerator(targetInstanceId).clientSearch(id,initiatorInstanceId,targetInstanceId,bearerToken);
+            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientSearch(id,initiatorInstanceId,targetInstanceId,bearerToken));
 
     }
 
@@ -253,7 +251,7 @@ public ResponseEntity<eu.nimble.service.bp.swagger.model.ProcessInstance> delega
                                                                                                             @RequestParam(value = "precedingPid", required = false) String precedingPid,
                                                                                                             @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
                                                                                                             @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
-                                                                                                            @RequestHeader(value="Authorization", required=true) String bearerToken) {
+                                                                                                            @RequestHeader(value="Authorization", required=true) String bearerToken)throws Exception {
 
     /*
     TODO:
@@ -265,7 +263,7 @@ public ResponseEntity<eu.nimble.service.bp.swagger.model.ProcessInstance> delega
     if(config.getInstanceid().equals(targetInstanceId))
         return startController.startProcessInstance(body,bearerToken, gid, precedingPid);
     else
-        return clientGenerator(targetInstanceId).clientStartProcessInstance(body,gid,precedingPid,initiatorInstanceId,targetInstanceId,bearerToken);
+        return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientStartProcessInstance(body,gid,precedingPid,initiatorInstanceId,targetInstanceId,bearerToken));
 
 
 }
@@ -275,16 +273,16 @@ public ResponseEntity<eu.nimble.service.bp.swagger.model.ProcessInstance> delega
     @RequestMapping(value = "/content/{processID}",
                     produces = { "application/json" },
                     method = RequestMethod.GET)
-    ResponseEntity<Process> delegateGetProcessDefinition(@PathVariable("processID") String processID,
+    public ResponseEntity<Process> delegateGetProcessDefinition(@PathVariable("processID") String processID,
                                                          @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
                                                          @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
-                                                         @RequestHeader(value="Authorization", required=true) String bearerToken){
+                                                         @RequestHeader(value="Authorization", required=true) String bearerToken)throws Exception{
 
 
         if(config.getInstanceid().equals(targetInstanceId))
             return contentController.getProcessDefinition(processID,bearerToken);
         else
-            return clientGenerator(targetInstanceId).clientGetProcessDefinition(processID,initiatorInstanceId,targetInstanceId,bearerToken);
+            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientGetProcessDefinition(processID,initiatorInstanceId,targetInstanceId,bearerToken));
 
 
     }
@@ -293,14 +291,14 @@ public ResponseEntity<eu.nimble.service.bp.swagger.model.ProcessInstance> delega
     @RequestMapping(value = "/content",
                     produces = { "application/json" },
                     method = RequestMethod.GET)
-    ResponseEntity<List<Process>> delegateGetProcessDefinitions(@RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
+    public ResponseEntity<List<Process>> delegateGetProcessDefinitions(@RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
                                                                 @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
-                                                                @RequestHeader(value="Authorization", required=true) String bearerToken){
+                                                                @RequestHeader(value="Authorization", required=true) String bearerToken)throws Exception{
 
         if(config.getInstanceid().equals(targetInstanceId))
             return contentController.getProcessDefinitions(bearerToken);
         else
-            return clientGenerator(targetInstanceId).clientGetProcessDefinitions(initiatorInstanceId,targetInstanceId,bearerToken);
+            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientGetProcessDefinitions(initiatorInstanceId,targetInstanceId,bearerToken));
 
 
 
@@ -313,13 +311,13 @@ public ResponseEntity<eu.nimble.service.bp.swagger.model.ProcessInstance> delega
     public ResponseEntity delegateGetClauseDetails(@PathVariable(value = "clauseId", required = true) String clauseId,
                                                    @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
                                                    @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
-                                                   @RequestHeader(value="Authorization", required=true) String bearerToken) {
+                                                   @RequestHeader(value="Authorization", required=true) String bearerToken) throws Exception{
 
 
         if(config.getInstanceid().equals(targetInstanceId))
             return contractController.getClauseDetails(clauseId,bearerToken);
         else
-            return clientGenerator(targetInstanceId).clientGetClauseDetails(clauseId,initiatorInstanceId,targetInstanceId,bearerToken);
+            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientGetClauseDetails(clauseId,initiatorInstanceId,targetInstanceId,bearerToken));
 
 
     }
@@ -331,14 +329,14 @@ public ResponseEntity<eu.nimble.service.bp.swagger.model.ProcessInstance> delega
                                                @PathVariable(value = "clauseId") String clauseId,
                                                @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
                                                @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
-                                               @RequestHeader(value="Authorization", required=true) String bearerToken) {
+                                               @RequestHeader(value="Authorization", required=true) String bearerToken)throws Exception {
 
 
 
         if(config.getInstanceid().equals(targetInstanceId))
             return contractController.updateClause(clauseId,deserializedClause,bearerToken);
         else
-            return clientGenerator(targetInstanceId).clientUpdateClause(clauseId,deserializedClause,initiatorInstanceId,targetInstanceId,bearerToken);
+            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientUpdateClause(clauseId,deserializedClause,initiatorInstanceId,targetInstanceId,bearerToken));
 
     }
 
@@ -348,14 +346,14 @@ public ResponseEntity<eu.nimble.service.bp.swagger.model.ProcessInstance> delega
     public ResponseEntity delegateConstructContractForProcessInstances(@RequestParam(value = "processInstanceId") String processInstanceId,
                                                                        @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
                                                                        @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
-                                                                       @RequestHeader(value="Authorization", required=true) String bearerToken) {
+                                                                       @RequestHeader(value="Authorization", required=true) String bearerToken)throws Exception {
 
 
 
         if(config.getInstanceid().equals(targetInstanceId))
             return contractController.constructContractForProcessInstances(processInstanceId,bearerToken);
         else
-            return clientGenerator(targetInstanceId).clientConstructContractForProcessInstances(processInstanceId,initiatorInstanceId,targetInstanceId,bearerToken);
+            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientConstructContractForProcessInstances(processInstanceId,initiatorInstanceId,targetInstanceId,bearerToken));
 
     }
 
@@ -365,12 +363,12 @@ public ResponseEntity<eu.nimble.service.bp.swagger.model.ProcessInstance> delega
     public ResponseEntity delegateGetClausesOfContract(@PathVariable(value = "contractId") String contractId,
                                                        @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
                                                        @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
-                                                       @RequestHeader(value="Authorization", required=true) String bearerToken) {
+                                                       @RequestHeader(value="Authorization", required=true) String bearerToken)throws Exception {
 
         if(config.getInstanceid().equals(targetInstanceId))
             return contractController.getClausesOfContract(contractId,bearerToken);
         else
-            return clientGenerator(targetInstanceId).clientGetClausesOfContract(contractId,initiatorInstanceId,targetInstanceId,bearerToken);
+            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientGetClausesOfContract(contractId,initiatorInstanceId,targetInstanceId,bearerToken));
 
     }
 
@@ -380,11 +378,11 @@ public ResponseEntity<eu.nimble.service.bp.swagger.model.ProcessInstance> delega
                                                            @PathVariable(value = "clauseId") String clauseId,
                                                            @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
                                                            @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
-                                                           @RequestHeader(value="Authorization", required=true) String bearerToken) {
+                                                           @RequestHeader(value="Authorization", required=true) String bearerToken) throws Exception{
         if(config.getInstanceid().equals(targetInstanceId))
             return contractController.deleteClauseFromContract(contractId,clauseId,bearerToken);
         else
-            return clientGenerator(targetInstanceId).clientDeleteClauseFromContract(contractId,clauseId,initiatorInstanceId,targetInstanceId,bearerToken);
+            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientDeleteClauseFromContract(contractId,clauseId,initiatorInstanceId,targetInstanceId,bearerToken));
 
     }
 
@@ -395,12 +393,12 @@ public ResponseEntity<eu.nimble.service.bp.swagger.model.ProcessInstance> delega
                                                                @RequestParam(value = "clauseType", required = true) eu.nimble.service.bp.impl.model.ClauseType clauseType,
                                                                @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
                                                                @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
-                                                               @RequestHeader(value="Authorization", required=true) String bearerToken) {
+                                                               @RequestHeader(value="Authorization", required=true) String bearerToken)throws Exception {
 
         if(config.getInstanceid().equals(targetInstanceId))
             return contractController.getClauseDetails(documentId,clauseType,bearerToken);
         else
-            return clientGenerator(targetInstanceId).clientGetClauseDetails(documentId,clauseType,initiatorInstanceId,targetInstanceId,bearerToken);
+            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientGetClauseDetails(documentId,clauseType,initiatorInstanceId,targetInstanceId,bearerToken));
 
     }
 
@@ -413,13 +411,13 @@ public ResponseEntity<eu.nimble.service.bp.swagger.model.ProcessInstance> delega
                                                               @RequestParam(value = "clauseDocumentId") String clauseDocumentId,
                                                               @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
                                                               @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
-                                                              @RequestHeader(value="Authorization", required=true) String bearerToken) {
+                                                              @RequestHeader(value="Authorization", required=true) String bearerToken) throws Exception{
 
 
         if(config.getInstanceid().equals(targetInstanceId))
             return contractController.addDocumentClauseToContract(documentId,clauseType,clauseDocumentId,bearerToken);
         else
-            return clientGenerator(targetInstanceId).clientAddDocumentClauseToContract(documentId,clauseType,clauseDocumentId,initiatorInstanceId,targetInstanceId,bearerToken);
+            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientAddDocumentClauseToContract(documentId,clauseType,clauseDocumentId,initiatorInstanceId,targetInstanceId,bearerToken));
 
     }
 
@@ -433,13 +431,13 @@ public ResponseEntity<eu.nimble.service.bp.swagger.model.ProcessInstance> delega
                                                             @RequestBody() DataMonitoringClauseType dataMonitoringClause,
                                                             @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
                                                             @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
-                                                            @RequestHeader(value="Authorization", required=true) String bearerToken) {
+                                                            @RequestHeader(value="Authorization", required=true) String bearerToken)throws Exception {
 
 
         if(config.getInstanceid().equals(targetInstanceId))
             return contractController.addDataMonitoringClauseToContract(documentId,dataMonitoringClause,bearerToken);
         else
-            return clientGenerator(targetInstanceId).clientAddDataMonitoringClauseToContract(dataMonitoringClause,documentId,initiatorInstanceId,targetInstanceId,bearerToken);
+            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientAddDataMonitoringClauseToContract(dataMonitoringClause,documentId,initiatorInstanceId,targetInstanceId,bearerToken));
 
     }
 
@@ -452,7 +450,7 @@ public ResponseEntity<eu.nimble.service.bp.swagger.model.ProcessInstance> delega
                                          HttpServletResponse response,
                                          @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
                                          @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
-                                         @RequestHeader(value="Authorization", required=true) String bearerToken){
+                                         @RequestHeader(value="Authorization", required=true) String bearerToken)throws Exception{
 
 
      contractGeneratorController.generateContract(orderId,response,bearerToken);
@@ -472,14 +470,14 @@ public ResponseEntity<eu.nimble.service.bp.swagger.model.ProcessInstance> delega
                                                                 @RequestParam(value = "tradingTerms", required = true) String tradingTerms,
                                                                 @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
                                                                         @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
-                                                                        @RequestHeader(value="Authorization", required=true) String bearerToken){
+                                                                        @RequestHeader(value="Authorization", required=true) String bearerToken)throws Exception{
 
 
 
         if(config.getInstanceid().equals(targetInstanceId))
             return contractGeneratorController.generateOrderTermsAndConditionsAsText(orderId,sellerParty,buyerParty,incoterms,tradingTerms,bearerToken);
         else
-            return clientGenerator(targetInstanceId).clientGenerateOrderTermsAndConditionsAsText(orderId,sellerParty,buyerParty,incoterms,tradingTerms,initiatorInstanceId,targetInstanceId,bearerToken);
+            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientGenerateOrderTermsAndConditionsAsText(orderId,sellerParty,buyerParty,incoterms,tradingTerms,initiatorInstanceId,targetInstanceId,bearerToken));
 
 
     }
@@ -491,14 +489,14 @@ public ResponseEntity<eu.nimble.service.bp.swagger.model.ProcessInstance> delega
     ResponseEntity<Object> delegateGetDocumentJsonContent(@PathVariable("documentID") String documentID,
                                                           @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
                                                           @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
-                                                          @RequestHeader(value="Authorization", required=true) String bearerToken) {
+                                                          @RequestHeader(value="Authorization", required=true) String bearerToken)throws Exception {
 
 
 
         if(config.getInstanceid().equals(targetInstanceId))
             return documentController.getDocumentJsonContent(documentID,bearerToken);
         else
-            return clientGenerator(targetInstanceId).clientGetDocumentJsonContent(documentID,initiatorInstanceId,targetInstanceId,bearerToken);
+            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientGetDocumentJsonContent(documentID,initiatorInstanceId,targetInstanceId,bearerToken));
 
 
     }
@@ -510,12 +508,12 @@ public ResponseEntity<eu.nimble.service.bp.swagger.model.ProcessInstance> delega
     public ResponseEntity<String> delegateGetDocumentXMLContent(@PathVariable("documentID") String documentID,
                                                                 @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
                                                                 @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
-                                                                @RequestHeader(value="Authorization", required=true) String bearerToken) {
+                                                                @RequestHeader(value="Authorization", required=true) String bearerToken)throws Exception {
 
         if(config.getInstanceid().equals(targetInstanceId))
             return documentController.getDocumentXMLContent(documentID,bearerToken);
         else
-            return clientGenerator(targetInstanceId).clientGetDocumentXMLContent(documentID,initiatorInstanceId,targetInstanceId,bearerToken);
+            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientGetDocumentXMLContent(documentID,initiatorInstanceId,targetInstanceId,bearerToken));
 
 
     }
@@ -529,13 +527,13 @@ public ResponseEntity<eu.nimble.service.bp.swagger.model.ProcessInstance> delega
                                                                               @PathVariable("type") String type,
                                                                               @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
                                                                               @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
-                                                                              @RequestHeader(value="Authorization", required=true) String bearerToken) {
+                                                                              @RequestHeader(value="Authorization", required=true) String bearerToken) throws Exception{
 
 
         if(config.getInstanceid().equals(targetInstanceId))
             return documentController.getDocuments(partnerID,type,bearerToken);
         else
-            return clientGenerator(targetInstanceId).clientGetDocuments(partnerID,type,initiatorInstanceId,targetInstanceId,bearerToken);
+            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientGetDocuments(partnerID,type,initiatorInstanceId,targetInstanceId,bearerToken));
 
     }
 
@@ -547,14 +545,13 @@ public ResponseEntity<eu.nimble.service.bp.swagger.model.ProcessInstance> delega
     public ResponseEntity delegateGetTTDetails(@RequestParam(value = "epc", required = true) String epc,
                                        @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
                                        @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
-                                       @RequestHeader(value="Authorization", required=true) String bearerToken
-) {
+                                       @RequestHeader(value="Authorization", required=true) String bearerToken) throws Exception{
 
 
         if(config.getInstanceid().equals(targetInstanceId))
             return epcController.getTTDetails(epc,bearerToken);
         else
-            return clientGenerator(targetInstanceId).clientGetTTDetails(epc,initiatorInstanceId,targetInstanceId,bearerToken);
+            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientGetTTDetails(epc,initiatorInstanceId,targetInstanceId,bearerToken));
 
 
     }
@@ -565,13 +562,13 @@ public ResponseEntity<eu.nimble.service.bp.swagger.model.ProcessInstance> delega
     public ResponseEntity delegateGetEPCCodesBelongsToProduct( @RequestParam(value = "productId", required = true) Long publishedProductID,
                                                        @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
                                                        @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
-                                                       @RequestHeader(value="Authorization", required=true) String bearerToken){
+                                                       @RequestHeader(value="Authorization", required=true) String bearerToken)throws Exception{
 
 
         if(config.getInstanceid().equals(targetInstanceId))
             return epcController.getEPCCodesBelongsToProduct(publishedProductID,bearerToken);
         else
-            return clientGenerator(targetInstanceId).clientGetEPCCodesBelongsToProduct(publishedProductID,initiatorInstanceId,targetInstanceId,bearerToken);
+            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientGetEPCCodesBelongsToProduct(publishedProductID,initiatorInstanceId,targetInstanceId,bearerToken));
 
 
     }
