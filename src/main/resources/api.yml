@@ -619,6 +619,14 @@ paths:
         name: collaborationRole
         type: string
         required: false
+      - in: query
+        name: initiatorInstanceId
+        type: string
+        required: true
+      - in: query
+        name: targetInstanceId
+        type: string
+        required: true
       - name: Authorization
         in: header
         type: string
@@ -688,6 +696,14 @@ paths:
         name: collaborationRole
         type: string
         required: false
+      - in: query
+        name: initiatorInstanceId
+        type: string
+        required: true
+      - in: query
+        name: targetInstanceId
+        type: string
+        required: true
       - name: Authorization
         in: header
         type: string

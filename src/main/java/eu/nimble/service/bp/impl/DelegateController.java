@@ -91,7 +91,7 @@ public BusinessProcessClient clientGenerator(String instanceid){
                                                                                   @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
                                                                                   @RequestHeader(value="Authorization", required=true) String bearerToken) throws Exception {
         if(config.getInstanceid().equals(targetInstanceId))
-            return processInstanceGroupController.getProcessInstanceGroups(bearerToken,partyID,relatedProducts,relatedProductCategories,tradingPartnerIDs,initiationDateRange,lastActivityDateRange,offset,limit,archived,collaborationRole);
+            return processInstanceGroupController.getProcessInstanceGroups(initiatorInstanceId,targetInstanceId,bearerToken,partyID,relatedProducts,relatedProductCategories,tradingPartnerIDs,initiationDateRange,lastActivityDateRange,offset,limit,archived,collaborationRole);
         else
             return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientGetProcessInstanceGroups(partyID,relatedProducts,relatedProductCategories,tradingPartnerIDs,initiationDateRange,lastActivityDateRange,offset,limit,archived,collaborationRole,initiatorInstanceId,targetInstanceId,bearerToken));
 
@@ -114,7 +114,7 @@ public BusinessProcessClient clientGenerator(String instanceid){
                          @RequestHeader(value="Authorization", required=true) String bearerToken) throws Exception{
 
         if(config.getInstanceid().equals(targetInstanceId))
-            return processInstanceGroupController.getProcessInstanceGroupFilters(bearerToken,partyID,relatedProducts,relatedProductCategories,tradingPartnerIDs,initiationDateRange,lastActivityDateRange,archived,collaborationRole);
+            return processInstanceGroupController.getProcessInstanceGroupFilters(initiatorInstanceId,targetInstanceId,bearerToken,partyID,relatedProducts,relatedProductCategories,tradingPartnerIDs,initiationDateRange,lastActivityDateRange,archived,collaborationRole);
         else
             return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientGetProcessInstanceGroupFilters(partyID,relatedProducts,relatedProductCategories,tradingPartnerIDs,initiationDateRange,lastActivityDateRange,archived,collaborationRole,initiatorInstanceId,targetInstanceId,bearerToken));
 
