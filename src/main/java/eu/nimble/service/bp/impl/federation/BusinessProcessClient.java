@@ -6,11 +6,8 @@ import eu.nimble.service.model.ubl.commonaggregatecomponents.DataMonitoringClaus
 import feign.Headers;
 import feign.Param;
 import feign.RequestLine;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 
@@ -62,7 +59,7 @@ public interface BusinessProcessClient {
 
     @RequestLine("GET delegate/contracts?initiatorInstanceId={initiatorInstanceId}&targetInstanceId={targetInstanceId}&processInstanceId={processInstanceId}")
     @Headers("Authorization: {bearerToken}")
-    ResponseEntity<eu.nimble.service.bp.swagger.model.Process> clientConstructContractForProcessInstances(@Param("processInstanceId") String processInstanceId,
+    ResponseEntity clientConstructContractForProcessInstances(@Param("processInstanceId") String processInstanceId,
                                                                                                           @Param("initiatorInstanceId") String initiatorInstanceId,
                                                                                                             @Param("targetInstanceId") String targetInstanceId,
                                                                                                             @Param("Authorization") String bearerToken);

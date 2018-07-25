@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -28,7 +29,7 @@ public class SearchController {
             produces = {"application/json"},
             method = RequestMethod.GET)
     public ResponseEntity getFields() {
-        String result = URLConnectionUtil.get(marmottaURL + "?q=*:*&rows=0&wt=csv", "UTF-8");
+        String result = URLConnectionUtil.get(marmottaURL + "?q=*:*&rows=0&wt=csv", "UTF-8",null,null,null);
 
         return new ResponseEntity<String>(result, HttpStatus.OK);
     }
@@ -40,7 +41,10 @@ public class SearchController {
                                  @RequestParam(value = "facets", required = false) List<String> facets,
                                  @RequestParam(value = "facetQueries", required = false) List<String> facetQueries,
                                  @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
-                                 @RequestParam(value = "federated", required = false, defaultValue = "false") Boolean federated) {
+                                 @RequestParam(value = "federated", required = false, defaultValue = "false") Boolean federated,
+                                 @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
+                                 @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
+                                 @RequestHeader(value="Authorization", required=true) String bearerToken) {
         logger.debug(" Query: {]", query);
         logger.debug(" Facets: {]", facets);
         logger.debug(" FacetQueries: {]", facetQueries);
@@ -64,7 +68,7 @@ public class SearchController {
 
         logger.debug(" $$$ Query: {}", marmottaURL + "?" + queryString);
 
-        String result = URLConnectionUtil.get(marmottaURL + "?" + queryString, "UTF-8");
+        String result = URLConnectionUtil.get(marmottaURL + "?" + queryString, "UTF-8",null,null,null);
 
         // if it is federated send the query to other NIMBLE instances...
         String unifiedResult = "";
@@ -80,10 +84,15 @@ public class SearchController {
             reconstructedQueryString += "federated=false";
 
             for (String searchURL : searchURLsInTheFederation) {
-                results.add(URLConnectionUtil.get(searchURL + "/search/query?" + reconstructedQueryString, "UTF-8"));
+                results.add(URLConnectionUtil.get(searchURL + "/delegate/search/query?" + reconstructedQueryString, "UTF-8",initiatorInstanceId,targetInstanceId,bearerToken));
+            }
+            try {
+                unifiedResult = JSONUtil.unify(results);
+            }
+            catch (Exception e){
+                logger.error("",e);
             }
 
-            unifiedResult = JSONUtil.unify(results);
         } else {
             unifiedResult = result;
         }
@@ -94,12 +103,15 @@ public class SearchController {
     @RequestMapping(value = "/search/retrieve",
             produces = {"application/json"},
             method = RequestMethod.GET)
-    public ResponseEntity search(@RequestParam(value = "id", required = false) String id) {
+    public ResponseEntity search(@RequestParam(value = "id", required = false) String id,
+                                 @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
+                                 @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
+                                 @RequestHeader(value="Authorization", required=true) String bearerToken) {
         String queryString = "q=*&rows=1&wt=json&fq=item_id:" + id;
 
         logger.debug(" $$$ Query: {}", marmottaURL + "?" + queryString);
 
-        String result = URLConnectionUtil.get(marmottaURL + "?" + queryString, "UTF-8");
+        String result = URLConnectionUtil.get(marmottaURL + "?" + queryString, "UTF-8",null,null,null);
 
         return new ResponseEntity<String>(result, HttpStatus.OK);
     }

@@ -143,13 +143,7 @@ public BusinessProcessClient clientGenerator(String instanceid){
     public ResponseEntity delegateGetFields(@RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
                                                                 @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
                                                                 @RequestHeader(value="Authorization", required=true) String bearerToken) {
-
-
-        if(config.getInstanceid().equals(targetInstanceId))
-            return searchController.getFields();
-        else
-            return clientGenerator(targetInstanceId).clientGetFields(initiatorInstanceId,targetInstanceId,bearerToken);
-
+        return searchController.getFields();
     }
 
     @RequestMapping(value = "/search/query",
@@ -167,7 +161,7 @@ public BusinessProcessClient clientGenerator(String instanceid){
 
 
         if(config.getInstanceid().equals(targetInstanceId))
-            return searchController.search(request,query,facets,facetQueries,page,federated);
+            return searchController.search(request,query,facets,facetQueries,page,federated,initiatorInstanceId,targetInstanceId,bearerToken);
         else
             return clientGenerator(targetInstanceId).clientSearch(query,facets,facetQueries,page,federated,initiatorInstanceId,targetInstanceId,bearerToken);
 
@@ -187,7 +181,7 @@ public BusinessProcessClient clientGenerator(String instanceid){
 
 
         if(config.getInstanceid().equals(targetInstanceId))
-            return searchController.search(id);
+            return searchController.search(id,initiatorInstanceId,targetInstanceId,bearerToken);
         else
             return clientGenerator(targetInstanceId).clientSearch(id,initiatorInstanceId,targetInstanceId,bearerToken);
 

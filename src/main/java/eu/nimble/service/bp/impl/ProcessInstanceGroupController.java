@@ -157,7 +157,7 @@ public class ProcessInstanceGroupController implements GroupApi {
         String queryString = constructQueryString(partyID, relatedProducts, relatedProductCategories, tradingPartnerIDs, initiationDateRange, lastActivityDateRange, offset, limit, archived, collaborationRole);
         List<String> nimbleURLs = FederationUtil.getFederationEndpoints();
         for(String nimbleURL: nimbleURLs) {
-            String groupResponseFederationJson = URLConnectionUtil.get(nimbleURL + "/group?" + queryString, "UTF-8");
+            String groupResponseFederationJson = URLConnectionUtil.get(nimbleURL + "/group?" + queryString, "UTF-8",null,null,null);
             try {
                 ProcessInstanceGroupResponse groupResponseFromFederation = new ObjectMapper().readValue(groupResponseFederationJson, ProcessInstanceGroupResponse.class);
                 groupResponse.getProcessInstanceGroups().addAll(groupResponseFromFederation.getProcessInstanceGroups());
@@ -219,7 +219,7 @@ public class ProcessInstanceGroupController implements GroupApi {
         String queryString = constructQueryString(partyID, relatedProducts, relatedProductCategories, tradingPartnerIDs, initiationDateRange, lastActivityDateRange, null, null, archived, collaborationRole);
         List<String> nimbleURLs = FederationUtil.getFederationEndpoints();
         for(String nimbleURL: nimbleURLs) {
-            String groupFiltersJson = URLConnectionUtil.get(nimbleURL + "/group/filters?" + queryString, "UTF-8");
+            String groupFiltersJson = URLConnectionUtil.get(nimbleURL + "/group/filters?" + queryString, "UTF-8",null,null,null);
             try {
                 ProcessInstanceGroupFilter filtersFromFederation = new ObjectMapper().readValue(groupFiltersJson, ProcessInstanceGroupFilter.class);
 
