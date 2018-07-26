@@ -21,6 +21,7 @@ public class ClientFactory {
 
     public  <T> T createClient(Class<T> clientClass ,String url) {
         T result = Feign.builder()
+                .encoder(new GsonEncoder())
                 .decoder(new GsonDecoder())
                 .target(clientClass, url);
         return result;

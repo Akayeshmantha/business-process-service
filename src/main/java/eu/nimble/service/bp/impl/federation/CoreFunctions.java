@@ -17,7 +17,12 @@ public class CoreFunctions {
             TODO:
             A consumer in order to get the instance endpoint from the core url.
         */
-        return "http://192.168.1.133:8081";
+        if(instanceId.equals(config.getInstanceid())){
+            return "http://192.168.1.133:8081";
+        }
+        else {
+            return "http://192.168.1.103:8081";
+        }
     }
 
 

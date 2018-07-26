@@ -86,11 +86,7 @@ public BusinessProcessClient clientGenerator(String instanceid){
                                                                                   @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
                                                                                   @RequestParam(value = "federated", required = true) Boolean federated,
                                                                                   @RequestHeader(value="Authorization", required=true) String bearerToken) throws Exception {
-        if(config.getInstanceid().equals(targetInstanceId))
             return processInstanceGroupController.getProcessInstanceGroups(initiatorInstanceId,targetInstanceId,federated,bearerToken,partyID,relatedProducts,relatedProductCategories,tradingPartnerIDs,initiationDateRange,lastActivityDateRange,offset,limit,archived,collaborationRole);
-        else
-            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientGetProcessInstanceGroups(partyID,relatedProducts,relatedProductCategories,tradingPartnerIDs,initiationDateRange,lastActivityDateRange,offset,limit,archived,collaborationRole,initiatorInstanceId,targetInstanceId,bearerToken));
-
     }
 
     @RequestMapping(value = "/group/filters",
@@ -109,14 +105,7 @@ public BusinessProcessClient clientGenerator(String instanceid){
                          @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
                          @RequestParam(value = "federated", required = true) Boolean federated,
                          @RequestHeader(value="Authorization", required=true) String bearerToken) throws Exception{
-
-        if(config.getInstanceid().equals(targetInstanceId))
             return processInstanceGroupController.getProcessInstanceGroupFilters(initiatorInstanceId,targetInstanceId,federated,bearerToken,partyID,relatedProducts,relatedProductCategories,tradingPartnerIDs,initiationDateRange,lastActivityDateRange,archived,collaborationRole);
-        else
-            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientGetProcessInstanceGroupFilters(partyID,relatedProducts,relatedProductCategories,tradingPartnerIDs,initiationDateRange,lastActivityDateRange,archived,collaborationRole,initiatorInstanceId,targetInstanceId,bearerToken));
-
-
-
     }
 
 
@@ -126,7 +115,6 @@ public BusinessProcessClient clientGenerator(String instanceid){
 
     @RequestMapping(value = "/rest/engine/default/history/variable-instance",
             produces = { "application/json" },
-            consumes = { "application/json" },
             method = RequestMethod.GET)
     public   ResponseEntity delegateGetProcessDetailsHistory(
             @RequestParam(value = "processInstanceIdIn", required = true) String processInstanceIdIn,
@@ -135,7 +123,7 @@ public BusinessProcessClient clientGenerator(String instanceid){
             @RequestHeader(value="Authorization", required=true) String bearerToken)throws Exception {
 
         if(config.getInstanceid().equals(targetInstanceId))
-            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(config.getInstanceid()).clientGetProcessDetailsHistory(processInstanceIdIn,initiatorInstanceId,targetInstanceId,bearerToken));
+            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(config.getInstanceid()).clientGetProcessDetailsHistory(processInstanceIdIn));
         else
             return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientGetProcessDetailsHistory(processInstanceIdIn,initiatorInstanceId,targetInstanceId,bearerToken));
 
@@ -145,7 +133,6 @@ public BusinessProcessClient clientGenerator(String instanceid){
 
     @RequestMapping(value = "/rest/engine/default/history/process-instance/{processInstanceId}",
             produces = { "application/json" },
-            consumes = { "application/json" },
             method = RequestMethod.GET)
     public  ResponseEntity delegateGetProcessInstanceDetails(
             @PathVariable(value = "processInstanceId", required = true) String processInstanceId,
@@ -154,7 +141,7 @@ public BusinessProcessClient clientGenerator(String instanceid){
             @RequestHeader(value="Authorization", required=true) String bearerToken)throws Exception {
 
         if(config.getInstanceid().equals(targetInstanceId))
-            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(config.getInstanceid()).clientGetProcessInstanceDetails(processInstanceId,initiatorInstanceId,targetInstanceId,bearerToken));
+            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(config.getInstanceid()).clientGetProcessInstanceDetails(processInstanceId));
         else
             return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientGetProcessInstanceDetails(processInstanceId,initiatorInstanceId,targetInstanceId,bearerToken));
 
@@ -162,19 +149,18 @@ public BusinessProcessClient clientGenerator(String instanceid){
 
     @RequestMapping(value = "rest/engine/default/history/activity-instance",
             produces = { "application/json" },
-            consumes = { "application/json" },
             method = RequestMethod.GET)
     public  ResponseEntity delegateGetLastActivityForProcessInstance(
-            @PathVariable(value = "processInstanceId", required = true) String processInstanceId,
-            @PathVariable(value = "sortBy", required = true) String sortBy,
-            @PathVariable(value = "sortOrder", required = true) String sortOrder,
-            @PathVariable(value = "maxResults", required = true) String maxResults,
+            @RequestParam(value = "processInstanceId", required = true) String processInstanceId,
+            @RequestParam(value = "sortBy", required = true) String sortBy,
+            @RequestParam(value = "sortOrder", required = true) String sortOrder,
+            @RequestParam(value = "maxResults", required = true) String maxResults,
             @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
             @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
             @RequestHeader(value="Authorization", required=true) String bearerToken)throws Exception {
 
         if(config.getInstanceid().equals(targetInstanceId))
-            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(config.getInstanceid()).clientGetLastActivityForProcessInstance(processInstanceId,sortBy,sortOrder,maxResults,initiatorInstanceId,targetInstanceId,bearerToken));
+            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(config.getInstanceid()).clientGetLastActivityForProcessInstance(processInstanceId,sortBy,sortOrder,maxResults));
         else
             return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientGetLastActivityForProcessInstance(processInstanceId,sortBy,sortOrder,maxResults,initiatorInstanceId,targetInstanceId,bearerToken));
 

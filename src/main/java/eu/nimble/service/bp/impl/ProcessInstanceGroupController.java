@@ -193,7 +193,7 @@ public class ProcessInstanceGroupController implements GroupApi {
 
         // For federation: Check the process instance groups in other and join them to ..
         if(federated){
-            String queryString = constructQueryString(partyID, relatedProducts, relatedProductCategories, tradingPartnerIDs, initiationDateRange, lastActivityDateRange, offset, limit, archived, collaborationRole,false);
+            String queryString = constructQueryString(partyID, relatedProducts, relatedProductCategories, tradingPartnerIDs, initiationDateRange, lastActivityDateRange, offset, limit, archived, collaborationRole);
             List<String> nimbleURLs = FederationUtil.getFederationEndpoints();
             for (String nimbleURL : nimbleURLs) {
                 String groupResponseFederationJson = URLConnectionUtil.get(nimbleURL + "/delegate/group?" + queryString, "UTF-8", initiatorInstanceId, targetInstanceId, authorization);
@@ -214,7 +214,7 @@ public class ProcessInstanceGroupController implements GroupApi {
     }
 
     private String constructQueryString(String partyID, List<String> relatedProducts, List<String> relatedProductCategories, List<String> tradingPartnerIDs,
-                                        String initiationDateRange, String lastActivityDateRange, Integer offset, Integer limit, Boolean archived, String collaborationRole,Boolean federated) {
+                                        String initiationDateRange, String lastActivityDateRange, Integer offset, Integer limit, Boolean archived, String collaborationRole) {
         String queryString = "";
         if (partyID != null)
             queryString += "partyID=" + partyID + "&";
@@ -236,11 +236,9 @@ public class ProcessInstanceGroupController implements GroupApi {
             queryString += "archived=" + archived + "&";
         if (collaborationRole != null)
             queryString += "collaborationRole=" + collaborationRole + "&";
-        if (federated != null){
-            queryString += "federated" + federated + "&";
-        }
+        queryString += "federated=false";
 
-        return queryString.substring(0,queryString.length()-1);
+        return queryString;
     }
 
     @Override
@@ -280,7 +278,7 @@ public class ProcessInstanceGroupController implements GroupApi {
 
         // For federation: Check the process instance groups in other and join them to filters..
         if(federated){
-            String queryString = constructQueryString(partyID, relatedProducts, relatedProductCategories, tradingPartnerIDs, initiationDateRange, lastActivityDateRange, null, null, archived, collaborationRole,false);
+            String queryString = constructQueryString(partyID, relatedProducts, relatedProductCategories, tradingPartnerIDs, initiationDateRange, lastActivityDateRange, null, null, archived, collaborationRole);
             List<String> nimbleURLs = FederationUtil.getFederationEndpoints();
             for (String nimbleURL : nimbleURLs) {
                 String groupFiltersJson = URLConnectionUtil.get(nimbleURL + "/delegate/group/filters?" + queryString, "UTF-8", initiatorInstanceId, targetInstanceId, authorization);
@@ -292,17 +290,19 @@ public class ProcessInstanceGroupController implements GroupApi {
                     filters.getRelatedProducts().addAll(filtersFromFederation.getRelatedProducts());
                     filters.getTradingPartnerNames().addAll(filtersFromFederation.getTradingPartnerNames());
 
-                    DateTime startDate = DateUtility.convert(filters.getStartDate());
-                    DateTime endDate = DateUtility.convert(filters.getEndDate());
+                    if(filters.getStartDate() != null && filtersFromFederation.getStartDate() != null){
+                        DateTime startDate = DateUtility.convert(filters.getStartDate());
+                        DateTime federationStartDate = DateUtility.convert(filtersFromFederation.getStartDate());
+                        if (federationStartDate.isBefore(startDate))
+                            filters.setStartDate(DateUtility.convert(federationStartDate));
+                    }
+                    if(filters.getEndDate() != null && filtersFromFederation.getEndDate() != null){
+                        DateTime endDate = DateUtility.convert(filters.getEndDate());
+                        DateTime federationEndDate = DateUtility.convert(filtersFromFederation.getEndDate());
+                        if (federationEndDate.isAfter(endDate))
+                            filters.setEndDate(DateUtility.convert(federationEndDate));
+                    }
 
-                    DateTime federationStartDate = DateUtility.convert(filtersFromFederation.getStartDate());
-                    DateTime federationEndDate = DateUtility.convert(filtersFromFederation.getEndDate());
-
-                    if (federationStartDate.isBefore(startDate))
-                        filters.setStartDate(DateUtility.convert(federationStartDate));
-
-                    if (federationEndDate.isAfter(endDate))
-                        filters.setEndDate(DateUtility.convert(federationEndDate));
                 } catch (IOException e) {
                     logger.error("", e);
                 }
