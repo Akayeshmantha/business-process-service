@@ -61,10 +61,11 @@ public class ContinueController implements ContinueApi {
             // save ProcessInstanceDAO
             businessProcessContext.setProcessInstanceDAO(storedInstance);
 
+            // TODO: Rewrite this part 
             // create process instance groups if this is the first process initializing the process group
-            if (gid != null) {
-                checkExistingGroup(businessProcessContext.getId(),gid, processInstance.getProcessInstanceID(), body);
-            }
+//            if (gid != null) {
+//                checkExistingGroup(businessProcessContext.getId(),gid, processInstance.getProcessInstanceID(), body);
+//            }
         }
         catch (Exception e){
             logger.error(" $$$ Failed to continue process with ProcessInstanceInputMessage {}", body.toString(),e);
@@ -81,21 +82,21 @@ public class ContinueController implements ContinueApi {
     private void checkExistingGroup(String businessContextId,String sourceGid, String processInstanceId, ProcessInstanceInputMessage body){
         ProcessInstanceGroupDAO existingGroup = ProcessInstanceGroupDAOUtility.getProcessInstanceGroupDAO(sourceGid);
 
-        // check whether the group for the trading partner is still there. If not, create a new one
-        ProcessInstanceGroupDAO associatedGroup = ProcessInstanceGroupDAOUtility.getProcessInstanceGroupDAO(body.getVariables().getInitiatorID(), sourceGid);
-        if (associatedGroup == null) {
-            associatedGroup = ProcessInstanceGroupDAOUtility.createProcessInstanceGroupDAO(
-                    body.getVariables().getInitiatorID(),
-                    processInstanceId,
-                    CamundaEngine.getTransactions(body.getVariables().getProcessID()).get(0).getInitiatorRole().toString(),
-                    body.getVariables().getRelatedProducts().toString(),
-                    sourceGid);
-
-            BusinessProcessContextHandler.getBusinessProcessContextHandler().getBusinessProcessContext(businessContextId).setUpdatedAssociatedGroup(associatedGroup);
-
-            // associate groups
-            existingGroup.getAssociatedGroups().add(associatedGroup.getID());
-            HibernateUtilityRef.getInstance("bp-data-model").update(existingGroup);
-        }
+//        // check whether the group for the trading partner is still there. If not, create a new one
+//        ProcessInstanceGroupDAO associatedGroup = ProcessInstanceGroupDAOUtility.getProcessInstanceGroupDAO(body.getVariables().getInitiatorID(), sourceGid);
+//        if (associatedGroup == null) {
+//            associatedGroup = ProcessInstanceGroupDAOUtility.createProcessInstanceGroupDAO(
+//                    body.getVariables().getInitiatorID(),
+//                    processInstanceId,
+//                    CamundaEngine.getTransactions(body.getVariables().getProcessID()).get(0).getInitiatorRole().toString(),
+//                    body.getVariables().getRelatedProducts().toString(),
+//                    sourceGid);
+//
+//            BusinessProcessContextHandler.getBusinessProcessContextHandler().getBusinessProcessContext(businessContextId).setUpdatedAssociatedGroup(associatedGroup);
+//
+//            // associate groups
+//            existingGroup.getAssociatedGroups().add(associatedGroup.getID());
+//            HibernateUtilityRef.getInstance("bp-data-model").update(existingGroup);
+//        }
     }
 }

@@ -96,9 +96,13 @@ public class HibernateSwaggerObjectMapper {
         return processDocument;
     }
 
-    public static ProcessInstanceDAO createProcessInstance_DAO(ProcessInstance processInstance) {
+    public static ProcessInstanceDAO createProcessInstance_DAO(ProcessInstance processInstance,String federation_instance_id) {
+        ProcessInstanceFederationDAO processInstanceFederationDAO = new ProcessInstanceFederationDAO();
+        processInstanceFederationDAO.setFederationInstanceId(federation_instance_id);
+        processInstanceFederationDAO.setProcessInstanceID(processInstance.getProcessID());
+
         ProcessInstanceDAO processInstanceDAO = new ProcessInstanceDAO();
-        processInstanceDAO.setProcessID(processInstance.getProcessID());
+        processInstanceDAO.setProcessInstance(processInstanceFederationDAO);
         processInstanceDAO.setProcessInstanceID(processInstance.getProcessInstanceID());
         processInstanceDAO.setCreationDate(processInstance.getCreationDate());
         processInstanceDAO.setStatus(ProcessInstanceStatus.fromValue(processInstance.getStatus().toString()));
@@ -109,7 +113,7 @@ public class HibernateSwaggerObjectMapper {
         List<ProcessInstance> processInstances = new ArrayList<>();
         for(ProcessInstanceDAO processInstanceDAO : processInstanceDAOS){
             ProcessInstance processInstance = new ProcessInstance();
-            processInstance.setProcessID(processInstanceDAO.getProcessID());
+            processInstance.setProcessID(processInstanceDAO.getProcessInstance().getProcessInstanceID());
             processInstance.setProcessInstanceID(processInstanceDAO.getProcessInstanceID());
             processInstance.setStatus(ProcessInstance.StatusEnum.valueOf(processInstanceDAO.getStatus().toString()));
             processInstance.setCreationDate(processInstanceDAO.getCreationDate());
@@ -270,7 +274,11 @@ public class HibernateSwaggerObjectMapper {
         processInstanceGroupDAO.setID(processInstanceGroup.getID());
         processInstanceGroupDAO.setArchived(processInstanceGroup.getArchived());
         processInstanceGroupDAO.setPartyID(processInstanceGroup.getPartyID());
-        processInstanceGroupDAO.setProcessInstanceIDs(processInstanceGroup.getProcessInstanceIDs());
+        List<ProcessInstanceFederationDAO> instanceFederationDAOList = new ArrayList<>();
+        for(ProcessInstanceFederation federation : processInstanceGroup.getProcessInstances()){
+            instanceFederationDAOList.add(convertProcessInstanceFederationDAO(federation));
+        }
+        processInstanceGroupDAO.setProcessInstances(instanceFederationDAOList);
         return processInstanceGroupDAO;
     }
 
@@ -280,11 +288,29 @@ public class HibernateSwaggerObjectMapper {
         processInstanceGroup.setArchived(processInstanceGroupDAO.isArchived());
         processInstanceGroup.setPartyID(processInstanceGroupDAO.getPartyID());
         processInstanceGroup.setCollaborationRole(processInstanceGroupDAO.getCollaborationRole());
-        processInstanceGroup.setProcessInstanceIDs(processInstanceGroupDAO.getProcessInstanceIDs());
+        List<ProcessInstanceFederation> processInstanceFederations = new ArrayList<>();
+        for(ProcessInstanceFederationDAO processInstanceFederationDAO : processInstanceGroupDAO.getProcessInstances()){
+            processInstanceFederations.add(convertProcessInstanceFederation(processInstanceFederationDAO));
+        }
+        processInstanceGroup.setProcessInstances(processInstanceFederations);
         processInstanceGroup.setAssociatedGroups(processInstanceGroupDAO.getAssociatedGroups());
         processInstanceGroup.setLastActivityTime(processInstanceGroupDAO.getLastActivityTime());
         processInstanceGroup.setFirstActivityTime(processInstanceGroupDAO.getFirstActivityTime());
 
         return processInstanceGroup;
+    }
+
+    public static ProcessInstanceFederation convertProcessInstanceFederation(ProcessInstanceFederationDAO processInstanceFederationDAO){
+        ProcessInstanceFederation processInstanceFederation = new ProcessInstanceFederation();
+        processInstanceFederation.setFederationInstanceId(processInstanceFederationDAO.getFederationInstanceId());
+        processInstanceFederation.setProcessInstanceID(processInstanceFederationDAO.getProcessInstanceID());
+        return processInstanceFederation;
+    }
+
+    public static ProcessInstanceFederationDAO convertProcessInstanceFederationDAO(ProcessInstanceFederation processInstanceFederation){
+        ProcessInstanceFederationDAO processInstanceFederationDAO = new ProcessInstanceFederationDAO();
+        processInstanceFederation.setFederationInstanceId(processInstanceFederation.getFederationInstanceId());
+        processInstanceFederation.setProcessInstanceID(processInstanceFederation.getProcessInstanceID());
+        return processInstanceFederationDAO;
     }
 }

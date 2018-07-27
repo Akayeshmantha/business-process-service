@@ -364,6 +364,14 @@ paths:
         description: The id of the preceding process instance
         required: false
         type: string
+      - in: query
+        name: federationInstanceId
+        required: true
+        type: string
+      - in: query
+        name: initiatorInstanceId
+        required: true
+        type: string
       - name: Authorization
         in: header
         type: string
@@ -375,7 +383,52 @@ paths:
           description: Business Process Instance Started
           schema:
             $ref: '#/definitions/ProcessInstance'
-
+  /start/{processInstanceId}/{groupId}:
+    post:
+      operationId: createProcessInstanceGroup
+      consumes:
+      - application/json
+      parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/ProcessInstanceInputMessage'
+      - in: path
+        name: processInstanceId
+        required: true
+        type: string
+      - in: query
+        name: federationInstanceId
+        required: true
+        type: string
+      - in: path
+        name: groupId
+        required: true
+        type: string
+  /start/{processInstanceId}:
+    patch:
+      operationId: addNewProcessInstanceToGroup
+      consumes:
+      - application/json
+      parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/ProcessInstanceInputMessage'
+      - in: path
+        name: processInstanceId
+        required: true
+        type: string
+      - in: query
+        name: federationInstanceId
+        required: true
+        type: string
+      - in: query
+        name: groupId
+        required: true
+        type: string
   /continue:
     post:
       operationId: continueProcessInstance
@@ -861,6 +914,10 @@ paths:
         type: string
         description: Identifier of the process instance to be added
         required: true
+      - in: query
+        name: federationInstanceId
+        type: string
+        required: true
       - name: Authorization
         in: header
         type: string
@@ -882,6 +939,10 @@ paths:
         name: processInstanceID
         type: string
         description: Identifier of the process instance to be deleted
+        required: true
+      - in: query
+        name: federationInstanceId
+        type: string
         required: true
       - name: Authorization
         in: header
@@ -1114,6 +1175,14 @@ definitions:
         - ABORTED
         - COMPLETED
 
+  ProcessInstanceFederation:
+    type: object
+    properties:
+      federationInstanceId:
+        type: string
+      processInstanceID:
+        type: string
+
   ProcessInstanceGroup:
     title: Process Instance Group Object
     type: object
@@ -1122,10 +1191,10 @@ definitions:
         type: string
       partyID:
         type: string
-      processInstanceIDs:
+      processInstances:
         type: array
         items:
-          type: string
+          $ref: '#/definitions/ProcessInstanceFederation'
       archived:
         type: boolean
       collaborationRole:

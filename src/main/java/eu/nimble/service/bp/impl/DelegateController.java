@@ -5,10 +5,8 @@ import eu.nimble.service.bp.config.GenericConfig;
 import eu.nimble.service.bp.impl.federation.BusinessProcessClient;
 import eu.nimble.service.bp.impl.federation.ClientFactory;
 import eu.nimble.service.bp.impl.federation.CoreFunctions;
+import eu.nimble.service.bp.swagger.model.*;
 import eu.nimble.service.bp.swagger.model.Process;
-import eu.nimble.service.bp.swagger.model.ProcessDocumentMetadata;
-import eu.nimble.service.bp.swagger.model.ProcessInstanceGroupFilter;
-import eu.nimble.service.bp.swagger.model.ProcessInstanceGroupResponse;
 import eu.nimble.service.model.ubl.commonaggregatecomponents.ClauseType;
 import eu.nimble.service.model.ubl.commonaggregatecomponents.DataMonitoringClauseType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,85 +25,85 @@ public class DelegateController  {
 
     //WRAPPERS FOR DELEGATE PROCESSES
 
-@Autowired
-private StartController startController;
-@Autowired
-private ContentController contentController;
-@Autowired
-private  ContractController contractController;
-@Autowired
-private ContractGeneratorController contractGeneratorController;
-@Autowired
-private DocumentController documentController;
-@Autowired
-private EPCController epcController;
-@Autowired
-private SearchController searchController;
-@Autowired
-private ProcessInstanceGroupController processInstanceGroupController;
+    @Autowired
+    private StartController startController;
+    @Autowired
+    private ContentController contentController;
+    @Autowired
+    private  ContractController contractController;
+    @Autowired
+    private ContractGeneratorController contractGeneratorController;
+    @Autowired
+    private DocumentController documentController;
+    @Autowired
+    private EPCController epcController;
+    @Autowired
+    private SearchController searchController;
+    @Autowired
+    private ProcessInstanceGroupController processInstanceGroupController;
 
-@Autowired
-private GenericConfig config;
-
-
-@Autowired
-private CoreFunctions core;
+    @Autowired
+    private GenericConfig config;
 
 
-//COMMON TOKEN VALIDATOR
-public boolean isValid( String initiatorInstanceId,String bearerToken){
-
-    /*
-    TODO:
-    CHECK ID AND TOKEN
-     */
-    return true;
-}
+    @Autowired
+    private CoreFunctions core;
 
 
-public BusinessProcessClient clientGenerator(String instanceid){
-    String url=core.getEndpointFromInstanceId(instanceid);
-    return ClientFactory.getClientFactoryInstance().createClient(BusinessProcessClient.class,url);
-}
+    //COMMON TOKEN VALIDATOR
+    public boolean isValid( String initiatorInstanceId,String bearerToken){
+
+        /*
+        TODO:
+        CHECK ID AND TOKEN
+         */
+        return true;
+    }
+
+
+    public BusinessProcessClient clientGenerator(String instanceid){
+        String url=core.getEndpointFromInstanceId(instanceid);
+        return ClientFactory.getClientFactoryInstance().createClient(BusinessProcessClient.class,url);
+    }
 
     @RequestMapping(value = "/group",
             produces = { "application/json" },
             method = RequestMethod.GET)
     public ResponseEntity<ProcessInstanceGroupResponse> getProcessInstanceGroups (
-                                                                                  @RequestParam(value = "partyID", required = false) String partyID,
-                                                                                  @RequestParam(value = "relatedProducts", required = false) List<String> relatedProducts,
-                                                                                  @RequestParam(value = "relatedProductCategories", required = false) List<String> relatedProductCategories,
-                                                                                  @RequestParam(value = "tradingPartnerIDs", required = false) List<String> tradingPartnerIDs,
-                                                                                  @RequestParam(value = "initiationDateRange", required = false) String initiationDateRange,
-                                                                                  @RequestParam(value = "lastActivityDateRange", required = false) String lastActivityDateRange,
-                                                                                  @RequestParam(value = "offset", required = false, defaultValue = "0") Integer offset,
-                                                                                  @RequestParam(value = "limit", required = false, defaultValue = "10") Integer limit,
-                                                                                  @RequestParam(value = "archived", required = false, defaultValue = "false") Boolean archived,
-                                                                                  @RequestParam(value = "collaborationRole", required = false) String collaborationRole,
-                                                                                  @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
-                                                                                  @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
-                                                                                  @RequestParam(value = "federated", required = true) Boolean federated,
-                                                                                  @RequestHeader(value="Authorization", required=true) String bearerToken) throws Exception {
-            return processInstanceGroupController.getProcessInstanceGroups(initiatorInstanceId,targetInstanceId,federated,bearerToken,partyID,relatedProducts,relatedProductCategories,tradingPartnerIDs,initiationDateRange,lastActivityDateRange,offset,limit,archived,collaborationRole);
+            @RequestParam(value = "partyID", required = false) String partyID,
+            @RequestParam(value = "relatedProducts", required = false) List<String> relatedProducts,
+            @RequestParam(value = "relatedProductCategories", required = false) List<String> relatedProductCategories,
+            @RequestParam(value = "tradingPartnerIDs", required = false) List<String> tradingPartnerIDs,
+            @RequestParam(value = "initiationDateRange", required = false) String initiationDateRange,
+            @RequestParam(value = "lastActivityDateRange", required = false) String lastActivityDateRange,
+            @RequestParam(value = "offset", required = false, defaultValue = "0") Integer offset,
+            @RequestParam(value = "limit", required = false, defaultValue = "10") Integer limit,
+            @RequestParam(value = "archived", required = false, defaultValue = "false") Boolean archived,
+            @RequestParam(value = "collaborationRole", required = false) String collaborationRole,
+            @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
+            @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
+            @RequestParam(value = "federated", required = true) Boolean federated,
+            @RequestHeader(value="Authorization", required=true) String bearerToken) throws Exception {
+        return processInstanceGroupController.getProcessInstanceGroups(initiatorInstanceId,targetInstanceId,federated,bearerToken,partyID,relatedProducts,relatedProductCategories,tradingPartnerIDs,initiationDateRange,lastActivityDateRange,offset,limit,archived,collaborationRole);
     }
 
     @RequestMapping(value = "/group/filters",
             produces = { "application/json" },
             method = RequestMethod.GET)
     public ResponseEntity<ProcessInstanceGroupFilter> getProcessInstanceGroupFilters(
-                         @RequestParam(value = "partyID", required = false) String partyID,
-                         @RequestParam(value = "relatedProducts", required = false) List<String> relatedProducts,
-                         @RequestParam(value = "relatedProductCategories", required = false) List<String> relatedProductCategories,
-                         @RequestParam(value = "tradingPartnerIDs", required = false) List<String> tradingPartnerIDs,
-                         @RequestParam(value = "initiationDateRange", required = false) String initiationDateRange,
-                         @RequestParam(value = "lastActivityDateRange", required = false) String lastActivityDateRange,
-                         @RequestParam(value = "archived", required = false, defaultValue = "false") Boolean archived,
-                         @RequestParam(value = "collaborationRole", required = false) String collaborationRole,
-                         @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
-                         @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
-                         @RequestParam(value = "federated", required = true) Boolean federated,
-                         @RequestHeader(value="Authorization", required=true) String bearerToken) throws Exception{
-            return processInstanceGroupController.getProcessInstanceGroupFilters(initiatorInstanceId,targetInstanceId,federated,bearerToken,partyID,relatedProducts,relatedProductCategories,tradingPartnerIDs,initiationDateRange,lastActivityDateRange,archived,collaborationRole);
+            @RequestParam(value = "partyID", required = false) String partyID,
+            @RequestParam(value = "relatedProducts", required = false) List<String> relatedProducts,
+            @RequestParam(value = "relatedProductCategories", required = false) List<String> relatedProductCategories,
+            @RequestParam(value = "tradingPartnerIDs", required = false) List<String> tradingPartnerIDs,
+            @RequestParam(value = "initiationDateRange", required = false) String initiationDateRange,
+            @RequestParam(value = "lastActivityDateRange", required = false) String lastActivityDateRange,
+            @RequestParam(value = "archived", required = false, defaultValue = "false") Boolean archived,
+            @RequestParam(value = "collaborationRole", required = false) String collaborationRole,
+            @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
+            @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
+            @RequestParam(value = "federated", required = true) Boolean federated,
+            @RequestHeader(value="Authorization", required=true) String bearerToken) throws Exception{
+        return processInstanceGroupController.getProcessInstanceGroupFilters(initiatorInstanceId,targetInstanceId,federated,bearerToken,partyID,relatedProducts,relatedProductCategories,tradingPartnerIDs,initiationDateRange,lastActivityDateRange,archived,collaborationRole);
     }
 
 
@@ -177,8 +175,8 @@ public BusinessProcessClient clientGenerator(String instanceid){
             produces = { "application/json" },
             method = RequestMethod.GET)
     public ResponseEntity delegateGetFields(@RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
-                                                                @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
-                                                                @RequestHeader(value="Authorization", required=true) String bearerToken) throws Exception{
+                                            @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
+                                            @RequestHeader(value="Authorization", required=true) String bearerToken) throws Exception{
         return searchController.getFields();
     }
 
@@ -194,7 +192,7 @@ public BusinessProcessClient clientGenerator(String instanceid){
                                          @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
                                          @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
                                          @RequestHeader(value="Authorization", required=true) String bearerToken) throws Exception{
-            return searchController.search(request,query,facets,facetQueries,page,federated,initiatorInstanceId,targetInstanceId,bearerToken);
+        return searchController.search(request,query,facets,facetQueries,page,federated,initiatorInstanceId,targetInstanceId,bearerToken);
     }
 
 
@@ -205,19 +203,19 @@ public BusinessProcessClient clientGenerator(String instanceid){
             produces = { "application/json" },
             method = RequestMethod.GET)
     public ResponseEntity delegateSearch(@RequestParam(value = "id", required = false) String id,
-                                            @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
-                                            @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
-                                            @RequestHeader(value="Authorization", required=true) String bearerToken) throws Exception{
-            return searchController.search(id,initiatorInstanceId,targetInstanceId,bearerToken);
+                                         @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
+                                         @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
+                                         @RequestHeader(value="Authorization", required=true) String bearerToken) throws Exception{
+        return searchController.search(id,initiatorInstanceId,targetInstanceId,bearerToken);
     }
 
 //STARTCONTROLLER
 
-@RequestMapping(value = "/start",
-                produces = { "application/json" },
-                consumes = { "application/json" },
-                method = RequestMethod.POST)
-public ResponseEntity<eu.nimble.service.bp.swagger.model.ProcessInstance> delegateStartProcessInstance( @RequestBody eu.nimble.service.bp.swagger.model.ProcessInstanceInputMessage body,
+    @RequestMapping(value = "/start",
+            produces = { "application/json" },
+            consumes = { "application/json" },
+            method = RequestMethod.POST)
+    public ResponseEntity<eu.nimble.service.bp.swagger.model.ProcessInstance> delegateStartProcessInstance( @RequestBody eu.nimble.service.bp.swagger.model.ProcessInstanceInputMessage body,
                                                                                                             @RequestParam(value = "gid", required = false) String gid,
                                                                                                             @RequestParam(value = "precedingPid", required = false) String precedingPid,
                                                                                                             @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
@@ -231,23 +229,60 @@ public ResponseEntity<eu.nimble.service.bp.swagger.model.ProcessInstance> delega
     3)Else if the instance is local then check token locally.
     */
 
-    if(config.getInstanceid().equals(targetInstanceId))
-        return startController.startProcessInstance(body,bearerToken, gid, precedingPid);
-    else
-        return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientStartProcessInstance(body,gid,precedingPid,initiatorInstanceId,targetInstanceId,bearerToken));
+        if (config.getInstanceid().equals(targetInstanceId)){
+            return startController.startProcessInstance(body,targetInstanceId,initiatorInstanceId,bearerToken,gid,precedingPid);
+        }
+        else{
+            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientStartProcessInstance(body,gid,precedingPid,initiatorInstanceId,targetInstanceId,bearerToken));
+        }
+    }
 
+    @RequestMapping(value = "/start/{processInstanceId}/{groupId}",
+            consumes = { "application/json" },
+            method = RequestMethod.POST)
+    ResponseEntity<Void> delegateCreateProcessInstanceGroup(@RequestBody ProcessInstanceInputMessage body,
+                                                            @PathVariable(value = "processInstanceId",required = true) String processInstanceId,
+                                                            @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
+                                                            @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
+                                                            @PathVariable(value = "groupId", required = true) String groupId,
+                                                            @RequestHeader(value="Authorization", required=true) String bearerToken)throws Exception{
+        if(config.getInstanceid().equals(targetInstanceId)){
+            return startController.createProcessInstanceGroup(body,processInstanceId,initiatorInstanceId,groupId);
 
-}
+        }
+        else {
+            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientCreateProcessInstanceGroup(body,initiatorInstanceId,targetInstanceId,processInstanceId,groupId,bearerToken));
+        }
 
+    }
 
-//CONTENTCONTROLLER
+    @RequestMapping(value = "/start/{processInstanceId}",
+            consumes = { "application/json" },
+            method = RequestMethod.PATCH)
+    ResponseEntity<Void> addNewProcessInstanceToGroup(@RequestBody ProcessInstanceInputMessage body,
+                                                      @PathVariable(value = "processInstanceId",required = true) String processInstanceId,
+                                                      @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
+                                                      @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
+                                                      @RequestParam(value = "groupId", required = true) String groupId,
+                                                      @RequestHeader(value="Authorization", required=true) String bearerToken)throws Exception{
+        if(config.getInstanceid().equals(targetInstanceId)){
+            return startController.addNewProcessInstanceToGroup(body,processInstanceId,initiatorInstanceId,groupId);
+
+        }
+        else {
+            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientAddNewProcessInstanceToGroup(body,initiatorInstanceId,targetInstanceId,processInstanceId,groupId,bearerToken));
+        }
+
+    }
+
+    //CONTENTCONTROLLER
     @RequestMapping(value = "/content/{processID}",
-                    produces = { "application/json" },
-                    method = RequestMethod.GET)
+            produces = { "application/json" },
+            method = RequestMethod.GET)
     public ResponseEntity<Process> delegateGetProcessDefinition(@PathVariable("processID") String processID,
-                                                         @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
-                                                         @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
-                                                         @RequestHeader(value="Authorization", required=true) String bearerToken)throws Exception{
+                                                                @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
+                                                                @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
+                                                                @RequestHeader(value="Authorization", required=true) String bearerToken)throws Exception{
 
 
         if(config.getInstanceid().equals(targetInstanceId))
@@ -260,11 +295,11 @@ public ResponseEntity<eu.nimble.service.bp.swagger.model.ProcessInstance> delega
 
 
     @RequestMapping(value = "/content",
-                    produces = { "application/json" },
-                    method = RequestMethod.GET)
+            produces = { "application/json" },
+            method = RequestMethod.GET)
     public ResponseEntity<List<Process>> delegateGetProcessDefinitions(@RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
-                                                                @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
-                                                                @RequestHeader(value="Authorization", required=true) String bearerToken)throws Exception{
+                                                                       @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
+                                                                       @RequestHeader(value="Authorization", required=true) String bearerToken)throws Exception{
 
         if(config.getInstanceid().equals(targetInstanceId))
             return contentController.getProcessDefinitions(bearerToken);
@@ -275,10 +310,10 @@ public ResponseEntity<eu.nimble.service.bp.swagger.model.ProcessInstance> delega
 
     }
 
-//CONTRACTCONTROLLER
+    //CONTRACTCONTROLLER
     @RequestMapping(value = "/clauses/{clauseId}",
-                    produces = {"application/json"},
-                    method = RequestMethod.GET)
+            produces = {"application/json"},
+            method = RequestMethod.GET)
     public ResponseEntity delegateGetClauseDetails(@PathVariable(value = "clauseId", required = true) String clauseId,
                                                    @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
                                                    @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
@@ -295,7 +330,7 @@ public ResponseEntity<eu.nimble.service.bp.swagger.model.ProcessInstance> delega
 
 
     @RequestMapping(value = "/clauses/{clauseId}",
-                    method = RequestMethod.PUT)
+            method = RequestMethod.PUT)
     public ResponseEntity delegateUpdateClause(@RequestBody() String deserializedClause,
                                                @PathVariable(value = "clauseId") String clauseId,
                                                @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
@@ -313,7 +348,7 @@ public ResponseEntity<eu.nimble.service.bp.swagger.model.ProcessInstance> delega
 
 
     @RequestMapping(value = "/contracts",
-                    method = RequestMethod.GET)
+            method = RequestMethod.GET)
     public ResponseEntity delegateConstructContractForProcessInstances(@RequestParam(value = "processInstanceId") String processInstanceId,
                                                                        @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
                                                                        @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
@@ -415,8 +450,8 @@ public ResponseEntity<eu.nimble.service.bp.swagger.model.ProcessInstance> delega
 
     //CONTRACTGENERATOR
     @RequestMapping(value = "/contracts/create-bundle",
-                    method = RequestMethod.GET,
-                    produces = {"application/zip"})
+            method = RequestMethod.GET,
+            produces = {"application/zip"})
     public void delegateGenerateContract(@RequestParam(value = "orderId", required = true) String orderId,
                                          HttpServletResponse response,
                                          @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
@@ -424,7 +459,7 @@ public ResponseEntity<eu.nimble.service.bp.swagger.model.ProcessInstance> delega
                                          @RequestHeader(value="Authorization", required=true) String bearerToken)throws Exception{
 
 
-     contractGeneratorController.generateContract(orderId,response,bearerToken);
+        contractGeneratorController.generateContract(orderId,response,bearerToken);
 
 
     }
@@ -435,11 +470,11 @@ public ResponseEntity<eu.nimble.service.bp.swagger.model.ProcessInstance> delega
             produces = {MediaType.TEXT_PLAIN_VALUE},
             method = RequestMethod.GET)
     public ResponseEntity delegateGenerateOrderTermsAndConditionsAsText(@RequestParam(value = "orderId", required = true) String orderId,
-                                                                @RequestParam(value = "sellerParty", required = true) String sellerParty,
-                                                                @RequestParam(value = "buyerParty", required = true) String buyerParty,
-                                                                @RequestParam(value = "incoterms", required = true) String incoterms,
-                                                                @RequestParam(value = "tradingTerms", required = true) String tradingTerms,
-                                                                @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
+                                                                        @RequestParam(value = "sellerParty", required = true) String sellerParty,
+                                                                        @RequestParam(value = "buyerParty", required = true) String buyerParty,
+                                                                        @RequestParam(value = "incoterms", required = true) String incoterms,
+                                                                        @RequestParam(value = "tradingTerms", required = true) String tradingTerms,
+                                                                        @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
                                                                         @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
                                                                         @RequestHeader(value="Authorization", required=true) String bearerToken)throws Exception{
 
@@ -453,7 +488,7 @@ public ResponseEntity<eu.nimble.service.bp.swagger.model.ProcessInstance> delega
 
     }
 
-//DOCUMENT CONTROLLER
+    //DOCUMENT CONTROLLER
     @RequestMapping(value = "/document/json/{documentID}",
             produces = {"application/json"},
             method = RequestMethod.GET)
@@ -514,9 +549,9 @@ public ResponseEntity<eu.nimble.service.bp.swagger.model.ProcessInstance> delega
             produces = {"application/json"},
             method = RequestMethod.GET)
     public ResponseEntity delegateGetTTDetails(@RequestParam(value = "epc", required = true) String epc,
-                                       @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
-                                       @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
-                                       @RequestHeader(value="Authorization", required=true) String bearerToken) throws Exception{
+                                               @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
+                                               @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
+                                               @RequestHeader(value="Authorization", required=true) String bearerToken) throws Exception{
 
 
         if(config.getInstanceid().equals(targetInstanceId))
@@ -528,12 +563,12 @@ public ResponseEntity<eu.nimble.service.bp.swagger.model.ProcessInstance> delega
     }
 
     @RequestMapping(value = "/t-t/epc-codes",
-                    produces = {"application/json"},
-                    method = RequestMethod.GET)
+            produces = {"application/json"},
+            method = RequestMethod.GET)
     public ResponseEntity delegateGetEPCCodesBelongsToProduct( @RequestParam(value = "productId", required = true) Long publishedProductID,
-                                                       @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
-                                                       @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
-                                                       @RequestHeader(value="Authorization", required=true) String bearerToken)throws Exception{
+                                                               @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
+                                                               @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
+                                                               @RequestHeader(value="Authorization", required=true) String bearerToken)throws Exception{
 
 
         if(config.getInstanceid().equals(targetInstanceId))

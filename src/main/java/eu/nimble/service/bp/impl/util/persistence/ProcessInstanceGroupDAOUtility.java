@@ -2,6 +2,7 @@ package eu.nimble.service.bp.impl.util.persistence;
 
 import eu.nimble.common.rest.identity.IdentityClientTyped;
 import eu.nimble.service.bp.hyperjaxb.model.ProcessInstanceDAO;
+import eu.nimble.service.bp.hyperjaxb.model.ProcessInstanceFederationDAO;
 import eu.nimble.service.bp.hyperjaxb.model.ProcessInstanceGroupDAO;
 import eu.nimble.service.bp.swagger.model.ProcessInstanceGroupFilter;
 import eu.nimble.service.model.ubl.commonaggregatecomponents.PartyType;
@@ -139,11 +140,11 @@ public class ProcessInstanceGroupDAOUtility {
         }
 
         query += " from " +
-                "ProcessInstanceGroupDAO pig join pig.processInstanceIDsItems pid, " +
+                "ProcessInstanceGroupDAO pig join pig.processInstances pid, " +
                 "ProcessInstanceDAO pi, " +
                 "ProcessDocumentMetadataDAO doc left join doc.relatedProductCategoriesItems relCat left join doc.relatedProductsItems relProd" +
                 " where " +
-                "pid.item = pi.processInstanceID and doc.processInstanceID = pi.processInstanceID";
+                "pid.processInstanceID = pi.processInstanceID and doc.processInstanceID = pi.processInstanceID";
 
         if (relatedProductCategories != null && relatedProductCategories.size() > 0) {
             query += " and (";
@@ -186,12 +187,15 @@ public class ProcessInstanceGroupDAOUtility {
         return query;
     }
 
-    public static ProcessInstanceGroupDAO createProcessInstanceGroupDAO(String partyId, String processInstanceId, String collaborationRole, String relatedProducts) {
-        return createProcessInstanceGroupDAO(partyId, processInstanceId, collaborationRole, relatedProducts, null);
+    public static ProcessInstanceGroupDAO createProcessInstanceGroupDAO(String groupId,String partyId, String processInstanceId, String collaborationRole, String relatedProducts,String federationInstanceId) {
+        return createProcessInstanceGroupDAO(groupId,partyId, processInstanceId, collaborationRole, relatedProducts, null,federationInstanceId);
     }
 
-    public static ProcessInstanceGroupDAO createProcessInstanceGroupDAO(String partyId, String processInstanceId, String collaborationRole, String relatedProducts, String associatedGroup) {
-        String uuid = UUID.randomUUID().toString();
+    public static ProcessInstanceGroupDAO createProcessInstanceGroupDAO(String groupId,String partyId, String processInstanceId, String collaborationRole, String relatedProducts, String associatedGroup,String federationInstanceId) {
+        String uuid = groupId;
+        if(uuid == null){
+            uuid = UUID.randomUUID().toString();
+        }
         ProcessInstanceGroupDAO group = new ProcessInstanceGroupDAO();
         group.setArchived(false);
         group.setID(uuid);
@@ -200,7 +204,12 @@ public class ProcessInstanceGroupDAOUtility {
         group.setCollaborationRole(collaborationRole);
         List<String> processInstanceIds = new ArrayList<>();
         processInstanceIds.add(processInstanceId);
-        group.setProcessInstanceIDs(processInstanceIds);
+        ProcessInstanceFederationDAO federationDAO = new ProcessInstanceFederationDAO();
+        federationDAO.setProcessInstanceID(processInstanceId);
+        federationDAO.setFederationInstanceId(federationInstanceId);
+        List<ProcessInstanceFederationDAO> federationDAOS = new ArrayList<>();
+        federationDAOS.add(federationDAO);
+        group.setProcessInstances(federationDAOS);
         if(associatedGroup != null) {
             List<String> associatedGroups = new ArrayList<>();
             associatedGroups.add(associatedGroup);
@@ -227,12 +236,18 @@ public class ProcessInstanceGroupDAOUtility {
         return pig;
     }
 
-    public static ProcessInstanceGroupDAO getProcessInstanceGroupDAO(String partyId, String associatedGroupId) {
-        String query = "select pig from ProcessInstanceGroupDAO pig where pig.partyID = '" + partyId+ "' and pig.ID in " +
-                "(select agrp.item from ProcessInstanceGroupDAO pig2 join pig2.associatedGroupsItems agrp where pig2.ID = '" + associatedGroupId + "')";
+    public static ProcessInstanceGroupDAO getProcessInstanceGroupDAO(String processInstanceId,String federationInstanceId) {
+        String query = "select pig from ProcessInstanceGroupDAO pig where (select federation from ProcessInstanceFederationDAO federation where federation.federationInstanceId = '"+federationInstanceId+"' and federation.processInstanceID = '"+processInstanceId+"') in pig.processInstances";
         ProcessInstanceGroupDAO group = (ProcessInstanceGroupDAO) HibernateUtilityRef.getInstance("bp-data-model").loadIndividualItem(query);
         return group;
     }
+
+//    public static ProcessInstanceGroupDAO getProcessInstanceGroupDAO(String partyId, String associatedGroupId) {
+//        String query = "select pig from ProcessInstanceGroupDAO pig where pig.partyID = '" + partyId+ "' and pig.ID in " +
+//                "(select agrp.item from ProcessInstanceGroupDAO pig2 join pig2.associatedGroupsItems agrp where pig2.ID = '" + associatedGroupId + "')";
+//        ProcessInstanceGroupDAO group = (ProcessInstanceGroupDAO) HibernateUtilityRef.getInstance("bp-data-model").loadIndividualItem(query);
+//        return group;
+//    }
 
     public static List<ProcessInstanceDAO> getProcessInstances(List<String> ids) {
         String idsString = "(";

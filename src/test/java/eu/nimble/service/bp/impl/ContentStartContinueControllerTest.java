@@ -45,6 +45,8 @@ public class ContentStartContinueControllerTest {
     @Autowired
     private TestRestTemplate restTemplate;
 
+    //TODO: Rewrite this test
+
     /**
      * Add a new business process
      */
@@ -120,7 +122,7 @@ public class ContentStartContinueControllerTest {
     @Test
     public void t51_createBusinessProcessInstanceGroupTest() {
         group = TestObjectFactory.createProcessInstanceGroupMessage();
-        group.addProcessInstanceIDsItem(processInstanceID);
+        //group.addProcessInstanceIDsItem(processInstanceID);
 
         String url = "http://localhost:" + port + "/group";
         logger.info(" $$$ Sending process instance group {} ", group.toString());

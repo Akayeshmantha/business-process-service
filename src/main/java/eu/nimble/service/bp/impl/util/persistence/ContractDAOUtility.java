@@ -207,9 +207,9 @@ public class ContractDAOUtility {
                 skipNextInstance = false;
                 processInstance = processInstance.getPrecedingProcess();
                 if (processInstance != null) {
-                    if (negotiationClauseFound && processInstance.getProcessID().equalsIgnoreCase(Process.ProcessTypeEnum.NEGOTIATION.toString())) {
+                    if (negotiationClauseFound && processInstance.getProcessInstance().getProcessInstanceID().equalsIgnoreCase(Process.ProcessTypeEnum.NEGOTIATION.toString())) {
                         skipNextInstance = true;
-                    } else if (ppapClauseFound && processInstance.getProcessID().equalsIgnoreCase(Process.ProcessTypeEnum.PPAP.toString())) {
+                    } else if (ppapClauseFound && processInstance.getProcessInstance().getProcessInstanceID().equalsIgnoreCase(Process.ProcessTypeEnum.PPAP.toString())) {
                         skipNextInstance = true;
                     }
                 }

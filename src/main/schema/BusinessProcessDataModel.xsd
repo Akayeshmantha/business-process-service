@@ -123,6 +123,12 @@
 			<xsd:enumeration value="OTHER"/>
 		</xsd:restriction>
 	</xsd:simpleType>
+	<xsd:complexType name="ProcessInstanceFederationDAO">
+		<xsd:sequence>
+			<xsd:element name="federationInstanceId" type="xsd:string"/>
+			<xsd:element name="processInstanceID" type="xsd:string"/>
+		</xsd:sequence>
+	</xsd:complexType>
 	<xsd:simpleType name="ProcessInstanceStatus">
 		<xsd:restriction base="xsd:token">
 			<xsd:enumeration value="STARTED"/>
@@ -135,7 +141,7 @@
 		<xsd:sequence>
 			<xsd:element name="processInstanceID" type="xsd:string"/>
             <xsd:element name="creationDate" type="xsd:string"/>
-			<xsd:element name="processID" type="xsd:string"/>
+			<xsd:element name="processInstance" type="ProcessInstanceFederationDAO"/>
 			<xsd:element name="status" type="ProcessInstanceStatus"/>
 			<xsd:element name="precedingProcess" type="ProcessInstanceDAO">
 				<xsd:annotation>
@@ -161,7 +167,7 @@
 			<!-- TODO do not use string-based references, use the object itself as a reference -->
 			<!-- if the referred item is deleted the reference becomes obselete -->
 			<!-- Otherwise we need to define a foreign key constraint in the database -->
-			<xsd:element name="processInstanceIDs" type="xsd:string" maxOccurs="unbounded"/>
+			<xsd:element name="processInstances" type="ProcessInstanceFederationDAO" maxOccurs="unbounded"/>
 			<xsd:element name="archived" type="xsd:boolean"/>
 			<xsd:element name="collaborationRole" type="xsd:string"/>
 			<!-- TODO do not use string-based references, use the object itself as a reference -->

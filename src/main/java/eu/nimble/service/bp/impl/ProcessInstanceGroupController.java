@@ -1,6 +1,7 @@
 package eu.nimble.service.bp.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import eu.nimble.service.bp.hyperjaxb.model.ProcessInstanceFederationDAO;
 import eu.nimble.service.bp.hyperjaxb.model.ProcessInstanceGroupDAO;
 import eu.nimble.service.bp.impl.util.federation.FederationUtil;
 import eu.nimble.service.bp.impl.util.persistence.HibernateSwaggerObjectMapper;
@@ -8,10 +9,7 @@ import eu.nimble.service.bp.impl.util.persistence.HibernateUtilityRef;
 import eu.nimble.service.bp.impl.util.persistence.ProcessInstanceGroupDAOUtility;
 import eu.nimble.service.bp.impl.util.rest.URLConnectionUtil;
 import eu.nimble.service.bp.swagger.api.GroupApi;
-import eu.nimble.service.bp.swagger.model.ProcessInstance;
-import eu.nimble.service.bp.swagger.model.ProcessInstanceGroup;
-import eu.nimble.service.bp.swagger.model.ProcessInstanceGroupFilter;
-import eu.nimble.service.bp.swagger.model.ProcessInstanceGroupResponse;
+import eu.nimble.service.bp.swagger.model.*;
 import io.swagger.annotations.ApiOperation;
 import eu.nimble.utility.DateUtility;
 import io.swagger.annotations.ApiParam;
@@ -46,12 +44,16 @@ public class ProcessInstanceGroupController implements GroupApi {
     public ResponseEntity<ProcessInstanceGroup> addProcessInstanceToGroup(
             @ApiParam(value = "Identifier of the process instance group to which a new process instance id is added", required = true) @PathVariable("ID") String ID,
             @ApiParam(value = "Identifier of the process instance to be added", required = true) @RequestParam(value = "processInstanceID", required = true) String processInstanceID,
+            @ApiParam(value = "", required = true) @RequestParam(value = "federationInstanceId", required = true) String federationInstanceId,
             @ApiParam(value = "", required = true) @RequestHeader(value = "Authorization", required = true) String authorization) {
         logger.debug("Adding process instance: {} to ProcessInstanceGroup: {}", ID);
         ProcessInstanceGroupDAO processInstanceGroupDAO = null;
         try {
             processInstanceGroupDAO = ProcessInstanceGroupDAOUtility.getProcessInstanceGroupDAO(ID);
-            processInstanceGroupDAO.getProcessInstanceIDs().add(processInstanceID);
+            ProcessInstanceFederationDAO processInstanceFederation = new ProcessInstanceFederationDAO();
+            processInstanceFederation.setProcessInstanceID(processInstanceID);
+            processInstanceFederation.setFederationInstanceId(federationInstanceId);
+            processInstanceGroupDAO.getProcessInstances().add(processInstanceFederation);
         } catch (Exception e) {
             logger.error("Failed to get process instance group with the given id : {}", ID, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
@@ -70,12 +72,18 @@ public class ProcessInstanceGroupController implements GroupApi {
 
     @Override
     @ApiOperation(value = "", notes = "Delete the process instance from the process instance group")
-    public ResponseEntity<ProcessInstanceGroup> deleteProcessInstanceFromGroup(@ApiParam(value = "Identifier of the process instance group from which the process instance id is deleted", required = true) @PathVariable("ID") String ID, @ApiParam(value = "Identifier of the process instance to be deleted", required = true) @RequestParam(value = "processInstanceID", required = true) String processInstanceID, @ApiParam(value = "", required = true) @RequestHeader(value = "Authorization", required = true) String authorization
+    public ResponseEntity<ProcessInstanceGroup> deleteProcessInstanceFromGroup(@ApiParam(value = "Identifier of the process instance group from which the process instance id is deleted", required = true) @PathVariable("ID") String ID, @ApiParam(value = "Identifier of the process instance to be deleted", required = true) @RequestParam(value = "processInstanceID", required = true) String processInstanceID,@ApiParam(value = "", required = true) @RequestParam(value = "federationInstanceId", required = true) String federationInstanceId ,@ApiParam(value = "", required = true) @RequestHeader(value = "Authorization", required = true) String authorization
     ) {
         logger.debug("Deleting process instance: {} from ProcessInstanceGroup: {}", ID);
 
         ProcessInstanceGroupDAO processInstanceGroupDAO = ProcessInstanceGroupDAOUtility.getProcessInstanceGroupDAO(ID);
-        processInstanceGroupDAO.getProcessInstanceIDs().remove(processInstanceID);
+
+        for(ProcessInstanceFederationDAO federation : processInstanceGroupDAO.getProcessInstances()){
+            if(federation.getFederationInstanceId().equals(federationInstanceId) && federation.getProcessInstanceID().equals(processInstanceID)){
+                processInstanceGroupDAO.getProcessInstances().remove(federation);
+                break;
+            }
+        }
         HibernateUtilityRef.getInstance("bp-data-model").update(processInstanceGroupDAO);
 
         processInstanceGroupDAO = ProcessInstanceGroupDAOUtility.getProcessInstanceGroupDAO(ID);
@@ -91,7 +99,13 @@ public class ProcessInstanceGroupController implements GroupApi {
         logger.debug("Getting ProcessInstances for group: {}", ID);
 
         ProcessInstanceGroupDAO processInstanceGroupDAO = ProcessInstanceGroupDAOUtility.getProcessInstanceGroupDAO(ID);
-        List<ProcessInstance> processInstances = HibernateSwaggerObjectMapper.createProcessInstances(ProcessInstanceGroupDAOUtility.getProcessInstances(processInstanceGroupDAO.getProcessInstanceIDs()));
+
+        List<String> processInstanceIds = new ArrayList<>();
+        for(ProcessInstanceFederationDAO federationDAO : processInstanceGroupDAO.getProcessInstances()){
+            processInstanceIds.add(federationDAO.getProcessInstanceID());
+        }
+
+        List<ProcessInstance> processInstances = HibernateSwaggerObjectMapper.createProcessInstances(ProcessInstanceGroupDAOUtility.getProcessInstances(processInstanceIds));
         ResponseEntity response = ResponseEntity.status(HttpStatus.OK).body(processInstances);
         logger.debug("Retrieved ProcessInstances for group: {}", ID);
         return response;
@@ -127,54 +141,18 @@ public class ProcessInstanceGroupController implements GroupApi {
     @Override
     @ApiOperation(value = "", notes = "Retrieve process instance groups for the specified party. If no partyID is specified, then all groups are returned")
     public ResponseEntity<ProcessInstanceGroupResponse> getProcessInstanceGroups(@ApiParam(value = "", required = true) @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId
-
-
-
             ,@ApiParam(value = "", required = true) @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
-                                                                                 @ApiParam(value = "", required = true) @RequestParam(value = "federated", required = true) Boolean federated
-
-
-
-            ,
-                                                                                 @ApiParam(value = "" ,required=true ) @RequestHeader(value="Authorization", required=true) String authorization
-
-
+             @ApiParam(value = "", required = true) @RequestParam(value = "federated", required = true) Boolean federated
+            ,@ApiParam(value = "" ,required=true ) @RequestHeader(value="Authorization", required=true) String authorization
             ,@ApiParam(value = "Identifier of the party") @RequestParam(value = "partyID", required = false) String partyID
-
-
-
             ,@ApiParam(value = "Related products") @RequestParam(value = "relatedProducts", required = false) List<String> relatedProducts
-
-
-
             ,@ApiParam(value = "Related product categories") @RequestParam(value = "relatedProductCategories", required = false) List<String> relatedProductCategories
-
-
-
             ,@ApiParam(value = "Identifier of the corresponsing trading partner ID") @RequestParam(value = "tradingPartnerIDs", required = false) List<String> tradingPartnerIDs
-
-
-
             ,@ApiParam(value = "Initiation date range for the first process instance in the group") @RequestParam(value = "initiationDateRange", required = false) String initiationDateRange
-
-
-
             ,@ApiParam(value = "Last activity date range. It is the latest submission date of the document to last process instance in the group") @RequestParam(value = "lastActivityDateRange", required = false) String lastActivityDateRange
-
-
-
             ,@ApiParam(value = "Offset of the first result among the complete result set satisfying the given criteria", defaultValue = "0") @RequestParam(value = "offset", required = false, defaultValue="0") Integer offset
-
-
-
             ,@ApiParam(value = "Number of results to be included in the result set", defaultValue = "10") @RequestParam(value = "limit", required = false, defaultValue="10") Integer limit
-
-
-
             ,@ApiParam(value = "", defaultValue = "false") @RequestParam(value = "archived", required = false, defaultValue="false") Boolean archived
-
-
-
             ,@ApiParam(value = "") @RequestParam(value = "collaborationRole", required = false) String collaborationRole
     ) {
         logger.debug("Getting ProcessInstanceGroups for party: {}", partyID);
@@ -247,31 +225,14 @@ public class ProcessInstanceGroupController implements GroupApi {
             @ApiParam(value = "", required = true) @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId
             , @ApiParam(value = "", required = true) @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
             @ApiParam(value = "", required = true) @RequestParam(value = "federated", required = true) Boolean federated
-
             , @ApiParam(value = "", required = true) @RequestHeader(value = "Authorization", required = true) String authorization
-
-
             , @ApiParam(value = "Identifier of the party") @RequestParam(value = "partyID", required = false) String partyID
-
-
             , @ApiParam(value = "Related products") @RequestParam(value = "relatedProducts", required = false) List<String> relatedProducts
-
-
             , @ApiParam(value = "Related product categories") @RequestParam(value = "relatedProductCategories", required = false) List<String> relatedProductCategories
-
-
             , @ApiParam(value = "Identifier of the corresponsing trading partner ID") @RequestParam(value = "tradingPartnerIDs", required = false) List<String> tradingPartnerIDs
-
-
             , @ApiParam(value = "Initiation date range for the first process instance in the group") @RequestParam(value = "initiationDateRange", required = false) String initiationDateRange
-
-
             , @ApiParam(value = "Last activity date range. It is the latest submission date of the document to last process instance in the group") @RequestParam(value = "lastActivityDateRange", required = false) String lastActivityDateRange
-
-
             , @ApiParam(value = "", defaultValue = "false") @RequestParam(value = "archived", required = false, defaultValue = "false") Boolean archived
-
-
             , @ApiParam(value = "") @RequestParam(value = "collaborationRole", required = false) String collaborationRole) {
 
         ProcessInstanceGroupFilter filters = groupDaoUtility.getFilterDetails(partyID, collaborationRole, archived, tradingPartnerIDs, relatedProducts, relatedProductCategories, null, null, authorization);
