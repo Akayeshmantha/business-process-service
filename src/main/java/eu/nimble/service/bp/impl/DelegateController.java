@@ -41,6 +41,8 @@ public class DelegateController  {
     private SearchController searchController;
     @Autowired
     private ProcessInstanceGroupController processInstanceGroupController;
+    @Autowired
+    private ProcessInstanceController processInstanceController;
 
     @Autowired
     private GenericConfig config;
@@ -106,7 +108,19 @@ public class DelegateController  {
         return processInstanceGroupController.getProcessInstanceGroupFilters(initiatorInstanceId,targetInstanceId,federated,bearerToken,partyID,relatedProducts,relatedProductCategories,tradingPartnerIDs,initiationDateRange,lastActivityDateRange,archived,collaborationRole);
     }
 
-
+    @RequestMapping(value = "/processInstance/exists",
+            method = RequestMethod.GET)
+    public ResponseEntity<Boolean> processInstanceExists(
+            @RequestParam(value = "relatedProducts", required = false) List<String> relatedProducts,
+            @RequestParam(value = "relatedProductCategories", required = false) List<String> relatedProductCategories,
+            @RequestParam(value = "tradingPartnerIDs", required = false) List<String> tradingPartnerIDs,
+            @RequestParam(value = "initiationDateRange", required = false) String initiationDateRange,
+            @RequestParam(value = "lastActivityDateRange", required = false) String lastActivityDateRange,
+            @RequestParam(value = "processInstanceId", required = false) String processInstanceId,
+            @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
+            @RequestHeader(value="Authorization", required=true) String bearerToken) throws Exception{
+        return processInstanceController.processInstanceExists(relatedProducts,relatedProductCategories,tradingPartnerIDs,initiationDateRange,lastActivityDateRange,processInstanceId);
+    }
 
 
 //CAMUNDA REST CONTROLLERS

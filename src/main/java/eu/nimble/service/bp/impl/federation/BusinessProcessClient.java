@@ -235,6 +235,19 @@ public interface BusinessProcessClient {
             @Param("targetInstanceId") String targetInstanceId,
             @Param("bearerToken") String bearerToken);
 
+    @RequestLine("GET delegate/processInstance/exists?relatedProducts={relatedProducts}&relatedProductCategories={relatedProductCategories}&" +
+            "tradingPartnerIDs={tradingPartnerIDs}&initiationDateRange={initiationDateRange}&lastActivityDateRange={lastActivityDateRange}&" +
+            "processInstanceId={processInstanceId}&targetInstanceId={targetInstanceId}")
+    @Headers("Authorization: {bearerToken}")
+    Response clientProcessInstanceExists(
+            @Param(value = "relatedProducts") List<String> relatedProducts,
+            @Param(value = "relatedProductCategories") List<String> relatedProductCategories,
+            @Param(value = "tradingPartnerIDs") List<String> tradingPartnerIDs,
+            @Param(value = "initiationDateRange") String initiationDateRange,
+            @Param(value = "lastActivityDateRange") String lastActivityDateRange,
+            @Param(value = "processInstanceId") String processInstanceId,
+            @Param(value = "targetInstanceId") String targetInstanceId);
+
     @RequestLine("GET rest/engine/default/history/variable-instance?processInstanceIdIn={processInstanceIdIn}")
     Response clientGetProcessDetailsHistory(
             @Param("processInstanceIdIn") String processInstanceIdIn);

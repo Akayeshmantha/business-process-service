@@ -3,6 +3,9 @@ package eu.nimble.service.bp.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.nimble.service.bp.hyperjaxb.model.ProcessInstanceFederationDAO;
 import eu.nimble.service.bp.hyperjaxb.model.ProcessInstanceGroupDAO;
+import eu.nimble.service.bp.impl.federation.BusinessProcessClient;
+import eu.nimble.service.bp.impl.federation.ClientFactory;
+import eu.nimble.service.bp.impl.federation.CoreFunctions;
 import eu.nimble.service.bp.impl.util.federation.FederationUtil;
 import eu.nimble.service.bp.impl.util.persistence.HibernateSwaggerObjectMapper;
 import eu.nimble.service.bp.impl.util.persistence.HibernateUtilityRef;
@@ -38,6 +41,14 @@ public class ProcessInstanceGroupController implements GroupApi {
 
     @Autowired
     private ProcessInstanceGroupDAOUtility groupDaoUtility;
+
+    public BusinessProcessClient clientGenerator(String instanceid){
+        String url=core.getEndpointFromInstanceId(instanceid);
+        return ClientFactory.getClientFactoryInstance().createClient(BusinessProcessClient.class,url);
+    }
+
+    @Autowired
+    private CoreFunctions core;
 
     @Override
     @ApiOperation(value = "", notes = "Add a new process instance to the specified")
@@ -157,34 +168,30 @@ public class ProcessInstanceGroupController implements GroupApi {
     ) {
         logger.debug("Getting ProcessInstanceGroups for party: {}", partyID);
 
-        List<ProcessInstanceGroupDAO> results = ProcessInstanceGroupDAOUtility.getProcessInstanceGroupDAOs(partyID, collaborationRole, archived, tradingPartnerIDs, relatedProducts, relatedProductCategories, null, null, limit, offset);
-        int totalSize = ProcessInstanceGroupDAOUtility.getProcessInstanceGroupSize(partyID, collaborationRole, archived, tradingPartnerIDs, relatedProducts, relatedProductCategories, null, null);
-        logger.debug(" There are {} process instance groups in total", results.size());
-        List<ProcessInstanceGroup> processInstanceGroups = new ArrayList<>();
-        for (ProcessInstanceGroupDAO result : results) {
-            processInstanceGroups.add(HibernateSwaggerObjectMapper.convertProcessInstanceGroupDAO(result));
-        }
+        List<ProcessInstanceGroupDAO> processInstanceGroupDAOS = ProcessInstanceGroupDAOUtility.getProcessInstanceGroupDAOs(partyID,collaborationRole,archived,limit,offset);
 
         ProcessInstanceGroupResponse groupResponse = new ProcessInstanceGroupResponse();
-        groupResponse.setProcessInstanceGroups(processInstanceGroups);
-        groupResponse.setSize(totalSize);
 
-        // For federation: Check the process instance groups in other and join them to ..
-        if(federated){
-            String queryString = constructQueryString(partyID, relatedProducts, relatedProductCategories, tradingPartnerIDs, initiationDateRange, lastActivityDateRange, offset, limit, archived, collaborationRole);
-            List<String> nimbleURLs = FederationUtil.getFederationEndpoints();
-            for (String nimbleURL : nimbleURLs) {
-                String groupResponseFederationJson = URLConnectionUtil.get(nimbleURL + "/delegate/group?" + queryString, "UTF-8", initiatorInstanceId, targetInstanceId, authorization);
-                try {
-                    ProcessInstanceGroupResponse groupResponseFromFederation = new ObjectMapper().readValue(groupResponseFederationJson, ProcessInstanceGroupResponse.class);
-                    groupResponse.getProcessInstanceGroups().addAll(groupResponseFromFederation.getProcessInstanceGroups());
-                    groupResponse.setSize(groupResponse.getSize() + groupResponseFromFederation.getSize());
-                } catch (IOException e) {
-                    logger.error("", e);
+        List<ProcessInstanceGroup> processInstanceGroups = new ArrayList<>();
+
+        for (ProcessInstanceGroupDAO processInstanceGroupDAO: processInstanceGroupDAOS){
+            for (ProcessInstanceFederationDAO federation : processInstanceGroupDAO.getProcessInstances()){
+                try{
+                    ResponseEntity responseEntity = ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(federation.getFederationInstanceId()).clientProcessInstanceExists(relatedProducts,relatedProductCategories,tradingPartnerIDs,initiationDateRange,lastActivityDateRange,federation.getProcessInstanceID(),federation.getFederationInstanceId()));
+                    if(responseEntity.getBody().equals("true")){
+                        processInstanceGroups.add(HibernateSwaggerObjectMapper.convertProcessInstanceGroupDAO(processInstanceGroupDAO));
+                        break;
+                    }
                 }
+                catch (Exception e){
+                    logger.error(e.getMessage());
+                }
+
             }
         }
-        /////////////////////////////////////////////////////////
+
+        groupResponse.setSize(processInstanceGroups.size());
+        groupResponse.setProcessInstanceGroups(processInstanceGroups);
 
         ResponseEntity response = ResponseEntity.status(HttpStatus.OK).body(groupResponse);
         logger.debug("Retrieved ProcessInstanceGroups for party: {}", partyID);
@@ -287,7 +294,7 @@ public class ProcessInstanceGroupController implements GroupApi {
     ) {
         logger.debug("Archiving ProcessInstanceGroup: {}", ID);
 
-        ProcessInstanceGroupDAO processInstanceGroupDAO = ProcessInstanceGroupDAOUtility.getProcessInstanceGroupDAO(ID);
+        ProcessInstanceGroupDAO processInstanceGroupDAO = ProcessInstanceGroupDAOUtility.getProcessInstanceGroupDAOByID(ID);
         processInstanceGroupDAO.setArchived(true);
 
         HibernateUtilityRef.getInstance("bp-data-model").update(processInstanceGroupDAO);
@@ -304,7 +311,7 @@ public class ProcessInstanceGroupController implements GroupApi {
     ) {
         logger.debug("Restoring ProcessInstanceGroup: {}", ID);
 
-        ProcessInstanceGroupDAO processInstanceGroupDAO = ProcessInstanceGroupDAOUtility.getProcessInstanceGroupDAO(ID);
+        ProcessInstanceGroupDAO processInstanceGroupDAO = ProcessInstanceGroupDAOUtility.getProcessInstanceGroupDAOByID(ID);
         processInstanceGroupDAO.setArchived(false);
 
         HibernateUtilityRef.getInstance("bp-data-model").update(processInstanceGroupDAO);

@@ -25,6 +25,42 @@ public class ProcessInstanceGroupDAOUtility {
             String partyId,
             String collaborationRole,
             Boolean archived,
+            int limit,
+            int offset) {
+
+        String query = "SELECT pig FROM ProcessInstanceGroupDAO pig ";
+        String whereClause = "";
+        if (archived != null) {
+            whereClause += " pig.archived = " + archived;
+        }
+        if (partyId != null) {
+            if(archived == null){
+                whereClause += " pig.partyID ='" + partyId + "'";
+            }
+            else {
+                whereClause += " and pig.partyID ='" + partyId + "'";
+            }
+        }
+        if (collaborationRole != null) {
+            if(partyId == null && archived == null){
+                whereClause += " pig.collaborationRole = '" + collaborationRole + "'";
+            }
+            else {
+                whereClause += " and pig.collaborationRole = '" + collaborationRole + "'";
+            }
+        }
+        if(!whereClause.contentEquals("")){
+            query += "WHERE " + whereClause;
+        }
+        List<ProcessInstanceGroupDAO> groups = (List<ProcessInstanceGroupDAO>) HibernateUtilityRef.getInstance("bp-data-model").loadAll(query, offset, limit);
+
+        return groups;
+    }
+
+    public static List<ProcessInstanceGroupDAO> getProcessInstanceGroupDAOs(
+            String partyId,
+            String collaborationRole,
+            Boolean archived,
             List<String> tradingPartnerIds,
             List<String> relatedProductIds,
             List<String> relatedProductCategories,
@@ -216,6 +252,13 @@ public class ProcessInstanceGroupDAOUtility {
             group.setAssociatedGroups(associatedGroups);
         }
         HibernateUtilityRef.getInstance("bp-data-model").persist(group);
+        return group;
+    }
+
+    // TODO: Check the usages of this and next method
+    public static ProcessInstanceGroupDAO getProcessInstanceGroupDAOByID(String groupID){
+        String query = "SELECT pig WHERE ProcessInstanceGroupDAO pig WHERE pig.ID = '"+groupID+"'";
+        ProcessInstanceGroupDAO group = (ProcessInstanceGroupDAO) HibernateUtilityRef.getInstance("bp-data-model").loadIndividualItem(query);
         return group;
     }
 
