@@ -253,7 +253,7 @@ public class DelegateController  {
         }
     }
 
-    @RequestMapping(value = "/start/{processInstanceId}/{groupId}",
+    @RequestMapping(value = "/start/createGroup/{processInstanceId}/{groupId}",
             consumes = { "application/json" },
             method = RequestMethod.POST)
     ResponseEntity<Void> delegateCreateProcessInstanceGroup(@RequestBody ProcessInstanceInputMessage body,
@@ -272,21 +272,21 @@ public class DelegateController  {
 
     }
 
-    @RequestMapping(value = "/start/{processInstanceId}",
+    @RequestMapping(value = "/start/addToGroup/{processInstanceId}",
             consumes = { "application/json" },
-            method = RequestMethod.PATCH)
+            method = RequestMethod.POST)
     ResponseEntity<Void> addNewProcessInstanceToGroup(@RequestBody ProcessInstanceInputMessage body,
                                                       @PathVariable(value = "processInstanceId",required = true) String processInstanceId,
                                                       @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
                                                       @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
-                                                      @RequestParam(value = "groupId", required = true) String groupId,
+                                                      @RequestParam(value = "precedingProcessId",required = true) String precedingProcessId,
                                                       @RequestHeader(value="Authorization", required=true) String bearerToken)throws Exception{
         if(config.getInstanceid().equals(targetInstanceId)){
-            return startController.addNewProcessInstanceToGroup(body,processInstanceId,initiatorInstanceId,groupId);
+            return startController.addNewProcessInstanceToGroup(body,processInstanceId,initiatorInstanceId,precedingProcessId);
 
         }
         else {
-            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientAddNewProcessInstanceToGroup(body,initiatorInstanceId,targetInstanceId,processInstanceId,groupId,bearerToken));
+            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientAddNewProcessInstanceToGroup(body,initiatorInstanceId,targetInstanceId,processInstanceId,precedingProcessId,bearerToken));
         }
 
     }
@@ -302,7 +302,7 @@ public class DelegateController  {
                                                                    @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
                                                                    @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId)throws Exception{
         if(config.getInstanceid().equals(targetInstanceId)){
-            return continueController.continueProcessInstance(body,gid,bearerToken);
+            return continueController.continueProcessInstance(body,targetInstanceId,initiatorInstanceId,gid,bearerToken);
         }
         else {
             return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientContinueProcessInstance(body,gid,targetInstanceId,initiatorInstanceId,bearerToken));

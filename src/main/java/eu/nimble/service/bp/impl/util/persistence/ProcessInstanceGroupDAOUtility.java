@@ -257,19 +257,19 @@ public class ProcessInstanceGroupDAOUtility {
 
     // TODO: Check the usages of this and next method
     public static ProcessInstanceGroupDAO getProcessInstanceGroupDAOByID(String groupID){
-        String query = "SELECT pig WHERE ProcessInstanceGroupDAO pig WHERE pig.ID = '"+groupID+"'";
+        String query = "SELECT pig FROM ProcessInstanceGroupDAO pig WHERE pig.ID = '"+groupID+"'";
         ProcessInstanceGroupDAO group = (ProcessInstanceGroupDAO) HibernateUtilityRef.getInstance("bp-data-model").loadIndividualItem(query);
         return group;
     }
 
     public static ProcessInstanceGroupDAO getProcessInstanceGroupDAO(String groupID) {
         String query = "select pig, max(doc.submissionDate) as lastActivityTime, min(doc.submissionDate) as firstActivityTime from" +
-                " ProcessInstanceGroupDAO pig join pig.processInstanceIDsItems pid," +
+                " ProcessInstanceGroupDAO pig join pig.processInstances pid," +
                 " ProcessInstanceDAO pi," +
                 " ProcessDocumentMetadataDAO doc" +
                 " where" +
                 " ( pig.ID ='" + groupID+ "') and" +
-                " pid.item = pi.processInstanceID and" +
+                " pid.processInstanceID = pi.processInstanceID and" +
                 " doc.processInstanceID = pi.processInstanceID" +
                 " group by pig.hjid";
         Object[] resultItems = (Object[]) (HibernateUtilityRef.getInstance("bp-data-model").loadIndividualItem(query));
@@ -280,7 +280,8 @@ public class ProcessInstanceGroupDAOUtility {
     }
 
     public static ProcessInstanceGroupDAO getProcessInstanceGroupDAO(String processInstanceId,String federationInstanceId) {
-        String query = "select pig from ProcessInstanceGroupDAO pig where (select federation from ProcessInstanceFederationDAO federation where federation.federationInstanceId = '"+federationInstanceId+"' and federation.processInstanceID = '"+processInstanceId+"') in pig.processInstances";
+        String query = "select pig from ProcessInstanceGroupDAO pig join pig.processInstances pid WHERE " +
+                "pid.federationInstanceId = '" + federationInstanceId+"' and pid.processInstanceID = '"+processInstanceId+"'";
         ProcessInstanceGroupDAO group = (ProcessInstanceGroupDAO) HibernateUtilityRef.getInstance("bp-data-model").loadIndividualItem(query);
         return group;
     }

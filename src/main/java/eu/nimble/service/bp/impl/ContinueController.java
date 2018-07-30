@@ -4,6 +4,9 @@ import eu.nimble.service.bp.hyperjaxb.model.ProcessInstanceDAO;
 import eu.nimble.service.bp.hyperjaxb.model.ProcessInstanceGroupDAO;
 import eu.nimble.service.bp.hyperjaxb.model.ProcessInstanceInputMessageDAO;
 import eu.nimble.service.bp.hyperjaxb.model.ProcessInstanceStatus;
+import eu.nimble.service.bp.impl.federation.BusinessProcessClient;
+import eu.nimble.service.bp.impl.federation.ClientFactory;
+import eu.nimble.service.bp.impl.federation.CoreFunctions;
 import eu.nimble.service.bp.impl.util.camunda.CamundaEngine;
 import eu.nimble.service.bp.impl.util.persistence.DAOUtility;
 import eu.nimble.service.bp.impl.util.persistence.HibernateSwaggerObjectMapper;
@@ -18,6 +21,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -32,9 +36,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class ContinueController implements ContinueApi {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    @Autowired
+    private CoreFunctions core;
+
+    public BusinessProcessClient clientGenerator(String instanceid){
+        String url=core.getEndpointFromInstanceId(instanceid);
+        return ClientFactory.getClientFactoryInstance().createClient(BusinessProcessClient.class,url);
+    }
+
     @Override
     @ApiOperation(value = "",notes = "Send input to a waiting process instance (because of a human task)")
     public ResponseEntity<ProcessInstance> continueProcessInstance(@ApiParam(value = "", required = true) @RequestBody ProcessInstanceInputMessage body,
+                                                                   @ApiParam(value = "", required = true) @RequestParam(value = "federationInstanceId", required = true) String federationInstanceId,
+                                                                   @ApiParam(value = "", required = true) @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
                                                                    @ApiParam(value = "The id of the process instance group owned by the party continuing the process") @RequestParam(value = "gid", required = false) String gid,
                                                                    @ApiParam(value = "" ,required=true ) @RequestHeader(value="Authorization", required=true) String bearerToken) {
         logger.debug(" $$$ Continue Process with ProcessInstanceInputMessage {}", body.toString());
@@ -61,11 +75,12 @@ public class ContinueController implements ContinueApi {
             // save ProcessInstanceDAO
             businessProcessContext.setProcessInstanceDAO(storedInstance);
 
-            // TODO: Rewrite this part 
+            // TODO: Rewrite this part
             // create process instance groups if this is the first process initializing the process group
 //            if (gid != null) {
 //                checkExistingGroup(businessProcessContext.getId(),gid, processInstance.getProcessInstanceID(), body);
 //            }
+            ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(initiatorInstanceId).clientCreateProcessInstanceGroup(body,federationInstanceId,initiatorInstanceId,processInstance.getProcessInstanceID(),null,bearerToken));
         }
         catch (Exception e){
             logger.error(" $$$ Failed to continue process with ProcessInstanceInputMessage {}", body.toString(),e);

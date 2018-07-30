@@ -96,8 +96,8 @@ public class StartController implements StartApi {
                 // make a call to create corresponding group
                 ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(initiatorInstanceId).clientCreateProcessInstanceGroup(body,federationInstanceId,initiatorInstanceId,processInstance.getProcessInstanceID(),associatedGroupId,authorization));
             } else {
-                addNewProcessInstanceToGroup(businessProcessContext.getId(),gid, processInstance.getProcessInstanceID(), body,federationInstanceId);
-                ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(initiatorInstanceId).clientAddNewProcessInstanceToGroup(body,federationInstanceId,initiatorInstanceId,processInstance.getProcessInstanceID(),gid,authorization));
+                addNewProcessInstanceToGroup(businessProcessContext.getId(), processInstance.getProcessInstanceID(), body,federationInstanceId,precedingPid);
+                ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(initiatorInstanceId).clientAddNewProcessInstanceToGroup(body,federationInstanceId,initiatorInstanceId,processInstance.getProcessInstanceID(),precedingPid,authorization));
 
             }
 
@@ -116,22 +116,27 @@ public class StartController implements StartApi {
 
     @Override
     public ResponseEntity<Void> createProcessInstanceGroup(ProcessInstanceInputMessage body, String processInstanceId, String federationInstanceId, String groupId) {
-        // create group for initiating party
-        ProcessInstanceGroupDAO processInstanceGroupDAO = ProcessInstanceGroupDAOUtility.createProcessInstanceGroupDAO(
-                groupId,
-                body.getVariables().getInitiatorID(),
-                processInstanceId,
-                CamundaEngine.getTransactions(body.getVariables().getProcessID()).get(0).getInitiatorRole().toString(),
-                body.getVariables().getRelatedProducts().toString(),
-                federationInstanceId
-        );
-        HibernateUtilityRef.getInstance("bp-data-model").update(processInstanceGroupDAO);
+        // check whether there is a group for the given process or not
+        ProcessInstanceGroupDAO groupDAO = ProcessInstanceGroupDAOUtility.getProcessInstanceGroupDAO(processInstanceId,federationInstanceId);
+        if(groupDAO == null){
+            // create group for initiating party
+            ProcessInstanceGroupDAO processInstanceGroupDAO = ProcessInstanceGroupDAOUtility.createProcessInstanceGroupDAO(
+                    groupId,
+                    body.getVariables().getInitiatorID(),
+                    processInstanceId,
+                    CamundaEngine.getTransactions(body.getVariables().getProcessID()).get(0).getInitiatorRole().toString(),
+                    body.getVariables().getRelatedProducts().toString(),
+                    federationInstanceId
+            );
+            HibernateUtilityRef.getInstance("bp-data-model").update(processInstanceGroupDAO);
+        }
+
         return ResponseEntity.ok(null);
     }
 
     @Override
-    public ResponseEntity<Void> addNewProcessInstanceToGroup(ProcessInstanceInputMessage body, String processInstanceId, String federationInstanceId,String groupId) {
-        ProcessInstanceGroupDAO group = ProcessInstanceGroupDAOUtility.getProcessInstanceGroupDAO(processInstanceId,federationInstanceId);
+    public ResponseEntity<Void> addNewProcessInstanceToGroup(ProcessInstanceInputMessage body, String processInstanceId, String federationInstanceId,String precedingProcessId) {
+        ProcessInstanceGroupDAO group = ProcessInstanceGroupDAOUtility.getProcessInstanceGroupDAO(precedingProcessId,federationInstanceId);
         if(group == null){
             ProcessInstanceGroupDAO targetGroup = ProcessInstanceGroupDAOUtility.createProcessInstanceGroupDAO(
                     null,
@@ -144,7 +149,7 @@ public class StartController implements StartApi {
             HibernateUtilityRef.getInstance("bp-data-model").update(targetGroup);
 
             // save targetGroup and sourceGroup
-         //   businessProcessContext.setTargetGroup(targetGroup);
+            //   businessProcessContext.setTargetGroup(targetGroup);
         }
         else {
             ProcessInstanceFederationDAO federationDAO = new ProcessInstanceFederationDAO();
@@ -154,7 +159,7 @@ public class StartController implements StartApi {
             HibernateUtilityRef.getInstance("bp-data-model").update(group);
 
             // save associatedGroup
-        //    businessProcessContext.setAssociatedGroup(associatedGroup);
+            //    businessProcessContext.setAssociatedGroup(associatedGroup);
         }
         return ResponseEntity.ok(null);
     }
@@ -184,8 +189,8 @@ public class StartController implements StartApi {
         return associatedGroupId;
     }
 
-    private String addNewProcessInstanceToGroup(String businessContextId,String sourceGid, String processInstanceId, ProcessInstanceInputMessage body,String federationInstanceId) {
-        ProcessInstanceGroupDAO sourceGroup = ProcessInstanceGroupDAOUtility.getProcessInstanceGroupDAO(processInstanceId,federationInstanceId);
+    private void addNewProcessInstanceToGroup(String businessContextId, String processInstanceId, ProcessInstanceInputMessage body,String federationInstanceId,String precedingPid) {
+        ProcessInstanceGroupDAO sourceGroup = ProcessInstanceGroupDAOUtility.getProcessInstanceGroupDAO(precedingPid,federationInstanceId);
 
         ProcessInstanceFederationDAO federationDAO = new ProcessInstanceFederationDAO();
         federationDAO.setFederationInstanceId(federationInstanceId);
@@ -196,7 +201,7 @@ public class StartController implements StartApi {
         // save sourceGroup
         BusinessProcessContext businessProcessContext = BusinessProcessContextHandler.getBusinessProcessContextHandler().getBusinessProcessContext(businessContextId);
         businessProcessContext.setSourceGroup(sourceGroup);
-        return sourceGid;
+
 
 //        ProcessInstanceGroupDAO sourceGroup = ProcessInstanceGroupDAOUtility.getProcessInstanceGroupDAO(sourceGid);
 //        ProcessInstanceFederationDAO federationDAO = new ProcessInstanceFederationDAO();
