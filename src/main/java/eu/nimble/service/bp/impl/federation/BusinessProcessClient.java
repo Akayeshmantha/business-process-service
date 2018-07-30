@@ -7,6 +7,7 @@ import feign.Param;
 import feign.RequestLine;
 import feign.Response;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 
@@ -165,6 +166,15 @@ public interface BusinessProcessClient {
                                                      @Param("targetInstanceId") String targetInstanceId,
                                                      @Param("bearerToken") String bearerToken);
 
+
+    @RequestLine("POST delegate/contracts/create-bundle?orderId={orderId}&initiatorInstanceId={initiatorInstanceId}&targetInstanceId={targetInstanceId}")
+    @Headers("Authorization: {bearerToken}")
+    Response clientGenerateContract(
+            @Param(value = "orderId") String orderId,
+            HttpServletResponse response,
+            @Param(value = "initiatorInstanceId") String initiatorInstanceId,
+            @Param(value = "targetInstanceId") String targetInstanceId,
+            @Param(value=" bearerToken") String bearerToken);
 
     @RequestLine("GET delegate/contracts/create-terms?orderId={orderId}&sellerParty={sellerParty}&buyerParty={buyerParty}&incoterms={incoterms}&tradingTerms={tradingTerms}&initiatorInstanceId={initiatorInstanceId}&targetInstanceId={targetInstanceId}")
     @Headers("Authorization: {bearerToken}")

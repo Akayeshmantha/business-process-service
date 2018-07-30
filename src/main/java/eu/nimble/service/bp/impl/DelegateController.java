@@ -485,18 +485,19 @@ public class DelegateController  {
 
     //CONTRACTGENERATOR
     @RequestMapping(value = "/contracts/create-bundle",
-            method = RequestMethod.GET,
+            method = RequestMethod.POST,
             produces = {"application/zip"})
     public void delegateGenerateContract(@RequestParam(value = "orderId", required = true) String orderId,
                                          HttpServletResponse response,
                                          @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
                                          @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
                                          @RequestHeader(value="Authorization", required=true) String bearerToken)throws Exception{
-
-
-        contractGeneratorController.generateContract(orderId,response,bearerToken);
-
-
+        if(config.getInstanceid().equals(targetInstanceId)){
+            contractGeneratorController.generateContract(orderId,response,bearerToken);
+        }
+        else {
+            ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientGenerateContract(orderId,response,initiatorInstanceId,targetInstanceId,bearerToken));
+        }
     }
 
 
