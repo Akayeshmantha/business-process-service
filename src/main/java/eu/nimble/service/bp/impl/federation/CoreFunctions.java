@@ -18,10 +18,10 @@ public class CoreFunctions {
             A consumer in order to get the instance endpoint from the core url.
         */
         if(instanceId.equals(config.getInstanceid())){
-            return "http://192.168.1.133:8081";
+            return "http://localhost:8081";
         }
         else {
-            return "http://192.168.1.103:8081";
+            return "http://localhost:8082";
         }
     }
 

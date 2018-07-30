@@ -8,14 +8,14 @@ public class FederationUtil {
     public static List<String> getFederationEndpoints() {
         List<String> nimbleURLs = new ArrayList<>();
 
-        nimbleURLs.add("http://192.168.1.133:8081");
+        nimbleURLs.add("http://localhost:8082");
 
         return nimbleURLs;
     }
 
     // The id of the NIMBLE instance...
     public static String getFederationEndpoint(String id) {
-        return "http://192.168.1.133:8081";
+        return "http://localhost:8082";
     }
 
 }
