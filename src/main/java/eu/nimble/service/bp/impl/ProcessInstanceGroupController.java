@@ -1,6 +1,7 @@
 package eu.nimble.service.bp.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import eu.nimble.service.bp.hyperjaxb.model.ProcessDocumentMetadataDAO;
 import eu.nimble.service.bp.hyperjaxb.model.ProcessInstanceFederationDAO;
 import eu.nimble.service.bp.hyperjaxb.model.ProcessInstanceGroupDAO;
 import eu.nimble.service.bp.impl.federation.BusinessProcessClient;
@@ -11,6 +12,7 @@ import eu.nimble.service.bp.impl.util.persistence.HibernateSwaggerObjectMapper;
 import eu.nimble.service.bp.impl.util.persistence.HibernateUtilityRef;
 import eu.nimble.service.bp.impl.util.persistence.ProcessInstanceGroupDAOUtility;
 import eu.nimble.service.bp.impl.util.rest.URLConnectionUtil;
+import eu.nimble.service.bp.impl.util.serialization.Serializer;
 import eu.nimble.service.bp.swagger.api.GroupApi;
 import eu.nimble.service.bp.swagger.model.*;
 import io.swagger.annotations.ApiOperation;
@@ -29,8 +31,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by suat on 06-Feb-18.
@@ -172,14 +173,16 @@ public class ProcessInstanceGroupController implements GroupApi {
 
         ProcessInstanceGroupResponse groupResponse = new ProcessInstanceGroupResponse();
 
-        List<ProcessInstanceGroup> processInstanceGroups = new ArrayList<>();
+        Map<String,ProcessInstanceGroup> map = new HashMap<>();
 
         for (ProcessInstanceGroupDAO processInstanceGroupDAO: processInstanceGroupDAOS){
             for (ProcessInstanceFederationDAO federation : processInstanceGroupDAO.getProcessInstances()){
                 try{
                     ResponseEntity responseEntity = ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(federation.getFederationInstanceId()).clientProcessInstanceExists(relatedProducts,relatedProductCategories,tradingPartnerIDs,initiationDateRange,lastActivityDateRange,federation.getProcessInstanceID(),federation.getFederationInstanceId()));
-                    if(responseEntity.getBody().equals("true")){
-                        processInstanceGroups.add(HibernateSwaggerObjectMapper.convertProcessInstanceGroupDAO(processInstanceGroupDAO));
+                    ObjectMapper objectMapper = Serializer.getDefaultObjectMapper();
+                    ProcessDocumentMetadataDAO documentMetadataDAO = objectMapper.readValue(responseEntity.getBody().toString(),ProcessDocumentMetadataDAO.class);
+                    if(documentMetadataDAO != null){
+                        map.put(documentMetadataDAO.getSubmissionDate(),HibernateSwaggerObjectMapper.convertProcessInstanceGroupDAO(processInstanceGroupDAO));
                         break;
                     }
                 }
@@ -188,6 +191,14 @@ public class ProcessInstanceGroupController implements GroupApi {
                 }
 
             }
+        }
+
+        // Sort the map
+        Map<String,ProcessInstanceGroup> sortedMap = new TreeMap<>(map);
+
+        List<ProcessInstanceGroup> processInstanceGroups = new ArrayList<>();
+        for(Map.Entry<String,ProcessInstanceGroup> entry : sortedMap.entrySet()){
+            processInstanceGroups.add(0,entry.getValue());
         }
 
         groupResponse.setSize(processInstanceGroups.size());

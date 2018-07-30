@@ -2,6 +2,7 @@ package eu.nimble.service.bp.impl;
 
 
 import eu.nimble.service.bp.config.GenericConfig;
+import eu.nimble.service.bp.hyperjaxb.model.ProcessDocumentMetadataDAO;
 import eu.nimble.service.bp.impl.federation.BusinessProcessClient;
 import eu.nimble.service.bp.impl.federation.ClientFactory;
 import eu.nimble.service.bp.impl.federation.CoreFunctions;
@@ -112,7 +113,7 @@ public class DelegateController  {
 
     @RequestMapping(value = "/processInstance/exists",
             method = RequestMethod.GET)
-    public ResponseEntity<Boolean> processInstanceExists(
+    public ResponseEntity<ProcessDocumentMetadataDAO> processInstanceExists(
             @RequestParam(value = "relatedProducts", required = false) List<String> relatedProducts,
             @RequestParam(value = "relatedProductCategories", required = false) List<String> relatedProductCategories,
             @RequestParam(value = "tradingPartnerIDs", required = false) List<String> tradingPartnerIDs,

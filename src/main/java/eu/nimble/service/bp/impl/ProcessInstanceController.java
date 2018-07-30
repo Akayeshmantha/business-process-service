@@ -1,5 +1,6 @@
 package eu.nimble.service.bp.impl;
 
+import eu.nimble.service.bp.hyperjaxb.model.ProcessDocumentMetadataDAO;
 import eu.nimble.service.bp.impl.util.persistence.HibernateUtilityRef;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -26,9 +27,9 @@ public class ProcessInstanceController {
         return ResponseEntity.ok().body(checkExistenceQuery(relatedProducts,relatedProductCategories,tradingPartnerIDs,initiationDateRange,lastActivityDateRange,processInstanceId));
     }
 
-    public boolean checkExistenceQuery(List<String> relatedProductIds,List<String> relatedProductCategories,List<String> tradingPartnerIds,
-                                       String initiationDateRange,String lastActivityDateRange,String processInstanceId){
-        String query = "SELECT pi.processInstanceID";
+    public ProcessDocumentMetadataDAO checkExistenceQuery(List<String> relatedProductIds, List<String> relatedProductCategories, List<String> tradingPartnerIds,
+                                                          String initiationDateRange, String lastActivityDateRange, String processInstanceId){
+        String query = "SELECT doc";
 
         query += " from " +
                 "ProcessInstanceDAO pi, " +
@@ -59,10 +60,7 @@ public class ProcessInstanceController {
             }
             query += " (doc.initiatorID = '" + tradingPartnerIds.get(i) + "' or doc.responderID = '" + tradingPartnerIds.get(i) + "'))";
         }
-        Object process = (Object) HibernateUtilityRef.getInstance("bp-data-model").loadIndividualItem(query);
-        if(process == null){
-            return false;
-        }
-        return true;
+        ProcessDocumentMetadataDAO documentMetadataDAO = (ProcessDocumentMetadataDAO) HibernateUtilityRef.getInstance("bp-data-model").loadIndividualItem(query);
+        return documentMetadataDAO;
     }
 }
