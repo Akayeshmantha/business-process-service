@@ -1,5 +1,6 @@
 package eu.nimble.service.bp.impl.federation;
 
+import eu.nimble.service.bp.swagger.model.ProcessInstanceInputMessage;
 import eu.nimble.service.model.ubl.commonaggregatecomponents.DataMonitoringClauseType;
 import feign.Headers;
 import feign.Param;
@@ -81,6 +82,13 @@ public interface BusinessProcessClient {
                                         @Param("targetInstanceId") String targetInstanceId,
                                         @Param("bearerToken") String bearerToken);
 
+    @RequestLine("GET delegate/continue?initiatorInstanceId={initiatorInstanceId}&targetInstanceId={targetInstanceId}&gid={gid}")
+    @Headers("Authorization: {bearerToken}")
+    Response clientContinueProcessInstance(ProcessInstanceInputMessage body,
+                                            @Param("gid") String gid,
+                                            @Param("targetInstanceId") String targetInstanceId,
+                                            @Param("initiatorInstanceId") String initiatorInstanceId,
+                                            @Param("bearerToken") String bearerToken);
 
     @RequestLine("GET delegate/content?initiatorInstanceId={initiatorInstanceId}&targetInstanceId={targetInstanceId}")
     @Headers("Authorization: {bearerToken}")

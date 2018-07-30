@@ -43,6 +43,8 @@ public class DelegateController  {
     private ProcessInstanceGroupController processInstanceGroupController;
     @Autowired
     private ProcessInstanceController processInstanceController;
+    @Autowired
+    private ContinueController continueController;
 
     @Autowired
     private GenericConfig config;
@@ -287,6 +289,24 @@ public class DelegateController  {
             return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientAddNewProcessInstanceToGroup(body,initiatorInstanceId,targetInstanceId,processInstanceId,groupId,bearerToken));
         }
 
+    }
+
+    // CONTINUECONTROLLER
+    @RequestMapping(value = "/continue",
+            produces = { "application/json" },
+            consumes = { "application/json" },
+            method = RequestMethod.POST)
+    public ResponseEntity<ProcessInstance> continueProcessInstance(@RequestBody ProcessInstanceInputMessage body,
+                                                                   @RequestParam(value = "gid", required = false) String gid,
+                                                                   @RequestHeader(value="Authorization", required=true) String bearerToken,
+                                                                   @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
+                                                                   @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId)throws Exception{
+        if(config.getInstanceid().equals(targetInstanceId)){
+            return continueController.continueProcessInstance(body,gid,bearerToken);
+        }
+        else {
+            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientContinueProcessInstance(body,gid,targetInstanceId,initiatorInstanceId,bearerToken));
+        }
     }
 
     //CONTENTCONTROLLER
