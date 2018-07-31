@@ -189,7 +189,7 @@ public interface BusinessProcessClient {
             @Param("bearerToken") String bearerToken);
 
 
-    @RequestLine("GET delegate/document/json/{documentID}?initiatorInstanceId={initiatorInstanceId}&targetInstanceId={targetInstanceId}")
+    @RequestLine("GET delegate/document/json/{documentId}?initiatorInstanceId={initiatorInstanceId}&targetInstanceId={targetInstanceId}")
     @Headers("Authorization: {bearerToken}")
     Response clientGetDocumentJsonContent(
             @Param("documentId") String documentId,
