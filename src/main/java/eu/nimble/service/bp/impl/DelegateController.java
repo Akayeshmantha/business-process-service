@@ -216,7 +216,7 @@ public class DelegateController  {
 
 
 
-    @RequestMapping(value = "/search/retrieve",
+    @RequestMapping(value = "/search/select",
             produces = { "application/json" },
             method = RequestMethod.GET)
     public ResponseEntity delegateSearch(@RequestParam(value = "id", required = false) String id,
@@ -224,6 +224,21 @@ public class DelegateController  {
                                          @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
                                          @RequestHeader(value="Authorization", required=true) String bearerToken) throws Exception{
         return searchController.search(id,initiatorInstanceId,targetInstanceId,bearerToken);
+    }
+
+    @RequestMapping(value = "/search/suggest",
+            produces = { "application/json" },
+            method = RequestMethod.GET)
+    public ResponseEntity delegateGetSuggestions(HttpServletRequest request,
+                                                 @RequestParam(value = "query", required = false) String query,
+                                                 @RequestParam(value = "wt", required = false) String wt,
+                                                 @RequestParam(value = "facets", required = false) List<String> facets,
+                                                 @RequestParam(value = "category", required = false) String category,
+                                                 @RequestParam(value = "federated", required = false, defaultValue = "false") Boolean federated,
+                                                 @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
+                                                 @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
+                                                 @RequestHeader(value="Authorization", required=true) String bearerToken) throws Exception{
+        return searchController.getSuggestions(request,query,wt,facets,category,federated,initiatorInstanceId,targetInstanceId,bearerToken);
     }
 
 //STARTCONTROLLER

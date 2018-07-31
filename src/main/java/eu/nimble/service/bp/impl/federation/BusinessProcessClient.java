@@ -320,8 +320,19 @@ public interface BusinessProcessClient {
             @Param("targetInstanceId") String targetInstanceId,
             @Param("bearerToken") String bearerToken);
 
+    @RequestLine("GET delegate/search/suggest?query={query}&wt={wt}facets={facets}&category={category}&federated={federated}&initiatorInstanceId={initiatorInstanceId}&targetInstanceId={targetInstanceId}")
+    @Headers("Authorization: {bearerToken}")
+    Response clientGetSuggestions(
+            @Param("query") String query,
+            @Param("wt") String wt,
+            @Param("facets") List<String> facets,
+            @Param("category") String category,
+            @Param("federated") Boolean federated,
+            @Param("initiatorInstanceId") String initiatorInstanceId,
+            @Param("targetInstanceId") String targetInstanceId,
+            @Param("bearerToken") String bearerToken);
 
-    @RequestLine("GET delegate/search/retrieve?id={id}&initiatorInstanceId={initiatorInstanceId}&targetInstanceId={targetInstanceId}")
+    @RequestLine("GET delegate/search/select?id={id}&initiatorInstanceId={initiatorInstanceId}&targetInstanceId={targetInstanceId}")
     @Headers("Authorization: {bearerToken}")
     Response clientSearch(
             @Param("id") String id,
