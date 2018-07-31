@@ -176,6 +176,7 @@
 			<!-- see the temp element for proper referencing -->
 			<!-- first try to use manytomany annotation, see the second temp !!! -->
 			<xsd:element name="associatedGroups" type="xsd:string" maxOccurs="unbounded"/>
+			<xsd:element name="firstActivityTime" type="xsd:string"/>
 			<!--<xsd:element name="temp" type="AssociatedProcessInstanceGroup" maxOccurs="unbounded"/>-->
 			<!--<xsd:element name="temp" type="ProcessInstanceGroupDAO" maxOccurs="unbounded">-->
 				<!--<xsd:annotation>-->
@@ -184,13 +185,13 @@
 					<!--</xsd:appinfo>-->
 				<!--</xsd:annotation>-->
 			<!--</xsd:element>-->
-			<xsd:element name="firstActivityTime" type="xsd:string">
-				<xsd:annotation>
-					<xsd:appinfo>
-						<hj:ignored/>
-					</xsd:appinfo>
-				</xsd:annotation>
-			</xsd:element>
+			<!--<xsd:element name="firstActivityTime" type="xsd:string">-->
+				<!--<xsd:annotation>-->
+					<!--<xsd:appinfo>-->
+						<!--<hj:ignored/>-->
+					<!--</xsd:appinfo>-->
+				<!--</xsd:annotation>-->
+			<!--</xsd:element>-->
 			<xsd:element name="lastActivityTime" type="xsd:string">
 				<xsd:annotation>
 					<xsd:appinfo>
