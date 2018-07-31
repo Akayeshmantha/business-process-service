@@ -106,7 +106,7 @@ public class JSONUtil {
         suggestions.put("suggestion_count",itemNames.length());
         suggestions.put("suggestion_facets",suggestionsFacets);
         union.put("suggestions",suggestions);
-        
+
         return union.toString();
     }
 }
