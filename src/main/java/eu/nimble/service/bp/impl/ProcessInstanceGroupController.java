@@ -154,7 +154,7 @@ public class ProcessInstanceGroupController implements GroupApi {
     @ApiOperation(value = "", notes = "Retrieve process instance groups for the specified party. If no partyID is specified, then all groups are returned")
     public ResponseEntity<ProcessInstanceGroupResponse> getProcessInstanceGroups(@ApiParam(value = "", required = true) @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId
             ,@ApiParam(value = "", required = true) @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
-             @ApiParam(value = "", required = true) @RequestParam(value = "federated", required = true) Boolean federated
+                                                                                 @ApiParam(value = "", required = true) @RequestParam(value = "federated", required = true) Boolean federated
             ,@ApiParam(value = "" ,required=true ) @RequestHeader(value="Authorization", required=true) String authorization
             ,@ApiParam(value = "Identifier of the party") @RequestParam(value = "partyID", required = false) String partyID
             ,@ApiParam(value = "Related products") @RequestParam(value = "relatedProducts", required = false) List<String> relatedProducts
@@ -173,7 +173,7 @@ public class ProcessInstanceGroupController implements GroupApi {
 
         ProcessInstanceGroupResponse groupResponse = new ProcessInstanceGroupResponse();
 
-        Map<String,ProcessInstanceGroup> map = new HashMap<>();
+        List<ProcessInstanceGroup> processInstanceGroups = new ArrayList<>();
 
         for (ProcessInstanceGroupDAO processInstanceGroupDAO: processInstanceGroupDAOS){
             for (ProcessInstanceFederationDAO federation : processInstanceGroupDAO.getProcessInstances()){
@@ -182,7 +182,7 @@ public class ProcessInstanceGroupController implements GroupApi {
                     ObjectMapper objectMapper = Serializer.getDefaultObjectMapper();
                     ProcessDocumentMetadataDAO documentMetadataDAO = objectMapper.readValue(responseEntity.getBody().toString(),ProcessDocumentMetadataDAO.class);
                     if(documentMetadataDAO != null){
-                        map.put(documentMetadataDAO.getSubmissionDate(),HibernateSwaggerObjectMapper.convertProcessInstanceGroupDAO(processInstanceGroupDAO));
+                        processInstanceGroups.add(HibernateSwaggerObjectMapper.convertProcessInstanceGroupDAO(processInstanceGroupDAO));
                         break;
                     }
                 }
@@ -191,14 +191,6 @@ public class ProcessInstanceGroupController implements GroupApi {
                 }
 
             }
-        }
-
-        // Sort the map
-        Map<String,ProcessInstanceGroup> sortedMap = new TreeMap<>(map);
-
-        List<ProcessInstanceGroup> processInstanceGroups = new ArrayList<>();
-        for(Map.Entry<String,ProcessInstanceGroup> entry : sortedMap.entrySet()){
-            processInstanceGroups.add(0,entry.getValue());
         }
 
         groupResponse.setSize(processInstanceGroups.size());

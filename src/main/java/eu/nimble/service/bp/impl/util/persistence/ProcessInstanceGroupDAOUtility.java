@@ -52,6 +52,7 @@ public class ProcessInstanceGroupDAOUtility {
         if(!whereClause.contentEquals("")){
             query += "WHERE " + whereClause;
         }
+        query += " order by pig.firstActivityTime desc";
         List<ProcessInstanceGroupDAO> groups = (List<ProcessInstanceGroupDAO>) HibernateUtilityRef.getInstance("bp-data-model").loadAll(query, offset, limit);
 
         return groups;
