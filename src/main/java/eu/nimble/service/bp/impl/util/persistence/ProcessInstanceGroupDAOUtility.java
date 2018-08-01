@@ -75,8 +75,7 @@ public class ProcessInstanceGroupDAOUtility {
         for(Object groupResult : groups) {
             Object[] resultItems = (Object[]) groupResult;
             ProcessInstanceGroupDAO group = (ProcessInstanceGroupDAO) resultItems[0];
-            group.setLastActivityTime((String) resultItems[1]);
-            group.setFirstActivityTime((String) resultItems[2]);
+            group.setFirstActivityTime((String) resultItems[1]);
             results.add(group);
         }
         return results;
@@ -155,6 +154,13 @@ public class ProcessInstanceGroupDAOUtility {
         return filter;
     }
 
+    private static String getSubmissionDate(String processInstanceId){
+        String query =  "SELECT doc.submissionDate " +
+                        "FROM ProcessDocumentMetadataDAO doc " +
+                        "WHERE doc.processInstanceID='"+processInstanceId+"'";
+        return (String) HibernateUtilityRef.getInstance("bp-data-model").loadIndividualItem(query);
+    }
+
     private static String getGroupRetrievalQuery(
             GroupQueryType queryType,
             String partyId,
@@ -172,7 +178,7 @@ public class ProcessInstanceGroupDAOUtility {
         } else if(queryType == GroupQueryType.SIZE) {
             query += "select count(distinct pig)";
         } else if(queryType == GroupQueryType.GROUP) {
-            query += "select pig, max(doc.submissionDate) as lastActivityTime, min(doc.submissionDate) as firstActivityTime";
+            query += "select pig, min(doc.submissionDate) as firstActivityTime";
         }
 
         query += " from " +
@@ -238,6 +244,7 @@ public class ProcessInstanceGroupDAOUtility {
         group.setName(relatedProducts);
         group.setPartyID(partyId);
         group.setCollaborationRole(collaborationRole);
+        group.setFirstActivityTime(getSubmissionDate(processInstanceId));
         List<String> processInstanceIds = new ArrayList<>();
         processInstanceIds.add(processInstanceId);
         ProcessInstanceFederationDAO federationDAO = new ProcessInstanceFederationDAO();
@@ -263,7 +270,7 @@ public class ProcessInstanceGroupDAOUtility {
     }
 
     public static ProcessInstanceGroupDAO getProcessInstanceGroupDAO(String groupID) {
-        String query = "select pig, max(doc.submissionDate) as lastActivityTime, min(doc.submissionDate) as firstActivityTime from" +
+        String query = "select pig, min(doc.submissionDate) as firstActivityTime from" +
                 " ProcessInstanceGroupDAO pig join pig.processInstances pid," +
                 " ProcessInstanceDAO pi," +
                 " ProcessDocumentMetadataDAO doc" +
@@ -274,8 +281,7 @@ public class ProcessInstanceGroupDAOUtility {
                 " group by pig.hjid";
         Object[] resultItems = (Object[]) (HibernateUtilityRef.getInstance("bp-data-model").loadIndividualItem(query));
         ProcessInstanceGroupDAO pig = (ProcessInstanceGroupDAO) resultItems[0];
-        pig.setLastActivityTime((String) resultItems[1]);
-        pig.setFirstActivityTime((String) resultItems[2]);
+        pig.setFirstActivityTime((String) resultItems[1]);
         return pig;
     }
 

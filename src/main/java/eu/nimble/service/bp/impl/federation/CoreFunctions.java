@@ -20,8 +20,11 @@ public class CoreFunctions {
         if(instanceId.equals(config.getInstanceid())){
             return "http://localhost:8081";
         }
-        else {
+        else if(instanceId.equals("11")){
             return "http://localhost:8082";
+        }
+        else {
+            return "http://localhost:8083";
         }
     }
 

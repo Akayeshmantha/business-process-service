@@ -9,6 +9,7 @@ public class FederationUtil {
         List<String> nimbleURLs = new ArrayList<>();
 
         nimbleURLs.add("http://localhost:8082");
+        nimbleURLs.add("http://localhost:8083");
 
         return nimbleURLs;
     }
