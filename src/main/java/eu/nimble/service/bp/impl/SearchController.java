@@ -71,11 +71,9 @@ public class SearchController {
         String result = URLConnectionUtil.get(marmottaURL + "/select?" + queryString, "UTF-8",null,null,null);
 
         // if it is federated send the query to other NIMBLE instances...
-        String unifiedResult = "";
+        List<String> results = new ArrayList<>();
         if (federated) {
             List<String> searchURLsInTheFederation = FederationUtil.getFederationEndpoints();
-            List<String> results = new ArrayList<>();
-            results.add(result);
             try {
                 String reconstructedQueryString = "query=" + URLEncoder.encode(query,"UTF-8") + "&";
                 reconstructedQueryString += "facets=" + URLEncoder.encode(request.getParameter("facets"),"UTF-8") + "&";
@@ -86,17 +84,16 @@ public class SearchController {
                 for (String searchURL : searchURLsInTheFederation) {
                     results.add(URLConnectionUtil.get(searchURL + "/delegate/search/query?" + reconstructedQueryString, "UTF-8",initiatorInstanceId,targetInstanceId,bearerToken));
                 }
-                unifiedResult = JSONUtil.unify(results);
             }
             catch (Exception e){
                 logger.error("",e);
             }
-
-        } else {
-            unifiedResult = result;
         }
-
-        return new ResponseEntity<String>(unifiedResult, HttpStatus.OK);
+        else {
+            return ResponseEntity.ok().body(result);
+        }
+        results.add(result);
+        return ResponseEntity.ok().body(results);
     }
 
     @RequestMapping(value = "/search/select",
