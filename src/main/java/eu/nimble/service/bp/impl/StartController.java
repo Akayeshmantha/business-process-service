@@ -217,41 +217,5 @@ public class StartController implements StartApi {
             BusinessProcessContext businessProcessContext = BusinessProcessContextHandler.getBusinessProcessContextHandler().getBusinessProcessContext(businessContextId);
             businessProcessContext.setSourceGroup(sourceGroup);
         }
-
-//        ProcessInstanceGroupDAO sourceGroup = ProcessInstanceGroupDAOUtility.getProcessInstanceGroupDAO(sourceGid);
-//        ProcessInstanceFederationDAO federationDAO = new ProcessInstanceFederationDAO();
-//        federationDAO.setFederationInstanceId(federationInstanceId);
-//        federationDAO.setProcessInstanceID(processInstanceId);
-//        sourceGroup.getProcessInstances().add(federationDAO);
-//        sourceGroup = (ProcessInstanceGroupDAO) HibernateUtilityRef.getInstance("bp-data-model").update(sourceGroup);
-//
-//        // save sourceGroup
-//        BusinessProcessContext businessProcessContext = BusinessProcessContextHandler.getBusinessProcessContextHandler().getBusinessProcessContext(businessContextId);
-//        businessProcessContext.setSourceGroup(sourceGroup);
-//
-//        // add the new process instance to the recipient's group
-//        // if such a group exists add into it otherwise create a new group
-//        ProcessInstanceGroupDAO associatedGroup = ProcessInstanceGroupDAOUtility.getProcessInstanceGroupDAO(body.getVariables().getResponderID(), sourceGid);
-//        if (associatedGroup == null) {
-//            ProcessInstanceGroupDAO targetGroup = ProcessInstanceGroupDAOUtility.createProcessInstanceGroupDAO(
-//                    body.getVariables().getResponderID(),
-//                    processInstanceId,
-//                    CamundaEngine.getTransactions(body.getVariables().getProcessID()).get(0).getResponderRole().toString(),
-//                    body.getVariables().getRelatedProducts().toString(),
-//                    sourceGid);
-//
-//            sourceGroup.getAssociatedGroups().add(targetGroup.getID());
-//            sourceGroup = (ProcessInstanceGroupDAO) HibernateUtilityRef.getInstance("bp-data-model").update(sourceGroup);
-//
-//            // save targetGroup and sourceGroup
-//            businessProcessContext.setTargetGroup(targetGroup);
-//            businessProcessContext.setSourceGroup(sourceGroup);
-//        } else {
-//            associatedGroup.getProcessInstanceIDs().add(processInstanceId);
-//            associatedGroup = (ProcessInstanceGroupDAO) HibernateUtilityRef.getInstance("bp-data-model").update(associatedGroup);
-//
-//            // save associatedGroup
-//            businessProcessContext.setAssociatedGroup(associatedGroup);
-//        }
     }
 }
