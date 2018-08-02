@@ -270,13 +270,14 @@ public class DelegateController  {
                                                             @PathVariable(value = "processInstanceId",required = true) String processInstanceId,
                                                             @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
                                                             @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
+                                                            @RequestParam(value = "submissionDate", required = true) String submissionDate,
                                                             @RequestHeader(value="Authorization", required=true) String bearerToken)throws Exception{
         if(config.getInstanceid().equals(targetInstanceId)){
-            return startController.createProcessInstanceGroup(body,processInstanceId,initiatorInstanceId);
+            return startController.createProcessInstanceGroup(body,processInstanceId,initiatorInstanceId,submissionDate);
 
         }
         else {
-            return clientFactory.createResponseEntity(clientFactory.clientGenerator(targetInstanceId).clientCreateProcessInstanceGroup(body,initiatorInstanceId,targetInstanceId,processInstanceId,bearerToken));
+            return clientFactory.createResponseEntity(clientFactory.clientGenerator(targetInstanceId).clientCreateProcessInstanceGroup(body,initiatorInstanceId,targetInstanceId,processInstanceId,submissionDate,bearerToken));
         }
 
     }
@@ -289,13 +290,14 @@ public class DelegateController  {
                                                       @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
                                                       @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
                                                       @RequestParam(value = "precedingProcessId",required = true) String precedingProcessId,
+                                                      @RequestParam(value = "submissionDate", required = true) String submissionDate,
                                                       @RequestHeader(value="Authorization", required=true) String bearerToken)throws Exception{
         if(config.getInstanceid().equals(targetInstanceId)){
-            return startController.addNewProcessInstanceToGroup(body,processInstanceId,initiatorInstanceId,precedingProcessId);
+            return startController.addNewProcessInstanceToGroup(body,processInstanceId,initiatorInstanceId,precedingProcessId,submissionDate);
 
         }
         else {
-            return clientFactory.createResponseEntity(clientFactory.clientGenerator(targetInstanceId).clientAddNewProcessInstanceToGroup(body,initiatorInstanceId,targetInstanceId,processInstanceId,precedingProcessId,bearerToken));
+            return clientFactory.createResponseEntity(clientFactory.clientGenerator(targetInstanceId).clientAddNewProcessInstanceToGroup(body,initiatorInstanceId,targetInstanceId,processInstanceId,precedingProcessId,submissionDate,bearerToken));
         }
 
     }

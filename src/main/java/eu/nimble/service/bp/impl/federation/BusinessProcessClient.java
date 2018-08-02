@@ -58,21 +58,23 @@ public interface BusinessProcessClient {
                                         @Param("targetInstanceId") String targetInstanceId,
                                         @Param("bearerToken") String bearerToken);
 
-    @RequestLine("POST delegate/start/createGroup/{processInstanceId}?initiatorInstanceId={initiatorInstanceId}&targetInstanceId={targetInstanceId}")
+    @RequestLine("POST delegate/start/createGroup/{processInstanceId}?submissionDate={submissionDate}&initiatorInstanceId={initiatorInstanceId}&targetInstanceId={targetInstanceId}")
     @Headers("Authorization: {bearerToken}")
     Response clientCreateProcessInstanceGroup(eu.nimble.service.bp.swagger.model.ProcessInstanceInputMessage body,
                                         @Param("initiatorInstanceId") String initiatorInstanceId,
                                         @Param("targetInstanceId") String targetInstanceId,
                                         @Param("processInstanceId") String processInstanceId,
+                                        @Param("submissionDate") String submissionDate,
                                         @Param("bearerToken") String bearerToken);
 
-    @RequestLine("POST delegate/start/addToGroup/{processInstanceId}?initiatorInstanceId={initiatorInstanceId}&targetInstanceId={targetInstanceId}&precedingProcessId={precedingProcessId}")
+    @RequestLine("POST delegate/start/addToGroup/{processInstanceId}?submissionDate={submissionDate}&initiatorInstanceId={initiatorInstanceId}&targetInstanceId={targetInstanceId}&precedingProcessId={precedingProcessId}")
     @Headers("Authorization: {bearerToken}")
     Response clientAddNewProcessInstanceToGroup(eu.nimble.service.bp.swagger.model.ProcessInstanceInputMessage body,
                                               @Param("initiatorInstanceId") String initiatorInstanceId,
                                               @Param("targetInstanceId") String targetInstanceId,
                                               @Param("processInstanceId") String processInstanceId,
                                               @Param("precedingProcessId") String precedingProcessId,
+                                                @Param("submissionDate") String submissionDate,
                                               @Param("bearerToken") String bearerToken);
 
     @RequestLine("GET delegate/content/{processID}?initiatorInstanceId={initiatorInstanceId}&targetInstanceId={targetInstanceId}")

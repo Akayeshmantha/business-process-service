@@ -88,10 +88,10 @@ public class StartController implements StartApi {
             if (gid == null) {
                 createProcessInstanceGroup(businessProcessContext.getId(),body, processInstance,federationInstanceId);
                 // make a call to create corresponding group
-                clientFactory.createResponseEntity(clientFactory.clientGenerator(initiatorInstanceId).clientCreateProcessInstanceGroup(body,federationInstanceId,initiatorInstanceId,processInstance.getProcessInstanceID(),authorization));
+                clientFactory.createResponseEntity(clientFactory.clientGenerator(initiatorInstanceId).clientCreateProcessInstanceGroup(body,federationInstanceId,initiatorInstanceId,processInstance.getProcessInstanceID(),ProcessInstanceGroupDAOUtility.getSubmissionDate(processInstance.getProcessInstanceID()),authorization));
             } else {
                 addNewProcessInstanceToGroup(businessProcessContext.getId(), processInstance.getProcessInstanceID(), body,federationInstanceId,precedingPid);
-                clientFactory.createResponseEntity(clientFactory.clientGenerator(initiatorInstanceId).clientAddNewProcessInstanceToGroup(body,federationInstanceId,initiatorInstanceId,processInstance.getProcessInstanceID(),precedingPid,authorization));
+                clientFactory.createResponseEntity(clientFactory.clientGenerator(initiatorInstanceId).clientAddNewProcessInstanceToGroup(body,federationInstanceId,initiatorInstanceId,processInstance.getProcessInstanceID(),precedingPid,ProcessInstanceGroupDAOUtility.getSubmissionDate(processInstance.getProcessInstanceID()),authorization));
 
             }
 
@@ -109,7 +109,7 @@ public class StartController implements StartApi {
     }
 
     @Override
-    public ResponseEntity<Void> createProcessInstanceGroup(ProcessInstanceInputMessage body, String processInstanceId, String federationInstanceId) {
+    public ResponseEntity<Void> createProcessInstanceGroup(ProcessInstanceInputMessage body, String processInstanceId, String federationInstanceId,String submissionDate) {
         // get BusinessProcessContext
         BusinessProcessContext businessProcessContext = BusinessProcessContextHandler.getBusinessProcessContextHandler().getBusinessProcessContext(null);
         try {
@@ -122,7 +122,8 @@ public class StartController implements StartApi {
                         processInstanceId,
                         CamundaEngine.getTransactions(body.getVariables().getProcessID()).get(0).getInitiatorRole().toString(),
                         body.getVariables().getRelatedProducts().toString(),
-                        federationInstanceId
+                        federationInstanceId,
+                        submissionDate
                 );
                 HibernateUtilityRef.getInstance("bp-data-model").update(processInstanceGroupDAO);
 
@@ -141,7 +142,7 @@ public class StartController implements StartApi {
     }
 
     @Override
-    public ResponseEntity<Void> addNewProcessInstanceToGroup(ProcessInstanceInputMessage body, String processInstanceId, String federationInstanceId,String precedingProcessId) {
+    public ResponseEntity<Void> addNewProcessInstanceToGroup(ProcessInstanceInputMessage body, String processInstanceId, String federationInstanceId,String precedingProcessId,String submissionDate) {
         // get BusinessProcessContext
         BusinessProcessContext businessProcessContext = BusinessProcessContextHandler.getBusinessProcessContextHandler().getBusinessProcessContext(null);
         try {
@@ -152,7 +153,8 @@ public class StartController implements StartApi {
                         processInstanceId,
                         CamundaEngine.getTransactions(body.getVariables().getProcessID()).get(0).getResponderRole().toString(),
                         body.getVariables().getRelatedProducts().toString(),
-                        federationInstanceId
+                        federationInstanceId,
+                        submissionDate
                 );
                 HibernateUtilityRef.getInstance("bp-data-model").update(targetGroup);
 
@@ -189,7 +191,8 @@ public class StartController implements StartApi {
                 processInstance.getProcessInstanceID(),
                 CamundaEngine.getTransactions(body.getVariables().getProcessID()).get(1).getInitiatorRole().toString(),
                 body.getVariables().getRelatedProducts().toString(),
-                federationInstanceId);
+                federationInstanceId,
+                ProcessInstanceGroupDAOUtility.getSubmissionDate(processInstance.getProcessInstanceID()));
 
         HibernateUtilityRef.getInstance("bp-data-model").update(processInstanceGroupDAO);
 
@@ -206,7 +209,8 @@ public class StartController implements StartApi {
                     processInstanceId,
                     CamundaEngine.getTransactions(body.getVariables().getProcessID()).get(0).getResponderRole().toString(),
                     body.getVariables().getRelatedProducts().toString(),
-                    federationInstanceId
+                    federationInstanceId,
+                    ProcessInstanceGroupDAOUtility.getSubmissionDate(processInstanceId)
             );
             HibernateUtilityRef.getInstance("bp-data-model").update(targetGroup);
 

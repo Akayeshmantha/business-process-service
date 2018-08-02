@@ -402,6 +402,10 @@ paths:
         name: federationInstanceId
         required: true
         type: string
+      - in: query
+        name: submissionDate
+        required: true
+        type: string
 
   /start/addToGroup/{processInstanceId}:
     patch:
@@ -424,6 +428,10 @@ paths:
         type: string
       - in: query
         name: precedingProcessId
+        required: true
+        type: string
+      - in: query
+        name: submissionDate
         required: true
         type: string
   /continue:

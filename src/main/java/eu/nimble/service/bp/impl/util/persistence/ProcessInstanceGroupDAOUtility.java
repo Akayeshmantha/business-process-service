@@ -155,7 +155,7 @@ public class ProcessInstanceGroupDAOUtility {
         return filter;
     }
 
-    private static String getSubmissionDate(String processInstanceId){
+    public static String getSubmissionDate(String processInstanceId){
         String query =  "SELECT doc.submissionDate " +
                         "FROM ProcessDocumentMetadataDAO doc " +
                         "WHERE doc.processInstanceID='"+processInstanceId+"'";
@@ -230,7 +230,7 @@ public class ProcessInstanceGroupDAOUtility {
         return query;
     }
 
-    public static ProcessInstanceGroupDAO createProcessInstanceGroupDAO(String partyId, String processInstanceId, String collaborationRole, String relatedProducts,String federationInstanceId) {
+    public static ProcessInstanceGroupDAO createProcessInstanceGroupDAO(String partyId, String processInstanceId, String collaborationRole, String relatedProducts,String federationInstanceId,String submissionDate) {
         String uuid = UUID.randomUUID().toString();
 
         ProcessInstanceGroupDAO group = new ProcessInstanceGroupDAO();
@@ -239,7 +239,7 @@ public class ProcessInstanceGroupDAOUtility {
         group.setName(relatedProducts);
         group.setPartyID(partyId);
         group.setCollaborationRole(collaborationRole);
-        group.setFirstActivityTime(getSubmissionDate(processInstanceId));
+        group.setFirstActivityTime(submissionDate);
         List<String> processInstanceIds = new ArrayList<>();
         processInstanceIds.add(processInstanceId);
         ProcessInstanceFederationDAO federationDAO = new ProcessInstanceFederationDAO();
