@@ -18,7 +18,6 @@ import eu.nimble.service.bp.swagger.api.StartApi;
 import eu.nimble.service.bp.swagger.model.ProcessInstance;
 import eu.nimble.service.bp.swagger.model.ProcessInstanceInputMessage;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -116,19 +115,31 @@ public class StartController implements StartApi {
 
     @Override
     public ResponseEntity<Void> createProcessInstanceGroup(ProcessInstanceInputMessage body, String processInstanceId, String federationInstanceId, String groupId) {
-        // check whether there is a group for the given process or not
-        ProcessInstanceGroupDAO groupDAO = ProcessInstanceGroupDAOUtility.getProcessInstanceGroupDAO(processInstanceId,federationInstanceId);
-        if(groupDAO == null){
-            // create group for initiating party
-            ProcessInstanceGroupDAO processInstanceGroupDAO = ProcessInstanceGroupDAOUtility.createProcessInstanceGroupDAO(
-                    groupId,
-                    body.getVariables().getInitiatorID(),
-                    processInstanceId,
-                    CamundaEngine.getTransactions(body.getVariables().getProcessID()).get(0).getInitiatorRole().toString(),
-                    body.getVariables().getRelatedProducts().toString(),
-                    federationInstanceId
-            );
-            HibernateUtilityRef.getInstance("bp-data-model").update(processInstanceGroupDAO);
+        // get BusinessProcessContext
+        BusinessProcessContext businessProcessContext = BusinessProcessContextHandler.getBusinessProcessContextHandler().getBusinessProcessContext(null);
+        try {
+            // check whether there is a group for the given process or not
+            ProcessInstanceGroupDAO groupDAO = ProcessInstanceGroupDAOUtility.getProcessInstanceGroupDAO(processInstanceId,federationInstanceId);
+            if(groupDAO == null){
+                // create group for initiating party
+                ProcessInstanceGroupDAO processInstanceGroupDAO = ProcessInstanceGroupDAOUtility.createProcessInstanceGroupDAO(
+                        groupId,
+                        body.getVariables().getInitiatorID(),
+                        processInstanceId,
+                        CamundaEngine.getTransactions(body.getVariables().getProcessID()).get(0).getInitiatorRole().toString(),
+                        body.getVariables().getRelatedProducts().toString(),
+                        federationInstanceId
+                );
+                HibernateUtilityRef.getInstance("bp-data-model").update(processInstanceGroupDAO);
+
+            }
+        }
+        catch (Exception e){
+            businessProcessContext.handleExceptions();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+        finally {
+            BusinessProcessContextHandler.getBusinessProcessContextHandler().deleteBusinessProcessContext(businessProcessContext.getId());
         }
 
         return ResponseEntity.ok(null);
@@ -136,31 +147,39 @@ public class StartController implements StartApi {
 
     @Override
     public ResponseEntity<Void> addNewProcessInstanceToGroup(ProcessInstanceInputMessage body, String processInstanceId, String federationInstanceId,String precedingProcessId) {
-        ProcessInstanceGroupDAO group = ProcessInstanceGroupDAOUtility.getProcessInstanceGroupDAO(precedingProcessId,federationInstanceId);
-        if(group == null){
-            ProcessInstanceGroupDAO targetGroup = ProcessInstanceGroupDAOUtility.createProcessInstanceGroupDAO(
-                    null,
-                    body.getVariables().getResponderID(),
-                    processInstanceId,
-                    CamundaEngine.getTransactions(body.getVariables().getProcessID()).get(0).getResponderRole().toString(),
-                    body.getVariables().getRelatedProducts().toString(),
-                    federationInstanceId
-            );
-            HibernateUtilityRef.getInstance("bp-data-model").update(targetGroup);
+        // get BusinessProcessContext
+        BusinessProcessContext businessProcessContext = BusinessProcessContextHandler.getBusinessProcessContextHandler().getBusinessProcessContext(null);
+        try {
+            ProcessInstanceGroupDAO group = ProcessInstanceGroupDAOUtility.getProcessInstanceGroupDAO(precedingProcessId,federationInstanceId);
+            if(group == null){
+                ProcessInstanceGroupDAO targetGroup = ProcessInstanceGroupDAOUtility.createProcessInstanceGroupDAO(
+                        null,
+                        body.getVariables().getResponderID(),
+                        processInstanceId,
+                        CamundaEngine.getTransactions(body.getVariables().getProcessID()).get(0).getResponderRole().toString(),
+                        body.getVariables().getRelatedProducts().toString(),
+                        federationInstanceId
+                );
+                HibernateUtilityRef.getInstance("bp-data-model").update(targetGroup);
 
-            // save targetGroup and sourceGroup
-            //   businessProcessContext.setTargetGroup(targetGroup);
-        }
-        else {
-            ProcessInstanceFederationDAO federationDAO = new ProcessInstanceFederationDAO();
-            federationDAO.setProcessInstanceID(processInstanceId);
-            federationDAO.setFederationInstanceId(federationInstanceId);
-            group.getProcessInstances().add(federationDAO);
-            HibernateUtilityRef.getInstance("bp-data-model").update(group);
+            }
+            else {
+                ProcessInstanceFederationDAO federationDAO = new ProcessInstanceFederationDAO();
+                federationDAO.setProcessInstanceID(processInstanceId);
+                federationDAO.setFederationInstanceId(federationInstanceId);
+                group.getProcessInstances().add(federationDAO);
+                HibernateUtilityRef.getInstance("bp-data-model").update(group);
 
-            // save associatedGroup
-            //    businessProcessContext.setAssociatedGroup(associatedGroup);
+            }
         }
+        catch (Exception e){
+            businessProcessContext.handleExceptions();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+        finally {
+            BusinessProcessContextHandler.getBusinessProcessContextHandler().deleteBusinessProcessContext(businessProcessContext.getId());
+        }
+
         return ResponseEntity.ok(null);
     }
 
