@@ -43,13 +43,8 @@ public class ProcessInstanceGroupController implements GroupApi {
     @Autowired
     private ProcessInstanceGroupDAOUtility groupDaoUtility;
 
-    public BusinessProcessClient clientGenerator(String instanceid){
-        String url=core.getEndpointFromInstanceId(instanceid);
-        return ClientFactory.getClientFactoryInstance().createClient(BusinessProcessClient.class,url);
-    }
-
     @Autowired
-    private CoreFunctions core;
+    private ClientFactory clientFactory;
 
     @Override
     @ApiOperation(value = "", notes = "Add a new process instance to the specified")
@@ -178,7 +173,7 @@ public class ProcessInstanceGroupController implements GroupApi {
         for (ProcessInstanceGroupDAO processInstanceGroupDAO: processInstanceGroupDAOS){
             for (ProcessInstanceFederationDAO federation : processInstanceGroupDAO.getProcessInstances()){
                 try{
-                    ResponseEntity responseEntity = ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(federation.getFederationInstanceId()).clientProcessInstanceExists(relatedProducts,relatedProductCategories,tradingPartnerIDs,initiationDateRange,lastActivityDateRange,federation.getProcessInstanceID(),federation.getFederationInstanceId()));
+                    ResponseEntity responseEntity = clientFactory.createResponseEntity(clientFactory.clientGenerator(federation.getFederationInstanceId()).clientProcessInstanceExists(relatedProducts,relatedProductCategories,tradingPartnerIDs,initiationDateRange,lastActivityDateRange,federation.getProcessInstanceID(),federation.getFederationInstanceId()));
                     ObjectMapper objectMapper = Serializer.getDefaultObjectMapper();
                     ProcessDocumentMetadataDAO documentMetadataDAO = objectMapper.readValue(responseEntity.getBody().toString(),ProcessDocumentMetadataDAO.class);
                     if(documentMetadataDAO != null){

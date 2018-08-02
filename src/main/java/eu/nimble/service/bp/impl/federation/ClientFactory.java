@@ -3,20 +3,22 @@ package eu.nimble.service.bp.impl.federation;
 import feign.Feign;
 import feign.Response;
 import feign.Util;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+@Component
+@Scope(value = "singleton")
 public class ClientFactory {
 
+    @Autowired
+    private CoreFunctions core;
 
-    private static ClientFactory clientFactoryInstance;
-
-    public static ClientFactory getClientFactoryInstance() {
-        if(clientFactoryInstance == null){
-            clientFactoryInstance = new ClientFactory();
-        }
-        return clientFactoryInstance;
+    public BusinessProcessClient clientGenerator(String instanceid){
+        String url=core.getEndpointFromInstanceId(instanceid);
+        return createClient(BusinessProcessClient.class,url);
     }
 
     public  <T> T createClient(Class<T> clientClass ,String url) {

@@ -40,12 +40,7 @@ public class StartController implements StartApi {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    private CoreFunctions core;
-
-    public BusinessProcessClient clientGenerator(String instanceid){
-        String url=core.getEndpointFromInstanceId(instanceid);
-        return ClientFactory.getClientFactoryInstance().createClient(BusinessProcessClient.class,url);
-    }
+    private ClientFactory clientFactory;
 
     @Override
     @ApiOperation(value = "", notes = "Start an instance of a business process", response = ProcessInstance.class, tags={  })
@@ -93,10 +88,10 @@ public class StartController implements StartApi {
             if (gid == null) {
                 createProcessInstanceGroup(businessProcessContext.getId(),body, processInstance,federationInstanceId);
                 // make a call to create corresponding group
-                ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(initiatorInstanceId).clientCreateProcessInstanceGroup(body,federationInstanceId,initiatorInstanceId,processInstance.getProcessInstanceID(),authorization));
+                clientFactory.createResponseEntity(clientFactory.clientGenerator(initiatorInstanceId).clientCreateProcessInstanceGroup(body,federationInstanceId,initiatorInstanceId,processInstance.getProcessInstanceID(),authorization));
             } else {
                 addNewProcessInstanceToGroup(businessProcessContext.getId(), processInstance.getProcessInstanceID(), body,federationInstanceId,precedingPid);
-                ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(initiatorInstanceId).clientAddNewProcessInstanceToGroup(body,federationInstanceId,initiatorInstanceId,processInstance.getProcessInstanceID(),precedingPid,authorization));
+                clientFactory.createResponseEntity(clientFactory.clientGenerator(initiatorInstanceId).clientAddNewProcessInstanceToGroup(body,federationInstanceId,initiatorInstanceId,processInstance.getProcessInstanceID(),precedingPid,authorization));
 
             }
 

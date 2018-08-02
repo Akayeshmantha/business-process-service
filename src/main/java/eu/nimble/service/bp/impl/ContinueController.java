@@ -37,12 +37,7 @@ public class ContinueController implements ContinueApi {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    private CoreFunctions core;
-
-    public BusinessProcessClient clientGenerator(String instanceid){
-        String url=core.getEndpointFromInstanceId(instanceid);
-        return ClientFactory.getClientFactoryInstance().createClient(BusinessProcessClient.class,url);
-    }
+    private ClientFactory clientFactory;
 
     @Override
     @ApiOperation(value = "",notes = "Send input to a waiting process instance (because of a human task)")
@@ -75,7 +70,7 @@ public class ContinueController implements ContinueApi {
             // save ProcessInstanceDAO
             businessProcessContext.setUpdatedProcessInstanceDAO(storedInstance);
 
-            ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(initiatorInstanceId).clientCreateProcessInstanceGroup(body,federationInstanceId,initiatorInstanceId,processInstance.getProcessInstanceID(),bearerToken));
+            clientFactory.createResponseEntity(clientFactory.clientGenerator(initiatorInstanceId).clientCreateProcessInstanceGroup(body,federationInstanceId,initiatorInstanceId,processInstance.getProcessInstanceID(),bearerToken));
         }
         catch (Exception e){
             logger.error(" $$$ Failed to continue process with ProcessInstanceInputMessage {}", body.toString(),e);

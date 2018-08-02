@@ -52,7 +52,7 @@ public class DelegateController  {
 
 
     @Autowired
-    private CoreFunctions core;
+    private ClientFactory clientFactory;
 
 
     //COMMON TOKEN VALIDATOR
@@ -63,12 +63,6 @@ public class DelegateController  {
         CHECK ID AND TOKEN
          */
         return true;
-    }
-
-
-    public BusinessProcessClient clientGenerator(String instanceid){
-        String url=core.getEndpointFromInstanceId(instanceid);
-        return ClientFactory.getClientFactoryInstance().createClient(BusinessProcessClient.class,url);
     }
 
     @RequestMapping(value = "/group",
@@ -138,9 +132,9 @@ public class DelegateController  {
             @RequestHeader(value="Authorization", required=true) String bearerToken)throws Exception {
 
         if(config.getInstanceid().equals(targetInstanceId))
-            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(config.getInstanceid()).clientGetProcessDetailsHistory(processInstanceIdIn));
+            return clientFactory.createResponseEntity(clientFactory.clientGenerator(config.getInstanceid()).clientGetProcessDetailsHistory(processInstanceIdIn));
         else
-            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientGetProcessDetailsHistory(processInstanceIdIn,initiatorInstanceId,targetInstanceId,bearerToken));
+            return clientFactory.createResponseEntity(clientFactory.clientGenerator(targetInstanceId).clientGetProcessDetailsHistory(processInstanceIdIn,initiatorInstanceId,targetInstanceId,bearerToken));
 
 
     }
@@ -156,9 +150,9 @@ public class DelegateController  {
             @RequestHeader(value="Authorization", required=true) String bearerToken)throws Exception {
 
         if(config.getInstanceid().equals(targetInstanceId))
-            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(config.getInstanceid()).clientGetProcessInstanceDetails(processInstanceId));
+            return clientFactory.createResponseEntity(clientFactory.clientGenerator(config.getInstanceid()).clientGetProcessInstanceDetails(processInstanceId));
         else
-            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientGetProcessInstanceDetails(processInstanceId,initiatorInstanceId,targetInstanceId,bearerToken));
+            return clientFactory.createResponseEntity(clientFactory.clientGenerator(targetInstanceId).clientGetProcessInstanceDetails(processInstanceId,initiatorInstanceId,targetInstanceId,bearerToken));
 
     }
 
@@ -175,9 +169,9 @@ public class DelegateController  {
             @RequestHeader(value="Authorization", required=true) String bearerToken)throws Exception {
 
         if(config.getInstanceid().equals(targetInstanceId))
-            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(config.getInstanceid()).clientGetLastActivityForProcessInstance(processInstanceId,sortBy,sortOrder,maxResults));
+            return clientFactory.createResponseEntity(clientFactory.clientGenerator(config.getInstanceid()).clientGetLastActivityForProcessInstance(processInstanceId,sortBy,sortOrder,maxResults));
         else
-            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientGetLastActivityForProcessInstance(processInstanceId,sortBy,sortOrder,maxResults,initiatorInstanceId,targetInstanceId,bearerToken));
+            return clientFactory.createResponseEntity(clientFactory.clientGenerator(targetInstanceId).clientGetLastActivityForProcessInstance(processInstanceId,sortBy,sortOrder,maxResults,initiatorInstanceId,targetInstanceId,bearerToken));
 
 
     }
@@ -265,7 +259,7 @@ public class DelegateController  {
             return startController.startProcessInstance(body,targetInstanceId,initiatorInstanceId,bearerToken,gid,precedingPid);
         }
         else{
-            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientStartProcessInstance(body,gid,precedingPid,initiatorInstanceId,targetInstanceId,bearerToken));
+            return clientFactory.createResponseEntity(clientFactory.clientGenerator(targetInstanceId).clientStartProcessInstance(body,gid,precedingPid,initiatorInstanceId,targetInstanceId,bearerToken));
         }
     }
 
@@ -282,7 +276,7 @@ public class DelegateController  {
 
         }
         else {
-            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientCreateProcessInstanceGroup(body,initiatorInstanceId,targetInstanceId,processInstanceId,bearerToken));
+            return clientFactory.createResponseEntity(clientFactory.clientGenerator(targetInstanceId).clientCreateProcessInstanceGroup(body,initiatorInstanceId,targetInstanceId,processInstanceId,bearerToken));
         }
 
     }
@@ -301,7 +295,7 @@ public class DelegateController  {
 
         }
         else {
-            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientAddNewProcessInstanceToGroup(body,initiatorInstanceId,targetInstanceId,processInstanceId,precedingProcessId,bearerToken));
+            return clientFactory.createResponseEntity(clientFactory.clientGenerator(targetInstanceId).clientAddNewProcessInstanceToGroup(body,initiatorInstanceId,targetInstanceId,processInstanceId,precedingProcessId,bearerToken));
         }
 
     }
@@ -320,7 +314,7 @@ public class DelegateController  {
             return continueController.continueProcessInstance(body,targetInstanceId,initiatorInstanceId,gid,bearerToken);
         }
         else {
-            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientContinueProcessInstance(body,gid,targetInstanceId,initiatorInstanceId,bearerToken));
+            return clientFactory.createResponseEntity(clientFactory.clientGenerator(targetInstanceId).clientContinueProcessInstance(body,gid,targetInstanceId,initiatorInstanceId,bearerToken));
         }
     }
 
@@ -337,7 +331,7 @@ public class DelegateController  {
         if(config.getInstanceid().equals(targetInstanceId))
             return contentController.getProcessDefinition(processID,bearerToken);
         else
-            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientGetProcessDefinition(processID,initiatorInstanceId,targetInstanceId,bearerToken));
+            return clientFactory.createResponseEntity(clientFactory.clientGenerator(targetInstanceId).clientGetProcessDefinition(processID,initiatorInstanceId,targetInstanceId,bearerToken));
 
 
     }
@@ -353,7 +347,7 @@ public class DelegateController  {
         if(config.getInstanceid().equals(targetInstanceId))
             return contentController.getProcessDefinitions(bearerToken);
         else
-            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientGetProcessDefinitions(initiatorInstanceId,targetInstanceId,bearerToken));
+            return clientFactory.createResponseEntity(clientFactory.clientGenerator(targetInstanceId).clientGetProcessDefinitions(initiatorInstanceId,targetInstanceId,bearerToken));
 
 
 
@@ -372,7 +366,7 @@ public class DelegateController  {
         if(config.getInstanceid().equals(targetInstanceId))
             return contractController.getClauseDetails(clauseId,bearerToken);
         else
-            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientGetClauseDetails(clauseId,initiatorInstanceId,targetInstanceId,bearerToken));
+            return clientFactory.createResponseEntity(clientFactory.clientGenerator(targetInstanceId).clientGetClauseDetails(clauseId,initiatorInstanceId,targetInstanceId,bearerToken));
 
 
     }
@@ -391,7 +385,7 @@ public class DelegateController  {
         if(config.getInstanceid().equals(targetInstanceId))
             return contractController.updateClause(clauseId,deserializedClause,bearerToken);
         else
-            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientUpdateClause(clauseId,deserializedClause,initiatorInstanceId,targetInstanceId,bearerToken));
+            return clientFactory.createResponseEntity(clientFactory.clientGenerator(targetInstanceId).clientUpdateClause(clauseId,deserializedClause,initiatorInstanceId,targetInstanceId,bearerToken));
 
     }
 
@@ -408,7 +402,7 @@ public class DelegateController  {
         if(config.getInstanceid().equals(targetInstanceId))
             return contractController.constructContractForProcessInstances(processInstanceId,bearerToken);
         else
-            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientConstructContractForProcessInstances(processInstanceId,initiatorInstanceId,targetInstanceId,bearerToken));
+            return clientFactory.createResponseEntity(clientFactory.clientGenerator(targetInstanceId).clientConstructContractForProcessInstances(processInstanceId,initiatorInstanceId,targetInstanceId,bearerToken));
 
     }
 
@@ -423,7 +417,7 @@ public class DelegateController  {
         if(config.getInstanceid().equals(targetInstanceId))
             return contractController.getClausesOfContract(contractId,bearerToken);
         else
-            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientGetClausesOfContract(contractId,initiatorInstanceId,targetInstanceId,bearerToken));
+            return clientFactory.createResponseEntity(clientFactory.clientGenerator(targetInstanceId).clientGetClausesOfContract(contractId,initiatorInstanceId,targetInstanceId,bearerToken));
 
     }
 
@@ -437,7 +431,7 @@ public class DelegateController  {
         if(config.getInstanceid().equals(targetInstanceId))
             return contractController.deleteClauseFromContract(contractId,clauseId,bearerToken);
         else
-            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientDeleteClauseFromContract(contractId,clauseId,initiatorInstanceId,targetInstanceId,bearerToken));
+            return clientFactory.createResponseEntity(clientFactory.clientGenerator(targetInstanceId).clientDeleteClauseFromContract(contractId,clauseId,initiatorInstanceId,targetInstanceId,bearerToken));
 
     }
 
@@ -453,7 +447,7 @@ public class DelegateController  {
         if(config.getInstanceid().equals(targetInstanceId))
             return contractController.getClauseDetails(documentId,clauseType,bearerToken);
         else
-            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientGetClauseDetails(documentId,clauseType,initiatorInstanceId,targetInstanceId,bearerToken));
+            return clientFactory.createResponseEntity(clientFactory.clientGenerator(targetInstanceId).clientGetClauseDetails(documentId,clauseType,initiatorInstanceId,targetInstanceId,bearerToken));
 
     }
 
@@ -472,7 +466,7 @@ public class DelegateController  {
         if(config.getInstanceid().equals(targetInstanceId))
             return contractController.addDocumentClauseToContract(documentId,clauseType,clauseDocumentId,bearerToken);
         else
-            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientAddDocumentClauseToContract(documentId,clauseType,clauseDocumentId,initiatorInstanceId,targetInstanceId,bearerToken));
+            return clientFactory.createResponseEntity(clientFactory.clientGenerator(targetInstanceId).clientAddDocumentClauseToContract(documentId,clauseType,clauseDocumentId,initiatorInstanceId,targetInstanceId,bearerToken));
 
     }
 
@@ -492,7 +486,7 @@ public class DelegateController  {
         if(config.getInstanceid().equals(targetInstanceId))
             return contractController.addDataMonitoringClauseToContract(documentId,dataMonitoringClause,bearerToken);
         else
-            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientAddDataMonitoringClauseToContract(dataMonitoringClause,documentId,initiatorInstanceId,targetInstanceId,bearerToken));
+            return clientFactory.createResponseEntity(clientFactory.clientGenerator(targetInstanceId).clientAddDataMonitoringClauseToContract(dataMonitoringClause,documentId,initiatorInstanceId,targetInstanceId,bearerToken));
 
     }
 
@@ -510,7 +504,7 @@ public class DelegateController  {
             contractGeneratorController.generateContract(orderId,response,bearerToken);
         }
         else {
-            ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientGenerateContract(orderId,response,initiatorInstanceId,targetInstanceId,bearerToken));
+            clientFactory.createResponseEntity(clientFactory.clientGenerator(targetInstanceId).clientGenerateContract(orderId,response,initiatorInstanceId,targetInstanceId,bearerToken));
         }
     }
 
@@ -533,7 +527,7 @@ public class DelegateController  {
         if(config.getInstanceid().equals(targetInstanceId))
             return contractGeneratorController.generateOrderTermsAndConditionsAsText(orderId,sellerParty,buyerParty,incoterms,tradingTerms,bearerToken);
         else
-            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientGenerateOrderTermsAndConditionsAsText(orderId,sellerParty,buyerParty,incoterms,tradingTerms,initiatorInstanceId,targetInstanceId,bearerToken));
+            return clientFactory.createResponseEntity(clientFactory.clientGenerator(targetInstanceId).clientGenerateOrderTermsAndConditionsAsText(orderId,sellerParty,buyerParty,incoterms,tradingTerms,initiatorInstanceId,targetInstanceId,bearerToken));
 
 
     }
@@ -552,7 +546,7 @@ public class DelegateController  {
         if(config.getInstanceid().equals(targetInstanceId))
             return documentController.getDocumentJsonContent(documentID,bearerToken);
         else
-            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientGetDocumentJsonContent(documentID,initiatorInstanceId,targetInstanceId,bearerToken));
+            return clientFactory.createResponseEntity(clientFactory.clientGenerator(targetInstanceId).clientGetDocumentJsonContent(documentID,initiatorInstanceId,targetInstanceId,bearerToken));
 
 
     }
@@ -569,7 +563,7 @@ public class DelegateController  {
         if(config.getInstanceid().equals(targetInstanceId))
             return documentController.getDocumentXMLContent(documentID,bearerToken);
         else
-            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientGetDocumentXMLContent(documentID,initiatorInstanceId,targetInstanceId,bearerToken));
+            return clientFactory.createResponseEntity(clientFactory.clientGenerator(targetInstanceId).clientGetDocumentXMLContent(documentID,initiatorInstanceId,targetInstanceId,bearerToken));
 
 
     }
@@ -589,7 +583,7 @@ public class DelegateController  {
         if(config.getInstanceid().equals(targetInstanceId))
             return documentController.getDocuments(partnerID,type,bearerToken);
         else
-            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientGetDocuments(partnerID,type,initiatorInstanceId,targetInstanceId,bearerToken));
+            return clientFactory.createResponseEntity(clientFactory.clientGenerator(targetInstanceId).clientGetDocuments(partnerID,type,initiatorInstanceId,targetInstanceId,bearerToken));
 
     }
 
@@ -607,7 +601,7 @@ public class DelegateController  {
         if(config.getInstanceid().equals(targetInstanceId))
             return epcController.getTTDetails(epc,bearerToken);
         else
-            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientGetTTDetails(epc,initiatorInstanceId,targetInstanceId,bearerToken));
+            return clientFactory.createResponseEntity(clientFactory.clientGenerator(targetInstanceId).clientGetTTDetails(epc,initiatorInstanceId,targetInstanceId,bearerToken));
 
 
     }
@@ -624,7 +618,7 @@ public class DelegateController  {
         if(config.getInstanceid().equals(targetInstanceId))
             return epcController.getEPCCodesBelongsToProduct(publishedProductID,bearerToken);
         else
-            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientGetEPCCodesBelongsToProduct(publishedProductID,initiatorInstanceId,targetInstanceId,bearerToken));
+            return clientFactory.createResponseEntity(clientFactory.clientGenerator(targetInstanceId).clientGetEPCCodesBelongsToProduct(publishedProductID,initiatorInstanceId,targetInstanceId,bearerToken));
 
 
     }
