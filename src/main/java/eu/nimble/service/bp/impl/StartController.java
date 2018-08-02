@@ -132,6 +132,7 @@ public class StartController implements StartApi {
                 );
                 HibernateUtilityRef.getInstance("bp-data-model").update(processInstanceGroupDAO);
 
+                businessProcessContext.setCreatedProcessInstanceGroupDAO(processInstanceGroupDAO);
             }
         }
         catch (Exception e){
@@ -162,6 +163,7 @@ public class StartController implements StartApi {
                 );
                 HibernateUtilityRef.getInstance("bp-data-model").update(targetGroup);
 
+                businessProcessContext.setCreatedProcessInstanceGroupDAO(targetGroup);
             }
             else {
                 ProcessInstanceFederationDAO federationDAO = new ProcessInstanceFederationDAO();
@@ -170,6 +172,10 @@ public class StartController implements StartApi {
                 group.getProcessInstances().add(federationDAO);
                 HibernateUtilityRef.getInstance("bp-data-model").update(group);
 
+                // save added federationDA
+                businessProcessContext.setAddedProcessInstanceFederationDAO(federationDAO);
+                // save sourceGroup
+                businessProcessContext.setUpdatedProcessInstanceGroupDAO(group);
             }
         }
         catch (Exception e){
