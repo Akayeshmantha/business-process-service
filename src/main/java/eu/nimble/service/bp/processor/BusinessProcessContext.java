@@ -6,21 +6,6 @@ import eu.nimble.utility.Configuration;
 
 public class BusinessProcessContext {
 
-//    private ProcessInstanceInputMessageDAO messageDAO;
-//    private ProcessDocumentMetadataDAO metadataDAO;
-//    private ProcessInstanceDAO processInstanceDAO;
-//    private ProcessInstanceGroupDAO processInstanceGroupDAO1;
-//    private ProcessInstanceGroupDAO processInstanceGroupDAO2;
-//    private ProcessInstanceGroupDAO sourceGroup;
-//    private ProcessInstanceGroupDAO associatedGroup;
-//    private ProcessInstanceGroupDAO targetGroup;
-//    private ProcessInstanceStatus previousStatus;
-//    private ProcessDocumentStatus previousDocumentMetadataStatus;
-//    private ProcessDocumentMetadataDAO updatedDocumentMetadata;
-//    private ProcessInstanceGroupDAO updatedAssociatedGroup;
-//    private Object document;
-//    private String id;
-
     private ProcessInstanceInputMessageDAO createdMessageDAO;   // it is created when a process is started
     private ProcessDocumentMetadataDAO createdMetadataDAO;
     private Object createdDocument;
@@ -68,62 +53,7 @@ public class BusinessProcessContext {
         if(updatedProcessInstanceDAO != null && previousProcessInstanceStatus != null){
             updatedProcessInstanceDAO.setStatus(previousProcessInstanceStatus);
             HibernateUtilityRef.getInstance("bp-data-model").update(updatedProcessInstanceDAO);
-
         }
-//        if (messageDAO != null) {
-//            HibernateUtilityRef.getInstance("bp-data-model").delete(messageDAO);
-//        }
-//        if (metadataDAO != null) {
-//            if (previousDocumentMetadataStatus != null) {
-//                updatedDocumentMetadata.setStatus(previousDocumentMetadataStatus);
-//                HibernateUtilityRef.getInstance("bp-data-model").update(updatedDocumentMetadata);
-//            }
-//            HibernateUtilityRef.getInstance("bp-data-model").delete(metadataDAO);
-//        }
-//        if (document != null) {
-//            HibernateUtilityRef.getInstance(Configuration.UBL_PERSISTENCE_UNIT_NAME).delete(document);
-//        }
-//        if (previousStatus == null && processInstanceDAO != null) {
-//            HibernateUtilityRef.getInstance("bp-data-model").delete(processInstanceDAO);
-//        }
-//
-//        if (processInstanceGroupDAO1 != null) {
-//            HibernateUtilityRef.getInstance("bp-data-model").delete(processInstanceGroupDAO1);
-//        }
-//        if (processInstanceGroupDAO2 != null) {
-//            HibernateUtilityRef.getInstance("bp-data-model").delete(processInstanceGroupDAO2);
-//        }
-//        if (sourceGroup != null) {
-//            for (ProcessInstanceGroupDAO.ProcessInstanceGroupDAOProcessInstanceIDsItem p : sourceGroup.getProcessInstanceIDsItems()) {
-//                if (p.getItem().equals(processInstanceDAO.getProcessInstanceID())) {
-//                    HibernateUtilityRef.getInstance("bp-data-model").delete(p);
-//                }
-//            }
-//            if (targetGroup != null) {
-//                for (ProcessInstanceGroupDAO.ProcessInstanceGroupDAOAssociatedGroupsItem p : sourceGroup.getAssociatedGroupsItems()) {
-//                    if (p.getItem().equals(targetGroup.getID())) {
-//                        HibernateUtilityRef.getInstance("bp-data-model").delete(p);
-//                    }
-//                }
-//            }
-//        }
-//        if (associatedGroup != null) {
-//            for (ProcessInstanceGroupDAO.ProcessInstanceGroupDAOProcessInstanceIDsItem p : associatedGroup.getProcessInstanceIDsItems()) {
-//                if (p.getItem().equals(processInstanceDAO.getProcessInstanceID())) {
-//                    HibernateUtilityRef.getInstance("bp-data-model").delete(p);
-//                }
-//            }
-//        }
-//        if (targetGroup != null) {
-//            HibernateUtilityRef.getInstance("bp-data-model").delete(targetGroup);
-//        }
-//        if (previousStatus != null && processInstanceDAO != null) {
-//            processInstanceDAO.setStatus(ProcessInstanceStatus.fromValue(previousStatus.toString()));
-//            HibernateUtilityRef.getInstance("bp-data-model").update(processInstanceDAO);
-//        }
-//        if (updatedAssociatedGroup != null) {
-//            HibernateUtilityRef.getInstance("bp-data-model").delete(updatedAssociatedGroup);
-//        }
     }
 
     // Getters and Setters

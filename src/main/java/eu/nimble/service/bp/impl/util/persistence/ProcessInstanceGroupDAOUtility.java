@@ -230,15 +230,9 @@ public class ProcessInstanceGroupDAOUtility {
         return query;
     }
 
-    public static ProcessInstanceGroupDAO createProcessInstanceGroupDAO(String groupId,String partyId, String processInstanceId, String collaborationRole, String relatedProducts,String federationInstanceId) {
-        return createProcessInstanceGroupDAO(groupId,partyId, processInstanceId, collaborationRole, relatedProducts, null,federationInstanceId);
-    }
+    public static ProcessInstanceGroupDAO createProcessInstanceGroupDAO(String partyId, String processInstanceId, String collaborationRole, String relatedProducts,String federationInstanceId) {
+        String uuid = UUID.randomUUID().toString();
 
-    public static ProcessInstanceGroupDAO createProcessInstanceGroupDAO(String groupId,String partyId, String processInstanceId, String collaborationRole, String relatedProducts, String associatedGroup,String federationInstanceId) {
-        String uuid = groupId;
-        if(uuid == null){
-            uuid = UUID.randomUUID().toString();
-        }
         ProcessInstanceGroupDAO group = new ProcessInstanceGroupDAO();
         group.setArchived(false);
         group.setID(uuid);
@@ -254,11 +248,6 @@ public class ProcessInstanceGroupDAOUtility {
         List<ProcessInstanceFederationDAO> federationDAOS = new ArrayList<>();
         federationDAOS.add(federationDAO);
         group.setProcessInstances(federationDAOS);
-        if(associatedGroup != null) {
-            List<String> associatedGroups = new ArrayList<>();
-            associatedGroups.add(associatedGroup);
-            group.setAssociatedGroups(associatedGroups);
-        }
         HibernateUtilityRef.getInstance("bp-data-model").persist(group);
         return group;
     }

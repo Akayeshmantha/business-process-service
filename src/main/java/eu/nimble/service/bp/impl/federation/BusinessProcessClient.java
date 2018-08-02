@@ -58,13 +58,12 @@ public interface BusinessProcessClient {
                                         @Param("targetInstanceId") String targetInstanceId,
                                         @Param("bearerToken") String bearerToken);
 
-    @RequestLine("POST delegate/start/createGroup/{processInstanceId}/{groupId}?initiatorInstanceId={initiatorInstanceId}&targetInstanceId={targetInstanceId}")
+    @RequestLine("POST delegate/start/createGroup/{processInstanceId}?initiatorInstanceId={initiatorInstanceId}&targetInstanceId={targetInstanceId}")
     @Headers("Authorization: {bearerToken}")
     Response clientCreateProcessInstanceGroup(eu.nimble.service.bp.swagger.model.ProcessInstanceInputMessage body,
                                         @Param("initiatorInstanceId") String initiatorInstanceId,
                                         @Param("targetInstanceId") String targetInstanceId,
                                         @Param("processInstanceId") String processInstanceId,
-                                        @Param("groupId") String groupId,
                                         @Param("bearerToken") String bearerToken);
 
     @RequestLine("POST delegate/start/addToGroup/{processInstanceId}?initiatorInstanceId={initiatorInstanceId}&targetInstanceId={targetInstanceId}&precedingProcessId={precedingProcessId}")

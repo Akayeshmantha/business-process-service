@@ -75,7 +75,7 @@ public class ContinueController implements ContinueApi {
             // save ProcessInstanceDAO
             businessProcessContext.setUpdatedProcessInstanceDAO(storedInstance);
 
-            ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(initiatorInstanceId).clientCreateProcessInstanceGroup(body,federationInstanceId,initiatorInstanceId,processInstance.getProcessInstanceID(),null,bearerToken));
+            ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(initiatorInstanceId).clientCreateProcessInstanceGroup(body,federationInstanceId,initiatorInstanceId,processInstance.getProcessInstanceID(),bearerToken));
         }
         catch (Exception e){
             logger.error(" $$$ Failed to continue process with ProcessInstanceInputMessage {}", body.toString(),e);

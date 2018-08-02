@@ -294,7 +294,6 @@ public class HibernateSwaggerObjectMapper {
             processInstanceFederations.add(convertProcessInstanceFederation(processInstanceFederationDAO));
         }
         processInstanceGroup.setProcessInstances(processInstanceFederations);
-        processInstanceGroup.setAssociatedGroups(processInstanceGroupDAO.getAssociatedGroups());
         processInstanceGroup.setFirstActivityTime(processInstanceGroupDAO.getFirstActivityTime());
 
         return processInstanceGroup;

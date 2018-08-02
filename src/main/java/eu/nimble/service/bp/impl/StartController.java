@@ -91,9 +91,9 @@ public class StartController implements StartApi {
 
             // create process instance groups if this is the first process initializing the process group
             if (gid == null) {
-                String associatedGroupId = createProcessInstanceGroup(businessProcessContext.getId(),body, processInstance,federationInstanceId);
+                createProcessInstanceGroup(businessProcessContext.getId(),body, processInstance,federationInstanceId);
                 // make a call to create corresponding group
-                ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(initiatorInstanceId).clientCreateProcessInstanceGroup(body,federationInstanceId,initiatorInstanceId,processInstance.getProcessInstanceID(),associatedGroupId,authorization));
+                ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(initiatorInstanceId).clientCreateProcessInstanceGroup(body,federationInstanceId,initiatorInstanceId,processInstance.getProcessInstanceID(),authorization));
             } else {
                 addNewProcessInstanceToGroup(businessProcessContext.getId(), processInstance.getProcessInstanceID(), body,federationInstanceId,precedingPid);
                 ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(initiatorInstanceId).clientAddNewProcessInstanceToGroup(body,federationInstanceId,initiatorInstanceId,processInstance.getProcessInstanceID(),precedingPid,authorization));
@@ -114,7 +114,7 @@ public class StartController implements StartApi {
     }
 
     @Override
-    public ResponseEntity<Void> createProcessInstanceGroup(ProcessInstanceInputMessage body, String processInstanceId, String federationInstanceId, String groupId) {
+    public ResponseEntity<Void> createProcessInstanceGroup(ProcessInstanceInputMessage body, String processInstanceId, String federationInstanceId) {
         // get BusinessProcessContext
         BusinessProcessContext businessProcessContext = BusinessProcessContextHandler.getBusinessProcessContextHandler().getBusinessProcessContext(null);
         try {
@@ -123,7 +123,6 @@ public class StartController implements StartApi {
             if(groupDAO == null){
                 // create group for initiating party
                 ProcessInstanceGroupDAO processInstanceGroupDAO = ProcessInstanceGroupDAOUtility.createProcessInstanceGroupDAO(
-                        groupId,
                         body.getVariables().getInitiatorID(),
                         processInstanceId,
                         CamundaEngine.getTransactions(body.getVariables().getProcessID()).get(0).getInitiatorRole().toString(),
@@ -154,7 +153,6 @@ public class StartController implements StartApi {
             ProcessInstanceGroupDAO group = ProcessInstanceGroupDAOUtility.getProcessInstanceGroupDAO(precedingProcessId,federationInstanceId);
             if(group == null){
                 ProcessInstanceGroupDAO targetGroup = ProcessInstanceGroupDAOUtility.createProcessInstanceGroupDAO(
-                        null,
                         body.getVariables().getResponderID(),
                         processInstanceId,
                         CamundaEngine.getTransactions(body.getVariables().getProcessID()).get(0).getResponderRole().toString(),
@@ -189,29 +187,19 @@ public class StartController implements StartApi {
         return ResponseEntity.ok(null);
     }
 
-    private String createProcessInstanceGroup(String businessContextId,ProcessInstanceInputMessage body, ProcessInstance processInstance,String federationInstanceId) {
+    private void createProcessInstanceGroup(String businessContextId,ProcessInstanceInputMessage body, ProcessInstance processInstance,String federationInstanceId) {
         // create group for responder party
         ProcessInstanceGroupDAO processInstanceGroupDAO = ProcessInstanceGroupDAOUtility.createProcessInstanceGroupDAO(
-                null,
                 body.getVariables().getResponderID(),
                 processInstance.getProcessInstanceID(),
                 CamundaEngine.getTransactions(body.getVariables().getProcessID()).get(1).getInitiatorRole().toString(),
                 body.getVariables().getRelatedProducts().toString(),
                 federationInstanceId);
 
-        String associatedGroupId = UUID.randomUUID().toString();
-
-        // associate groups
-        List<String> associatedGroups = new ArrayList<>();
-
-        associatedGroups.add(associatedGroupId);
-        processInstanceGroupDAO.setAssociatedGroups(associatedGroups);
         HibernateUtilityRef.getInstance("bp-data-model").update(processInstanceGroupDAO);
 
         // save ProcessInstanceGroupDAOs
         BusinessProcessContextHandler.getBusinessProcessContextHandler().getBusinessProcessContext(businessContextId).setCreatedProcessInstanceGroupDAO(processInstanceGroupDAO);
-
-        return associatedGroupId;
     }
 
     private void addNewProcessInstanceToGroup(String businessContextId, String processInstanceId, ProcessInstanceInputMessage body,String federationInstanceId,String precedingPid) {
@@ -219,7 +207,6 @@ public class StartController implements StartApi {
 
         if(sourceGroup == null){
             ProcessInstanceGroupDAO targetGroup = ProcessInstanceGroupDAOUtility.createProcessInstanceGroupDAO(
-                    null,
                     body.getVariables().getResponderID(),
                     processInstanceId,
                     CamundaEngine.getTransactions(body.getVariables().getProcessID()).get(0).getResponderRole().toString(),

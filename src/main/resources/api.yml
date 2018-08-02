@@ -383,7 +383,7 @@ paths:
           description: Business Process Instance Started
           schema:
             $ref: '#/definitions/ProcessInstance'
-  /start/createGroup/{processInstanceId}/{groupId}:
+  /start/createGroup/{processInstanceId}:
     post:
       operationId: createProcessInstanceGroup
       consumes:
@@ -402,10 +402,7 @@ paths:
         name: federationInstanceId
         required: true
         type: string
-      - in: path
-        name: groupId
-        required: true
-        type: string
+
   /start/addToGroup/{processInstanceId}:
     patch:
       operationId: addNewProcessInstanceToGroup
@@ -426,7 +423,7 @@ paths:
         required: true
         type: string
       - in: query
-        name: groupId
+        name: precedingProcessId
         required: true
         type: string
   /continue:
@@ -1207,10 +1204,6 @@ definitions:
         type: boolean
       collaborationRole:
         type: string
-      associatedGroups:
-        type: array
-        items:
-          type: string
       firstActivityTime:
         type: string
 

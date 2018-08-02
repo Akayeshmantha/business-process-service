@@ -175,7 +175,6 @@
 			<!-- Otherwise we need to define a foreign key constraint in the database -->
 			<!-- see the temp element for proper referencing -->
 			<!-- first try to use manytomany annotation, see the second temp !!! -->
-			<xsd:element name="associatedGroups" type="xsd:string" maxOccurs="unbounded"/>
 			<xsd:element name="firstActivityTime" type="xsd:string"/>
 			<!--<xsd:element name="temp" type="AssociatedProcessInstanceGroup" maxOccurs="unbounded"/>-->
 			<!--<xsd:element name="temp" type="ProcessInstanceGroupDAO" maxOccurs="unbounded">-->

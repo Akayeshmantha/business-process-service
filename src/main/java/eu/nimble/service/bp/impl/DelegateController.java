@@ -276,14 +276,13 @@ public class DelegateController  {
                                                             @PathVariable(value = "processInstanceId",required = true) String processInstanceId,
                                                             @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
                                                             @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
-                                                            @PathVariable(value = "groupId", required = true) String groupId,
                                                             @RequestHeader(value="Authorization", required=true) String bearerToken)throws Exception{
         if(config.getInstanceid().equals(targetInstanceId)){
-            return startController.createProcessInstanceGroup(body,processInstanceId,initiatorInstanceId,groupId);
+            return startController.createProcessInstanceGroup(body,processInstanceId,initiatorInstanceId);
 
         }
         else {
-            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientCreateProcessInstanceGroup(body,initiatorInstanceId,targetInstanceId,processInstanceId,groupId,bearerToken));
+            return ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(targetInstanceId).clientCreateProcessInstanceGroup(body,initiatorInstanceId,targetInstanceId,processInstanceId,bearerToken));
         }
 
     }
