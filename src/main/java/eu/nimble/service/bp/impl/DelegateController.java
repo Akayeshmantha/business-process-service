@@ -269,7 +269,7 @@ public class DelegateController  {
         }
     }
 
-    @RequestMapping(value = "/start/createGroup/{processInstanceId}/{groupId}",
+    @RequestMapping(value = "/start/createGroup/{processInstanceId}",
             consumes = { "application/json" },
             method = RequestMethod.POST)
     ResponseEntity<Void> delegateCreateProcessInstanceGroup(@RequestBody ProcessInstanceInputMessage body,
