@@ -263,7 +263,7 @@ public class DelegateController  {
         }
     }
 
-    @RequestMapping(value = "/start/createGroup/{processInstanceId}",
+    @RequestMapping(value = "/group/process-instance/{processInstanceId}",
             consumes = { "application/json" },
             method = RequestMethod.POST)
     ResponseEntity<Void> delegateCreateProcessInstanceGroup(@RequestBody ProcessInstanceInputMessage body,
@@ -273,7 +273,7 @@ public class DelegateController  {
                                                             @RequestParam(value = "submissionDate", required = true) String submissionDate,
                                                             @RequestHeader(value="Authorization", required=true) String bearerToken)throws Exception{
         if(config.getInstanceid().equals(targetInstanceId)){
-            return startController.createProcessInstanceGroup(body,processInstanceId,initiatorInstanceId,submissionDate);
+            return processInstanceGroupController.createProcessInstanceGroup(body,processInstanceId,initiatorInstanceId,submissionDate);
 
         }
         else {
@@ -282,9 +282,9 @@ public class DelegateController  {
 
     }
 
-    @RequestMapping(value = "/start/addToGroup/{processInstanceId}",
+    @RequestMapping(value = "/group/process-instance/{processInstanceId}",
             consumes = { "application/json" },
-            method = RequestMethod.POST)
+            method = RequestMethod.PUT)
     ResponseEntity<Void> addNewProcessInstanceToGroup(@RequestBody ProcessInstanceInputMessage body,
                                                       @PathVariable(value = "processInstanceId",required = true) String processInstanceId,
                                                       @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
@@ -293,7 +293,7 @@ public class DelegateController  {
                                                       @RequestParam(value = "submissionDate", required = true) String submissionDate,
                                                       @RequestHeader(value="Authorization", required=true) String bearerToken)throws Exception{
         if(config.getInstanceid().equals(targetInstanceId)){
-            return startController.addNewProcessInstanceToGroup(body,processInstanceId,initiatorInstanceId,precedingProcessId,submissionDate);
+            return processInstanceGroupController.addNewProcessInstanceToGroup(body,processInstanceId,initiatorInstanceId,precedingProcessId,submissionDate);
 
         }
         else {

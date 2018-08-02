@@ -58,7 +58,7 @@ public interface BusinessProcessClient {
                                         @Param("targetInstanceId") String targetInstanceId,
                                         @Param("bearerToken") String bearerToken);
 
-    @RequestLine("POST delegate/start/createGroup/{processInstanceId}?submissionDate={submissionDate}&initiatorInstanceId={initiatorInstanceId}&targetInstanceId={targetInstanceId}")
+    @RequestLine("POST delegate/group/process-instance/{processInstanceId}?submissionDate={submissionDate}&initiatorInstanceId={initiatorInstanceId}&targetInstanceId={targetInstanceId}")
     @Headers("Authorization: {bearerToken}")
     Response clientCreateProcessInstanceGroup(eu.nimble.service.bp.swagger.model.ProcessInstanceInputMessage body,
                                         @Param("initiatorInstanceId") String initiatorInstanceId,
@@ -67,7 +67,7 @@ public interface BusinessProcessClient {
                                         @Param("submissionDate") String submissionDate,
                                         @Param("bearerToken") String bearerToken);
 
-    @RequestLine("POST delegate/start/addToGroup/{processInstanceId}?submissionDate={submissionDate}&initiatorInstanceId={initiatorInstanceId}&targetInstanceId={targetInstanceId}&precedingProcessId={precedingProcessId}")
+    @RequestLine("PUT delegate/group/process-instance/{processInstanceId}?submissionDate={submissionDate}&initiatorInstanceId={initiatorInstanceId}&targetInstanceId={targetInstanceId}&precedingProcessId={precedingProcessId}")
     @Headers("Authorization: {bearerToken}")
     Response clientAddNewProcessInstanceToGroup(eu.nimble.service.bp.swagger.model.ProcessInstanceInputMessage body,
                                               @Param("initiatorInstanceId") String initiatorInstanceId,

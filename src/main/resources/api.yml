@@ -383,57 +383,7 @@ paths:
           description: Business Process Instance Started
           schema:
             $ref: '#/definitions/ProcessInstance'
-  /start/createGroup/{processInstanceId}:
-    post:
-      operationId: createProcessInstanceGroup
-      consumes:
-      - application/json
-      parameters:
-      - in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/ProcessInstanceInputMessage'
-      - in: path
-        name: processInstanceId
-        required: true
-        type: string
-      - in: query
-        name: federationInstanceId
-        required: true
-        type: string
-      - in: query
-        name: submissionDate
-        required: true
-        type: string
 
-  /start/addToGroup/{processInstanceId}:
-    patch:
-      operationId: addNewProcessInstanceToGroup
-      consumes:
-      - application/json
-      parameters:
-      - in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/ProcessInstanceInputMessage'
-      - in: path
-        name: processInstanceId
-        required: true
-        type: string
-      - in: query
-        name: federationInstanceId
-        required: true
-        type: string
-      - in: query
-        name: precedingProcessId
-        required: true
-        type: string
-      - in: query
-        name: submissionDate
-        required: true
-        type: string
   /continue:
     post:
       operationId: continueProcessInstance
@@ -891,6 +841,56 @@ paths:
       responses:
         200:
           description: Deleted the groups successfully
+
+  /group/process-instance/{processInstanceId}:
+    post:
+      operationId: createProcessInstanceGroup
+      consumes:
+      - application/json
+      parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/ProcessInstanceInputMessage'
+      - in: path
+        name: processInstanceId
+        required: true
+        type: string
+      - in: query
+        name: federationInstanceId
+        required: true
+        type: string
+      - in: query
+        name: submissionDate
+        required: true
+        type: string
+    put:
+      operationId: addNewProcessInstanceToGroup
+      consumes:
+      - application/json
+      parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/ProcessInstanceInputMessage'
+      - in: path
+        name: processInstanceId
+        required: true
+        type: string
+      - in: query
+        name: federationInstanceId
+        required: true
+        type: string
+      - in: query
+        name: precedingProcessId
+        required: true
+        type: string
+      - in: query
+        name: submissionDate
+        required: true
+        type: string
 
   /group/{ID}/process-instance:
     get:
