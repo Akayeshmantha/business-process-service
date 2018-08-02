@@ -65,13 +65,13 @@ public class DocumentDAOUtility {
         HibernateUtilityRef.getInstance("bp-data-model").persist(processDocumentDAO);
         // save ProcessDocumentMetadataDAO
         BusinessProcessContext businessProcessContext = BusinessProcessContextHandler.getBusinessProcessContextHandler().getBusinessProcessContext(processContextId);
-        businessProcessContext.setMetadataDAO(processDocumentDAO);
+        businessProcessContext.setCreatedMetadataDAO(processDocumentDAO);
 
         if (document != null)
         {
             HibernateUtilityRef.getInstance(Configuration.UBL_PERSISTENCE_UNIT_NAME).persist(document);
             // save Object
-            businessProcessContext.setDocument(document);
+            businessProcessContext.setCreatedDocument(document);
         }
 
     }
@@ -90,7 +90,7 @@ public class DocumentDAOUtility {
 
         newDocumentDAO = (ProcessDocumentMetadataDAO) HibernateUtilityRef.getInstance("bp-data-model").update(newDocumentDAO);
 
-        businessProcessContext.setUpdatedDocumentMetadata(newDocumentDAO);
+        businessProcessContext.setUpdatedMetadataDAO(newDocumentDAO);
 
     }
 

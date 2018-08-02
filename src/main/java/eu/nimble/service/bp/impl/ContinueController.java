@@ -59,21 +59,21 @@ public class ContinueController implements ContinueApi {
             HibernateUtilityRef.getInstance("bp-data-model").persist(processInstanceInputMessageDAO);
 
             // save ProcessInstanceInputMessageDAO
-            businessProcessContext.setMessageDAO(processInstanceInputMessageDAO);
+            businessProcessContext.setCreatedMessageDAO(processInstanceInputMessageDAO);
 
             processInstance = CamundaEngine.continueProcessInstance(businessProcessContext.getId(),body, bearerToken);
 
             ProcessInstanceDAO storedInstance = DAOUtility.getProcessIntanceDAOByID(processInstance.getProcessInstanceID());
 
             // save previous status
-            businessProcessContext.setPreviousStatus(storedInstance.getStatus());
+            businessProcessContext.setPreviousProcessInstanceStatus(storedInstance.getStatus());
 
             storedInstance.setStatus(ProcessInstanceStatus.fromValue(processInstance.getStatus().toString()));
 
             HibernateUtilityRef.getInstance("bp-data-model").update(storedInstance);
 
             // save ProcessInstanceDAO
-            businessProcessContext.setProcessInstanceDAO(storedInstance);
+            businessProcessContext.setUpdatedProcessInstanceDAO(storedInstance);
 
             ClientFactory.getClientFactoryInstance().createResponseEntity(clientGenerator(initiatorInstanceId).clientCreateProcessInstanceGroup(body,federationInstanceId,initiatorInstanceId,processInstance.getProcessInstanceID(),null,bearerToken));
         }
