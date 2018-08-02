@@ -263,7 +263,6 @@ public class ProcessInstanceGroupDAOUtility {
         return group;
     }
 
-    // TODO: Check the usages of this and next method
     public static ProcessInstanceGroupDAO getProcessInstanceGroupDAOByID(String groupID){
         String query = "SELECT pig FROM ProcessInstanceGroupDAO pig WHERE pig.ID = '"+groupID+"'";
         ProcessInstanceGroupDAO group = (ProcessInstanceGroupDAO) HibernateUtilityRef.getInstance("bp-data-model").loadIndividualItem(query);
