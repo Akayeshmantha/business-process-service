@@ -68,7 +68,7 @@ public class DelegateController  {
     @RequestMapping(value = "/group",
             produces = { "application/json" },
             method = RequestMethod.GET)
-    public ResponseEntity<ProcessInstanceGroupResponse> getProcessInstanceGroups (
+    public ResponseEntity<ProcessInstanceGroupResponse> delegateGetProcessInstanceGroups (
             @RequestParam(value = "partyID", required = false) String partyID,
             @RequestParam(value = "relatedProducts", required = false) List<String> relatedProducts,
             @RequestParam(value = "relatedProductCategories", required = false) List<String> relatedProductCategories,
@@ -89,7 +89,7 @@ public class DelegateController  {
     @RequestMapping(value = "/group/filters",
             produces = { "application/json" },
             method = RequestMethod.GET)
-    public ResponseEntity<ProcessInstanceGroupFilter> getProcessInstanceGroupFilters(
+    public ResponseEntity<ProcessInstanceGroupFilter> delegateGetProcessInstanceGroupFilters(
             @RequestParam(value = "partyID", required = false) String partyID,
             @RequestParam(value = "relatedProducts", required = false) List<String> relatedProducts,
             @RequestParam(value = "relatedProductCategories", required = false) List<String> relatedProductCategories,
@@ -107,7 +107,7 @@ public class DelegateController  {
 
     @RequestMapping(value = "/processInstance/exists",
             method = RequestMethod.GET)
-    public ResponseEntity<ProcessDocumentMetadataDAO> processInstanceExists(
+    public ResponseEntity<ProcessDocumentMetadataDAO> delegateProcessInstanceExists(
             @RequestParam(value = "relatedProducts", required = false) List<String> relatedProducts,
             @RequestParam(value = "relatedProductCategories", required = false) List<String> relatedProductCategories,
             @RequestParam(value = "tradingPartnerIDs", required = false) List<String> tradingPartnerIDs,
@@ -285,7 +285,7 @@ public class DelegateController  {
     @RequestMapping(value = "/group/process-instance/{processInstanceId}",
             consumes = { "application/json" },
             method = RequestMethod.PUT)
-    ResponseEntity<Void> addNewProcessInstanceToGroup(@RequestBody ProcessInstanceInputMessage body,
+    ResponseEntity<Void> delegateAddNewProcessInstanceToGroup(@RequestBody ProcessInstanceInputMessage body,
                                                       @PathVariable(value = "processInstanceId",required = true) String processInstanceId,
                                                       @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
                                                       @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
@@ -307,7 +307,7 @@ public class DelegateController  {
             produces = { "application/json" },
             consumes = { "application/json" },
             method = RequestMethod.POST)
-    public ResponseEntity<ProcessInstance> continueProcessInstance(@RequestBody ProcessInstanceInputMessage body,
+    public ResponseEntity<ProcessInstance> delegateContinueProcessInstance(@RequestBody ProcessInstanceInputMessage body,
                                                                    @RequestParam(value = "gid", required = false) String gid,
                                                                    @RequestHeader(value="Authorization", required=true) String bearerToken,
                                                                    @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
@@ -478,7 +478,7 @@ public class DelegateController  {
             consumes = {"application/json"},
             produces = {"application/json"},
             method = RequestMethod.PATCH)
-    public ResponseEntity addDataMonitoringClauseToContract(@PathVariable(value = "documentId") String documentId,
+    public ResponseEntity delegateAddDataMonitoringClauseToContract(@PathVariable(value = "documentId") String documentId,
                                                             @RequestBody() DataMonitoringClauseType dataMonitoringClause,
                                                             @RequestParam(value = "initiatorInstanceId", required = true) String initiatorInstanceId,
                                                             @RequestParam(value = "targetInstanceId", required = true) String targetInstanceId,
