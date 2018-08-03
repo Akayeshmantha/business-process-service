@@ -15,40 +15,6 @@ import java.util.List;
 public interface BusinessProcessClient {
 
 
-    @RequestLine("GET delegate/group?collaborationRole={collaborationRole}&archived={archived}&limit={limit}&offset={offset}&lastActivityDateRange={lastActivityDateRange}&initiationDateRange={initiationDateRange}&tradingPartnerIDs={tradingPartnerIDs}&relatedProductCategories={relatedProductCategories}&relatedProducts={relatedProducts}&partyID={partyID}&initiatorInstanceId={initiatorInstanceId}&targetInstanceId={targetInstanceId}")
-    @Headers("Authorization: {bearerToken}")
-    Response clientGetProcessInstanceGroups(
-            @Param("partyID") String partyID,
-            @Param("relatedProducts") List<String> relatedProducts,
-            @Param("relatedProductCategories") List<String> relatedProductCategories,
-            @Param("tradingPartnerIDs") List<String> tradingPartnerIDs,
-            @Param("initiationDateRange") String initiationDateRange,
-            @Param("lastActivityDateRange") String lastActivityDateRange,
-            @Param("offset") Integer offset,
-            @Param("limit") Integer limit,
-            @Param("archived") Boolean archived,
-            @Param("collaborationRole") String collaborationRole,
-            @Param("initiatorInstanceId") String initiatorInstanceId,
-            @Param("targetInstanceId") String targetInstanceId,
-            @Param("bearerToken") String bearerToken);
-
-
-    @RequestLine("GET delegate/group/filters?collaborationRole={collaborationRole}&archived={archived}&lastActivityDateRange={lastActivityDateRange}&initiationDateRange={initiationDateRange}&tradingPartnerIDs={tradingPartnerIDs}&relatedProductCategories={relatedProductCategories}&relatedProducts={relatedProducts}&partyID={partyID}&initiatorInstanceId={initiatorInstanceId}&targetInstanceId={targetInstanceId}")
-    @Headers("Authorization: {bearerToken}")
-    Response clientGetProcessInstanceGroupFilters(
-            @Param("partyID") String partyID,
-            @Param("relatedProducts") List<String> relatedProducts,
-            @Param("relatedProductCategories") List<String> relatedProductCategories,
-            @Param("tradingPartnerIDs") List<String> tradingPartnerIDs,
-            @Param("initiationDateRange") String initiationDateRange,
-            @Param("lastActivityDateRange") String lastActivityDateRange,
-            @Param("archived") Boolean archived,
-            @Param("collaborationRole") String collaborationRole,
-            @Param("initiatorInstanceId") String initiatorInstanceId,
-            @Param("targetInstanceId") String targetInstanceId,
-            @Param("bearerToken") String bearerToken);
-
-
     @RequestLine("POST delegate/start?gid={gid}&precedingPid={precedingPid}&initiatorInstanceId={initiatorInstanceId}&targetInstanceId={targetInstanceId}")
     @Headers("Authorization: {bearerToken}")
     Response clientStartProcessInstance(eu.nimble.service.bp.swagger.model.ProcessInstanceInputMessage body,
@@ -301,45 +267,6 @@ public interface BusinessProcessClient {
     Response clientGetProcessInstanceDetails(
             @Param("processInstanceId") String processInstanceId);
 
-    @RequestLine("GET delegate/search/fields?initiatorInstanceId={initiatorInstanceId}&targetInstanceId={targetInstanceId}")
-    @Headers("Authorization: {bearerToken}")
-    Response clientGetFields(
-            @Param("initiatorInstanceId") String initiatorInstanceId,
-            @Param("targetInstanceId") String targetInstanceId,
-            @Param("bearerToken") String bearerToken);
-
-
-    @RequestLine("GET delegate/search/query?query={query}&facets={facets}&facetQueries={facetQueries}&page={page}&federated={federated}&initiatorInstanceId={initiatorInstanceId}&targetInstanceId={targetInstanceId}")
-    @Headers("Authorization: {bearerToken}")
-    Response clientSearch(
-            @Param("query") String query,
-            @Param("facets") List<String> facets,
-            @Param("facetQueries") List<String> facetQueries,
-            @Param("page") Integer page,
-            @Param("federated") Boolean federated,
-            @Param("initiatorInstanceId") String initiatorInstanceId,
-            @Param("targetInstanceId") String targetInstanceId,
-            @Param("bearerToken") String bearerToken);
-
-    @RequestLine("GET delegate/search/suggest?query={query}&wt={wt}facets={facets}&category={category}&federated={federated}&initiatorInstanceId={initiatorInstanceId}&targetInstanceId={targetInstanceId}")
-    @Headers("Authorization: {bearerToken}")
-    Response clientGetSuggestions(
-            @Param("query") String query,
-            @Param("wt") String wt,
-            @Param("facets") List<String> facets,
-            @Param("category") String category,
-            @Param("federated") Boolean federated,
-            @Param("initiatorInstanceId") String initiatorInstanceId,
-            @Param("targetInstanceId") String targetInstanceId,
-            @Param("bearerToken") String bearerToken);
-
-    @RequestLine("GET delegate/search/select?id={id}&initiatorInstanceId={initiatorInstanceId}&targetInstanceId={targetInstanceId}")
-    @Headers("Authorization: {bearerToken}")
-    Response clientSearch(
-            @Param("id") String id,
-            @Param("initiatorInstanceId") String initiatorInstanceId,
-            @Param("targetInstanceId") String targetInstanceId,
-            @Param("bearerToken") String bearerToken);
 
 }
 
