@@ -51,6 +51,7 @@ public class ProcessInstanceGroupController implements GroupApi {
 
 
     @Override
+    @ApiOperation(value = "", notes = "Create a group for the given process if the process does not belong to any existing groups.")
     public ResponseEntity<Void> createProcessInstanceGroup(ProcessInstanceInputMessage body, String processInstanceId, String federationInstanceId, String submissionDate) {
         // get BusinessProcessContext
         BusinessProcessContext businessProcessContext = BusinessProcessContextHandler.getBusinessProcessContextHandler().getBusinessProcessContext(null);
@@ -84,6 +85,8 @@ public class ProcessInstanceGroupController implements GroupApi {
     }
 
     @Override
+    @ApiOperation(value = "", notes = "Add the given process to group which is identified by preceding process,if the group does not exist for the preceding process," +
+            "then create a group for the given process.")
     public ResponseEntity<Void> addNewProcessInstanceToGroup(ProcessInstanceInputMessage body, String processInstanceId, String federationInstanceId, String precedingProcessId, String submissionDate) {
         // get BusinessProcessContext
         BusinessProcessContext businessProcessContext = BusinessProcessContextHandler.getBusinessProcessContextHandler().getBusinessProcessContext(null);
